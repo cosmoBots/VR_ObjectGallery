@@ -1,0 +1,25 @@
+# Godot cache/import artifacts
+.godot/
+.import/
+*.import
+
+# Editor/OS noise
+*.tmp
+*.swp
+*~
+.DS_Store
+Thumbs.db
+
+# Build/export outputs
+*.apk
+*.aab
+*.pck
+*.x86_64
+*.zip
+
+# Android export/build generated files
+android/build/
+android/.gradle/
+android/local.properties
+android/gradlew
+android/gradlew.bat

@@ -19,7 +19,7 @@ albedo_color = Color(0.25, 0.25, 0.27, 1)
 roughness = 0.95
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hand"]
-albedo_color = Color(0.85, 0.35, 0.2, 1)
+albedo_color = Color(0.2, 0.8, 0.95, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_hand"]
 size = Vector3(0.02, 0.25, 0.02)
@@ -50,6 +50,8 @@ tracker = &"left_hand"
 pose = &"aim"
 
 [node name="LeftHandMesh" type="MeshInstance3D" parent="XROrigin3D/LeftHand"]
+position = Vector3(0, 0, -0.2)
+rotation_degrees = Vector3(-90, 0, 0)
 mesh = SubResource("BoxMesh_hand")
 material_override = SubResource("StandardMaterial3D_hand")
 
@@ -59,6 +61,8 @@ tracker = &"right_hand"
 pose = &"aim"
 
 [node name="RightHandMesh" type="MeshInstance3D" parent="XROrigin3D/RightHand"]
+position = Vector3(0, 0, -0.2)
+rotation_degrees = Vector3(-90, 0, 0)
 mesh = SubResource("BoxMesh_hand")
 material_override = SubResource("StandardMaterial3D_hand")
 

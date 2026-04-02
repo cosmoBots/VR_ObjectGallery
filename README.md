@@ -40,6 +40,7 @@ En el nodo raiz `Main` (script `main.gd`):
 - `default_target_model_height`: altura usada por `fit_height` si el YAML no define otra.
 - `gallery_origin`: origen de la cuadricula.
 - `xr_render_target_size_multiplier`: escala de resolucion XR en Pico/OpenXR.
+- `xr_move_speed`, `xr_turn_speed_degrees`, `xr_stick_deadzone`: locomocion XR con stick izquierdo.
 - `desktop_forward_move_speed`, `desktop_strafe_move_speed`, `desktop_vertical_move_speed`: velocidad de navegacion en preview Linux.
 
 ## YAML por modelo
@@ -122,6 +123,11 @@ Campos por control:
 Para exportar a Android (Pico/Quest), reutiliza el flujo de SDK/JDK ya validado en el otro proyecto:
 - SDK: `/home/txinto/Android/Sdk`
 - JDK: `/opt/android-studio/jbr`
+
+Locomocion XR actual:
+- stick izquierdo horizontal: gira la camara/origen a izquierda y derecha
+- stick izquierdo vertical: avanza y retrocede
+- stick derecho: reservado para controles de subarboles definidos en `models.yaml`
 
 ## Preview en Linux
 

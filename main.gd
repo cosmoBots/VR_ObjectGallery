@@ -14,6 +14,9 @@ extends Node3D
 @export var cookie_min_radius: float = 0.18
 @export var cookie_margin: float = 0.05
 @export_range(0.5, 2.0, 0.05) var xr_render_target_size_multiplier: float = 1.3
+@export var xr_move_speed: float = 1.5
+@export var xr_turn_speed_degrees: float = 90.0
+@export var xr_stick_deadzone: float = 0.15
 @export var desktop_preview_enabled: bool = true
 @export var desktop_forward_move_speed: float = 3.5
 @export var desktop_strafe_move_speed: float = 1.5
@@ -23,6 +26,7 @@ extends Node3D
 
 @onready var gallery_root: Node3D = $GalleryRoot
 @onready var xr_origin: XROrigin3D = $XROrigin3D
+@onready var xr_camera: XRCamera3D = $XROrigin3D/XRCamera3D
 @onready var left_hand: XRController3D = $XROrigin3D/LeftHand
 @onready var right_hand: XRController3D = $XROrigin3D/RightHand
 @onready var desktop_preview: Node3D = $DesktopPreview
@@ -105,6 +109,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _process(delta: float) -> void:
 	if _xr_active or desktop_stick_simulation_enabled:
+		if _xr_active:
+			_process_xr_locomotion(delta)
 		_process_model_controls(delta)
 	if _xr_active:
 		return
@@ -142,6 +148,32 @@ func _process(delta: float) -> void:
 	var forward_movement: Vector3 = basis.z * move_input.z
 	var vertical_movement: Vector3 = Vector3.UP * move_input.y
 	desktop_preview.global_position += (strafe_movement * desktop_strafe_move_speed * delta) + (forward_movement * desktop_forward_move_speed * delta) + (vertical_movement * desktop_vertical_move_speed * delta)
+
+
+func _process_xr_locomotion(delta: float) -> void:
+	var stick: Vector2 = left_hand.get_vector2("primary")
+	if stick.length() < xr_stick_deadzone:
+		return
+
+	if absf(stick.x) >= xr_stick_deadzone:
+		_rotate_xr_origin_around_camera(-stick.x * deg_to_rad(xr_turn_speed_degrees) * delta)
+
+	if absf(stick.y) >= xr_stick_deadzone:
+		var camera_basis: Basis = xr_camera.global_transform.basis
+		var forward: Vector3 = -camera_basis.z
+		forward.y = 0.0
+		if forward.length_squared() > 0.0001:
+			forward = forward.normalized()
+			xr_origin.global_position += forward * (stick.y * xr_move_speed * delta)
+
+
+func _rotate_xr_origin_around_camera(angle_radians: float) -> void:
+	var pivot: Vector3 = xr_camera.global_position
+	var origin_position: Vector3 = xr_origin.global_position
+	var relative: Vector3 = origin_position - pivot
+	relative = relative.rotated(Vector3.UP, angle_radians)
+	xr_origin.global_position = pivot + relative
+	xr_origin.rotate_y(angle_radians)
 
 
 func _spawn_gallery() -> void:

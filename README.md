@@ -39,6 +39,7 @@ En el nodo raiz `Main` (script `main.gd`):
 - `gltf_model_scale`, `fbx_model_scale`: escala base por formato.
 - `default_target_model_height`: altura usada por `fit_height` si el YAML no define otra.
 - `gallery_origin`: origen de la cuadricula.
+- `desktop_forward_move_speed`, `desktop_strafe_move_speed`, `desktop_vertical_move_speed`: velocidad de navegacion en preview Linux.
 
 ## YAML por modelo
 
@@ -54,6 +55,19 @@ models:
     scale: 1.0
     rotation_degrees: [0.0, 0.0, 90.0]
     translation: [0.0, 1.0, 0.0]
+    controls:
+      left_stick_x:
+        target_node: "44V-M70-460_POLARIMETRO_ASS_ASM"
+        axis: "x"
+        min: -1.0
+        max: 1.0
+        speed: 0.10
+      left_stick_y:
+        target_node: "44V-M70-511_MOUNTANDBASE"
+        axis: "x"
+        min: -1.0
+        max: 1.0
+        speed: 0.10
 
   "tioazul.gltf":
     fit_height: true
@@ -70,6 +84,7 @@ Claves soportadas:
 - `scale`: escala final fija para ese archivo.
 - `rotation_degrees`: correccion Euler en grados `[x, y, z]`.
 - `translation`: desplazamiento local `[x, y, z]`.
+- `controls`: mapa de bindings de stick a movimientos de subarboles.
 
 Orden de aplicacion:
 - `scale`
@@ -77,6 +92,23 @@ Orden de aplicacion:
 - `rotation_degrees`
 - `fit_height` si procede
 - `place_on_pedestal` si esta activo
+
+Bindings soportados en `controls`:
+- `left_stick_x`
+- `left_stick_y`
+- `right_stick_x`
+- `right_stick_y`
+- `left_secondary_x`
+- `left_secondary_y`
+- `right_secondary_x`
+- `right_secondary_y`
+
+Campos por control:
+- `target_node`: nombre exacto del nodo hijo a mover.
+- `axis`: eje local a modificar (`x`, `y` o `z`).
+- `min`: desplazamiento minimo relativo a la posicion inicial del nodo.
+- `max`: desplazamiento maximo relativo a la posicion inicial del nodo.
+- `speed`: velocidad en metros por segundo a entrada maxima del stick.
 
 ## Nota VR
 
@@ -92,5 +124,15 @@ Controles:
 - `Click izquierdo`: capturar raton
 - `Esc` o `click derecho`: liberar raton
 - `W/A/S/D`: mover
-- `Q/E`: bajar/subir
+- `Q/E`, `F/R` o `PageDown/PageUp`: bajar/subir
 - mover raton: mirar
+
+Simulacion de sticks en Linux:
+- `J/L`: `left_stick_x`
+- `K/I`: `left_stick_y`
+- flechas `izquierda/derecha`: `right_stick_x`
+- flechas `abajo/arriba`: `right_stick_y`
+- `F/H`: `left_secondary_x`
+- `G/T`: `left_secondary_y`
+- keypad `4/6`: `right_secondary_x`
+- keypad `2/8`: `right_secondary_y`

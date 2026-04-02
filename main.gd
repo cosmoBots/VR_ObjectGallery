@@ -14,17 +14,23 @@ extends Node3D
 @export var cookie_min_radius: float = 0.18
 @export var cookie_margin: float = 0.05
 @export var desktop_preview_enabled: bool = true
-@export var desktop_move_speed: float = 3.5
+@export var desktop_forward_move_speed: float = 3.5
+@export var desktop_strafe_move_speed: float = 1.5
+@export var desktop_vertical_move_speed: float = 1.0
 @export var desktop_look_sensitivity: float = 0.1
+@export var desktop_stick_simulation_enabled: bool = true
 
 @onready var gallery_root: Node3D = $GalleryRoot
 @onready var xr_origin: XROrigin3D = $XROrigin3D
+@onready var left_hand: XRController3D = $XROrigin3D/LeftHand
+@onready var right_hand: XRController3D = $XROrigin3D/RightHand
 @onready var desktop_preview: Node3D = $DesktopPreview
 @onready var desktop_camera: Camera3D = $DesktopPreview/DesktopCamera3D
 
 var _model_overrides: Dictionary = {}
 var _xr_active: bool = false
 var _desktop_pitch_degrees: float = 0.0
+var _active_model_controls: Array[Dictionary] = []
 
 func _ready() -> void:
 	_xr_active = _enable_xr_if_available()
@@ -95,7 +101,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
-	if not desktop_preview_enabled or _xr_active:
+	if _xr_active or desktop_stick_simulation_enabled:
+		_process_model_controls(delta)
+	if _xr_active:
+		return
+	if not desktop_preview_enabled:
 		return
 
 	var move_input := Vector3.ZERO
@@ -111,18 +121,29 @@ func _process(delta: float) -> void:
 		move_input.y -= 1.0
 	if Input.is_key_pressed(KEY_E):
 		move_input.y += 1.0
+	if Input.is_key_pressed(KEY_F):
+		move_input.y -= 1.0
+	if Input.is_key_pressed(KEY_R):
+		move_input.y += 1.0
+	if Input.is_key_pressed(KEY_PAGEDOWN):
+		move_input.y -= 1.0
+	if Input.is_key_pressed(KEY_PAGEUP):
+		move_input.y += 1.0
 
 	if move_input == Vector3.ZERO:
 		return
 
 	move_input = move_input.normalized()
 	var basis: Basis = desktop_preview.global_transform.basis
-	var movement: Vector3 = (basis.x * move_input.x) + (-basis.z * move_input.z) + (Vector3.UP * move_input.y)
-	desktop_preview.global_position += movement * desktop_move_speed * delta
+	var strafe_movement: Vector3 = basis.x * move_input.x
+	var forward_movement: Vector3 = basis.z * move_input.z
+	var vertical_movement: Vector3 = Vector3.UP * move_input.y
+	desktop_preview.global_position += (strafe_movement * desktop_strafe_move_speed * delta) + (forward_movement * desktop_forward_move_speed * delta) + (vertical_movement * desktop_vertical_move_speed * delta)
 
 
 func _spawn_gallery() -> void:
 	_clear_children(gallery_root)
+	_active_model_controls.clear()
 	var model_paths: Array[String] = []
 	_collect_model_paths(models_dir, model_paths)
 	model_paths.sort()
@@ -167,6 +188,7 @@ func _spawn_gallery() -> void:
 			_fit_model_height(instance, float(override.get("target_height", default_target_model_height)))
 		if _place_on_pedestal_for_override(override):
 			_place_model_on_pedestal(instance, pedestal_height)
+		_register_model_controls(instance, override)
 		slot.add_child(_make_shadow_cookie(instance))
 
 
@@ -398,6 +420,8 @@ func _load_model_overrides(path: String) -> Dictionary:
 	var overrides: Dictionary = {}
 	var in_models_section: bool = false
 	var current_model: String = ""
+	var in_controls_section: bool = false
+	var current_control: String = ""
 
 	while not file.eof_reached():
 		var raw_line: String = file.get_line()
@@ -418,6 +442,8 @@ func _load_model_overrides(path: String) -> Dictionary:
 			model_key = model_key.trim_prefix("'").trim_suffix("'")
 			current_model = model_key
 			overrides[current_model] = {}
+			in_controls_section = false
+			current_control = ""
 			continue
 
 		if current_model.is_empty():
@@ -425,6 +451,28 @@ func _load_model_overrides(path: String) -> Dictionary:
 
 		if line.begins_with("    "):
 			var entry: String = line.strip_edges()
+			if entry == "controls:":
+				overrides[current_model]["controls"] = {}
+				in_controls_section = true
+				current_control = ""
+				continue
+
+			if in_controls_section and line.begins_with("      ") and not line.begins_with("        "):
+				current_control = entry.trim_suffix(":")
+				overrides[current_model]["controls"][current_control] = {}
+				continue
+
+			if in_controls_section and current_control != "" and line.begins_with("        "):
+				var control_entry: String = line.strip_edges()
+				var control_sep: int = control_entry.find(":")
+				if control_sep == -1:
+					continue
+
+				var control_key: String = control_entry.substr(0, control_sep).strip_edges()
+				var control_value_text: String = control_entry.substr(control_sep + 1).strip_edges()
+				overrides[current_model]["controls"][current_control][control_key] = _parse_yaml_scalar(control_value_text)
+				continue
+
 			var sep: int = entry.find(":")
 			if sep == -1:
 				continue
@@ -432,6 +480,8 @@ func _load_model_overrides(path: String) -> Dictionary:
 			var key: String = entry.substr(0, sep).strip_edges()
 			var value_text: String = entry.substr(sep + 1).strip_edges()
 			overrides[current_model][key] = _parse_yaml_scalar(value_text)
+			in_controls_section = false
+			current_control = ""
 
 	return overrides
 
@@ -480,3 +530,136 @@ func _apply_debug_material(model_root: Node3D) -> void:
 	for mesh_instance in meshes:
 		mesh_instance.material_override = mat
 		mesh_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+func _register_model_controls(model_root: Node3D, override: Dictionary) -> void:
+	if not override.has("controls"):
+		return
+
+	var controls = override["controls"]
+	if not (controls is Dictionary):
+		return
+
+	for control_name in controls.keys():
+		var control_config = controls[control_name]
+		if not (control_config is Dictionary):
+			continue
+
+		var target_name: String = str(control_config.get("target_node", ""))
+		if target_name.is_empty():
+			continue
+
+		var target_node: Node = model_root.find_child(target_name, true, false)
+		if target_node == null:
+			push_warning("No se encontro nodo de control: %s" % target_name)
+			continue
+		if not target_node is Node3D:
+			push_warning("Nodo de control no es Node3D: %s" % target_name)
+			continue
+
+		var axis_name: String = str(control_config.get("axis", "x")).to_lower()
+		var axis_index: int = _axis_index_from_name(axis_name)
+		if axis_index == -1:
+			push_warning("Eje no soportado en control %s: %s" % [control_name, axis_name])
+			continue
+
+		var target_3d := target_node as Node3D
+		_active_model_controls.append({
+			"binding": String(control_name),
+			"node": target_3d,
+			"axis_index": axis_index,
+			"axis_name": axis_name,
+			"min": float(control_config.get("min", -1.0)),
+			"max": float(control_config.get("max", 1.0)),
+			"speed": float(control_config.get("speed", 0.1)),
+			"base_position": target_3d.position,
+			"offset": 0.0,
+		})
+
+
+func _process_model_controls(delta: float) -> void:
+	for i in _active_model_controls.size():
+		var control: Dictionary = _active_model_controls[i]
+		var input_value: float = _control_input_value(str(control["binding"]))
+		if absf(input_value) < 0.15:
+			continue
+
+		var new_offset: float = clampf(float(control["offset"]) + (input_value * float(control["speed"]) * delta), float(control["min"]), float(control["max"]))
+		control["offset"] = new_offset
+
+		var target_node := control["node"] as Node3D
+		var base_position: Vector3 = control["base_position"]
+		var axis_index: int = int(control["axis_index"])
+		var new_position: Vector3 = base_position
+		new_position[axis_index] = base_position[axis_index] + new_offset
+		target_node.position = new_position
+
+		_active_model_controls[i] = control
+
+
+func _control_input_value(binding: String) -> float:
+	if not _xr_active and desktop_stick_simulation_enabled:
+		return _desktop_control_input_value(binding)
+
+	match binding:
+		"left_stick_x":
+			return left_hand.get_vector2("primary").x
+		"left_stick_y":
+			return left_hand.get_vector2("primary").y
+		"right_stick_x":
+			return right_hand.get_vector2("primary").x
+		"right_stick_y":
+			return right_hand.get_vector2("primary").y
+		"left_secondary_x":
+			return left_hand.get_vector2("secondary").x
+		"left_secondary_y":
+			return left_hand.get_vector2("secondary").y
+		"right_secondary_x":
+			return right_hand.get_vector2("secondary").x
+		"right_secondary_y":
+			return right_hand.get_vector2("secondary").y
+		_:
+			return 0.0
+
+
+func _desktop_control_input_value(binding: String) -> float:
+	match binding:
+		"left_stick_x":
+			return _desktop_axis_value(KEY_J, KEY_L)
+		"left_stick_y":
+			return _desktop_axis_value(KEY_K, KEY_I)
+		"right_stick_x":
+			return _desktop_axis_value(KEY_LEFT, KEY_RIGHT)
+		"right_stick_y":
+			return _desktop_axis_value(KEY_DOWN, KEY_UP)
+		"left_secondary_x":
+			return _desktop_axis_value(KEY_F, KEY_H)
+		"left_secondary_y":
+			return _desktop_axis_value(KEY_G, KEY_T)
+		"right_secondary_x":
+			return _desktop_axis_value(KEY_KP_4, KEY_KP_6)
+		"right_secondary_y":
+			return _desktop_axis_value(KEY_KP_2, KEY_KP_8)
+		_:
+			return 0.0
+
+
+func _desktop_axis_value(negative_key: Key, positive_key: Key) -> float:
+	var value: float = 0.0
+	if Input.is_key_pressed(negative_key):
+		value -= 1.0
+	if Input.is_key_pressed(positive_key):
+		value += 1.0
+	return value
+
+
+func _axis_index_from_name(axis_name: String) -> int:
+	match axis_name:
+		"x":
+			return 0
+		"y":
+			return 1
+		"z":
+			return 2
+		_:
+			return -1

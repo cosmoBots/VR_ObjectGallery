@@ -28,6 +28,7 @@ Evitar si puedes:
 3. Ejecuta la escena principal.
 4. El script carga todos los `.glb`/`.gltf`/`.fbx` de `models` (incluyendo subcarpetas) y los coloca en una cuadrícula.
 5. Si necesitas ajustes por modelo, edita `models/models.yaml`.
+6. Si existe una escena asociada `mismo_nombre.tscn`, se cargara en lugar del `.glb/.gltf/.fbx`.
 
 ## Parametros de la galeria
 
@@ -47,6 +48,11 @@ En el nodo raiz `Main` (script `main.gd`):
 ## YAML por modelo
 
 Archivo: [`models/models.yaml`](models/models.yaml)
+
+Convencion de override editable:
+- `BancoIFU.glb` puede tener una escena asociada `BancoIFU.tscn`
+- en runtime se intentara cargar `BancoIFU.tscn` antes que `BancoIFU.glb`
+- el YAML sigue refiriendose siempre al archivo base, por ejemplo `BancoIFU.glb`
 
 Ejemplo:
 

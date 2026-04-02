@@ -421,13 +421,19 @@ func _model_scale_for_path(path: String, override: Dictionary = {}) -> float:
 		return float(override["scale"])
 
 	var ext: String = path.get_extension().to_lower()
+	if ext == "tscn":
+		var source_ext: String = _source_extension_for_resolved_path(path)
+		if source_ext == "fbx":
+			return fbx_model_scale
+		return gltf_model_scale
 	if ext == "fbx":
 		return fbx_model_scale
 	return gltf_model_scale
 
 
 func _instantiate_model(path: String) -> Node3D:
-	var res := ResourceLoader.load(path)
+	var resolved_path: String = _resolve_scene_override_path(path)
+	var res := ResourceLoader.load(resolved_path)
 	if res == null:
 		return null
 
@@ -447,6 +453,29 @@ func _instantiate_model(path: String) -> Node3D:
 		return wrapper_mesh
 
 	return null
+
+
+func _resolve_scene_override_path(path: String) -> String:
+	var ext: String = path.get_extension().to_lower()
+	if ext == "tscn":
+		return path
+	if not _is_supported_model_extension(ext):
+		return path
+
+	var scene_override_path: String = "%s.tscn" % path.get_basename()
+	if FileAccess.file_exists(scene_override_path):
+		return scene_override_path
+	return path
+
+
+func _source_extension_for_resolved_path(path: String) -> String:
+	var basename: String = path.get_basename()
+	var candidates := ["glb", "gltf", "fbx"]
+	for candidate in candidates:
+		var candidate_path := "%s.%s" % [basename, candidate]
+		if FileAccess.file_exists(candidate_path):
+			return candidate
+	return ""
 
 
 func _make_pedestal() -> MeshInstance3D:

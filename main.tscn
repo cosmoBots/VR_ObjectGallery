@@ -1,6 +1,6 @@
-[gd_scene load_steps=10 format=3 uid="uid://c0vrgallerymain"]
+[gd_scene format=3 uid="uid://cwo034wg56xub"]
 
-[ext_resource type="Script" path="res://main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://rff55v78r4s1" path="res://main.gd" id="1_main"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_1"]
 
@@ -11,12 +11,12 @@ sky_material = SubResource("ProceduralSkyMaterial_1")
 background_mode = 2
 sky = SubResource("Sky_1")
 
-[sub_resource type="PlaneMesh" id="PlaneMesh_1"]
-size = Vector2(20, 20)
-
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_floor"]
 albedo_color = Color(0.25, 0.25, 0.27, 1)
 roughness = 0.95
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_1"]
+size = Vector2(20, 20)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hand"]
 albedo_color = Color(0.2, 0.8, 0.95, 1)
@@ -24,46 +24,51 @@ albedo_color = Color(0.2, 0.8, 0.95, 1)
 [sub_resource type="BoxMesh" id="BoxMesh_hand"]
 size = Vector3(0.02, 0.25, 0.02)
 
-[node name="Main" type="Node3D"]
+[node name="Main" type="Node3D" unique_id=2075797965]
 script = ExtResource("1_main")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1879892446]
 environment = SubResource("Environment_1")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1707500394]
 transform = Transform3D(0.939693, -0.34202, 0, 0.241845, 0.664463, -0.707107, 0.241845, 0.664463, 0.707107, 0, 4, 0)
 light_energy = 2.2
 shadow_enabled = true
 
-[node name="Floor" type="MeshInstance3D" parent="."]
-mesh = SubResource("PlaneMesh_1")
+[node name="Floor" type="MeshInstance3D" parent="." unique_id=1810831152]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.002670765, -2.3841858e-07, -0.0014590025)
 material_override = SubResource("StandardMaterial3D_floor")
+mesh = SubResource("PlaneMesh_1")
 
-[node name="XROrigin3D" type="XROrigin3D" parent="."]
+[node name="XROrigin3D" type="XROrigin3D" parent="." unique_id=97634981]
 
-[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D"]
+[node name="XRCamera3D" type="XRCamera3D" parent="XROrigin3D" unique_id=401937009]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 0)
 
-[node name="LeftHand" type="XRController3D" parent="XROrigin3D"]
+[node name="LeftHand" type="XRController3D" parent="XROrigin3D" unique_id=678258482]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 1.45, -0.35)
 tracker = &"left_hand"
 pose = &"aim"
 
-[node name="LeftHandMesh" type="MeshInstance3D" parent="XROrigin3D/LeftHand"]
-position = Vector3(0, 0, -0.2)
-rotation_degrees = Vector3(-90, 0, 0)
-mesh = SubResource("BoxMesh_hand")
+[node name="LeftHandMesh" type="MeshInstance3D" parent="XROrigin3D/LeftHand" unique_id=858622846]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, -0.2)
 material_override = SubResource("StandardMaterial3D_hand")
+mesh = SubResource("BoxMesh_hand")
 
-[node name="RightHand" type="XRController3D" parent="XROrigin3D"]
+[node name="RightHand" type="XRController3D" parent="XROrigin3D" unique_id=1842962176]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1.45, -0.35)
 tracker = &"right_hand"
 pose = &"aim"
 
-[node name="RightHandMesh" type="MeshInstance3D" parent="XROrigin3D/RightHand"]
-position = Vector3(0, 0, -0.2)
-rotation_degrees = Vector3(-90, 0, 0)
-mesh = SubResource("BoxMesh_hand")
+[node name="RightHandMesh" type="MeshInstance3D" parent="XROrigin3D/RightHand" unique_id=1616859846]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, -0.2)
 material_override = SubResource("StandardMaterial3D_hand")
+mesh = SubResource("BoxMesh_hand")
 
-[node name="GalleryRoot" type="Node3D" parent="."]
+[node name="GalleryRoot" type="Node3D" parent="." unique_id=1190689613]
+
+[node name="DesktopPreview" type="Node3D" parent="." unique_id=541001]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 2.5)
+
+[node name="DesktopCamera3D" type="Camera3D" parent="DesktopPreview" unique_id=541002]
+current = false

@@ -1,35 +1,124 @@
 extends Node3D
 
 @export_dir var models_dir: String = "res://models"
+@export_file("*.yaml") var model_overrides_file: String = "res://models/models.yaml"
 @export var columns: int = 4
 @export var spacing_x: float = 2.0
 @export var spacing_z: float = 2.0
-@export var model_scale: float = 1.0
+@export var gltf_model_scale: float = 1.0
+@export var fbx_model_scale: float = 1.0
+@export var use_unshaded_debug_material: bool = false
 @export var gallery_origin: Vector3 = Vector3(0.0, 0.0, -1.0)
 @export var pedestal_height: float = 0.1
-@export var target_model_height: float = 1.5
+@export var default_target_model_height: float = 1.5
 @export var cookie_min_radius: float = 0.18
 @export var cookie_margin: float = 0.05
+@export var desktop_preview_enabled: bool = true
+@export var desktop_move_speed: float = 3.5
+@export var desktop_look_sensitivity: float = 0.1
 
 @onready var gallery_root: Node3D = $GalleryRoot
+@onready var xr_origin: XROrigin3D = $XROrigin3D
+@onready var desktop_preview: Node3D = $DesktopPreview
+@onready var desktop_camera: Camera3D = $DesktopPreview/DesktopCamera3D
+
+var _model_overrides: Dictionary = {}
+var _xr_active: bool = false
+var _desktop_pitch_degrees: float = 0.0
 
 func _ready() -> void:
-	_enable_xr_if_available()
-	call_deferred("_enable_xr_if_available")
+	_xr_active = _enable_xr_if_available()
+	call_deferred("_late_xr_setup")
+	_model_overrides = _load_model_overrides(model_overrides_file)
+	_configure_preview_mode()
 	_spawn_gallery()
 
 
-func _enable_xr_if_available() -> void:
+func _enable_xr_if_available() -> bool:
 	var interface: OpenXRInterface = XRServer.find_interface("OpenXR")
 	if interface == null:
-		return
+		return false
 
 	if not interface.is_initialized():
-		interface.initialize()
+		if not interface.initialize():
+			return false
 
 	# En Pico, el estado puede no estar listo al primer _ready().
 	# Marcamos el viewport para XR para evitar el bucle "No viewport was marked with use_xr".
 	get_viewport().use_xr = true
+	return true
+
+
+func _late_xr_setup() -> void:
+	if _xr_active:
+		return
+	_xr_active = _enable_xr_if_available()
+	_configure_preview_mode()
+
+
+func _configure_preview_mode() -> void:
+	var use_desktop_preview: bool = desktop_preview_enabled and not _xr_active
+	desktop_preview.visible = use_desktop_preview
+	desktop_camera.current = use_desktop_preview
+	xr_origin.visible = _xr_active
+
+	if use_desktop_preview:
+		desktop_preview.rotation_degrees.x = 0.0
+		_desktop_pitch_degrees = 0.0
+	else:
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not desktop_preview_enabled or _xr_active:
+		return
+
+	if event is InputEventMouseButton:
+		var mouse_event := event as InputEventMouseButton
+		if mouse_event.button_index == MOUSE_BUTTON_LEFT and mouse_event.pressed:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+		elif mouse_event.button_index == MOUSE_BUTTON_RIGHT and mouse_event.pressed:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		return
+
+	if event is InputEventKey:
+		var key_event := event as InputEventKey
+		if key_event.pressed and key_event.keycode == KEY_ESCAPE:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		return
+
+	if event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+		var motion := event as InputEventMouseMotion
+		desktop_preview.rotate_y(deg_to_rad(-motion.relative.x * desktop_look_sensitivity))
+		_desktop_pitch_degrees = clampf(_desktop_pitch_degrees - motion.relative.y * desktop_look_sensitivity, -85.0, 85.0)
+		desktop_camera.rotation_degrees.x = _desktop_pitch_degrees
+
+
+func _process(delta: float) -> void:
+	if not desktop_preview_enabled or _xr_active:
+		return
+
+	var move_input := Vector3.ZERO
+	if Input.is_key_pressed(KEY_W):
+		move_input.z -= 1.0
+	if Input.is_key_pressed(KEY_S):
+		move_input.z += 1.0
+	if Input.is_key_pressed(KEY_A):
+		move_input.x -= 1.0
+	if Input.is_key_pressed(KEY_D):
+		move_input.x += 1.0
+	if Input.is_key_pressed(KEY_Q):
+		move_input.y -= 1.0
+	if Input.is_key_pressed(KEY_E):
+		move_input.y += 1.0
+
+	if move_input == Vector3.ZERO:
+		return
+
+	move_input = move_input.normalized()
+	var basis: Basis = desktop_preview.global_transform.basis
+	var movement: Vector3 = (basis.x * move_input.x) + (-basis.z * move_input.z) + (Vector3.UP * move_input.y)
+	desktop_preview.global_position += movement * desktop_move_speed * delta
 
 
 func _spawn_gallery() -> void:
@@ -52,6 +141,8 @@ func _spawn_gallery() -> void:
 	for i in model_paths.size():
 		var model_path := model_paths[i]
 		var instance := _instantiate_model(model_path)
+		var model_name := model_path.get_file()
+		var override: Dictionary = _override_for_model(model_name)
 
 		var slot := Node3D.new()
 		slot.name = "Slot_%02d" % i
@@ -66,11 +157,16 @@ func _spawn_gallery() -> void:
 			slot.add_child(_make_shadow_cookie(null))
 			continue
 
-		instance.scale = Vector3.ONE * model_scale
-		instance.position = Vector3.ZERO
+		instance.scale = Vector3.ONE * _model_scale_for_path(model_path, override)
+		instance.position = _vector3_from_override(override, "translation", Vector3.ZERO)
+		instance.rotation_degrees = _vector3_from_override(override, "rotation_degrees", Vector3.ZERO)
+		if use_unshaded_debug_material:
+			_apply_debug_material(instance)
 		slot.add_child(instance)
-		_fit_model_height(instance, target_model_height)
-		_place_model_on_pedestal(instance, pedestal_height)
+		if override.get("fit_height", false):
+			_fit_model_height(instance, float(override.get("target_height", default_target_model_height)))
+		if _place_on_pedestal_for_override(override):
+			_place_model_on_pedestal(instance, pedestal_height)
 		slot.add_child(_make_shadow_cookie(instance))
 
 
@@ -93,14 +189,28 @@ func _collect_model_paths(base_dir: String, out_paths: Array[String]) -> void:
 			_collect_model_paths(full_path, out_paths)
 		else:
 			var ext := name.get_extension().to_lower()
-			if ext == "glb" or ext == "gltf":
+			if _is_supported_model_extension(ext):
 				out_paths.append(full_path)
 			elif ext == "import":
 				var source_name: String = name.trim_suffix(".import")
 				var source_ext: String = source_name.get_extension().to_lower()
-				if source_ext == "glb" or source_ext == "gltf":
+				if _is_supported_model_extension(source_ext):
 					out_paths.append("%s/%s" % [base_dir, source_name])
 	dir.list_dir_end()
+
+
+func _is_supported_model_extension(ext: String) -> bool:
+	return ext == "glb" or ext == "gltf" or ext == "fbx"
+
+
+func _model_scale_for_path(path: String, override: Dictionary = {}) -> float:
+	if override.has("scale"):
+		return float(override["scale"])
+
+	var ext: String = path.get_extension().to_lower()
+	if ext == "fbx":
+		return fbx_model_scale
+	return gltf_model_scale
 
 
 func _instantiate_model(path: String) -> Node3D:
@@ -252,3 +362,121 @@ func _transform_aabb(aabb: AABB, xform: Transform3D) -> AABB:
 		var p: Vector3 = xform * aabb.get_endpoint(i)
 		result = result.expand(p)
 	return result
+
+
+func _override_for_model(model_name: String) -> Dictionary:
+	if _model_overrides.has(model_name):
+		return _model_overrides[model_name]
+	return {}
+
+
+func _place_on_pedestal_for_override(override: Dictionary) -> bool:
+	if override.has("place_on_pedestal"):
+		return bool(override["place_on_pedestal"])
+	return true
+
+
+func _vector3_from_override(data: Dictionary, key: String, default_value: Vector3) -> Vector3:
+	if not data.has(key):
+		return default_value
+
+	var value = data[key]
+	if value is Array and value.size() >= 3:
+		return Vector3(float(value[0]), float(value[1]), float(value[2]))
+	return default_value
+
+
+func _load_model_overrides(path: String) -> Dictionary:
+	if path.is_empty() or not FileAccess.file_exists(path):
+		return {}
+
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		push_warning("No se pudo abrir YAML de modelos: %s" % path)
+		return {}
+
+	var overrides: Dictionary = {}
+	var in_models_section: bool = false
+	var current_model: String = ""
+
+	while not file.eof_reached():
+		var raw_line: String = file.get_line()
+		var line: String = raw_line.split("#", true, 1)[0].rstrip("\r\n\t ")
+		if line.is_empty():
+			continue
+
+		if line == "models:":
+			in_models_section = true
+			continue
+
+		if not in_models_section:
+			continue
+
+		if line.begins_with("  ") and not line.begins_with("    "):
+			var model_key: String = line.strip_edges().trim_suffix(":")
+			model_key = model_key.trim_prefix("\"").trim_suffix("\"")
+			model_key = model_key.trim_prefix("'").trim_suffix("'")
+			current_model = model_key
+			overrides[current_model] = {}
+			continue
+
+		if current_model.is_empty():
+			continue
+
+		if line.begins_with("    "):
+			var entry: String = line.strip_edges()
+			var sep: int = entry.find(":")
+			if sep == -1:
+				continue
+
+			var key: String = entry.substr(0, sep).strip_edges()
+			var value_text: String = entry.substr(sep + 1).strip_edges()
+			overrides[current_model][key] = _parse_yaml_scalar(value_text)
+
+	return overrides
+
+
+func _parse_yaml_scalar(value_text: String):
+	if value_text.is_empty():
+		return ""
+
+	if value_text == "true":
+		return true
+	if value_text == "false":
+		return false
+
+	if value_text.begins_with("[") and value_text.ends_with("]"):
+		var inside: String = value_text.substr(1, value_text.length() - 2).strip_edges()
+		if inside.is_empty():
+			return []
+
+		var parts: PackedStringArray = inside.split(",", false)
+		var out: Array = []
+		for part in parts:
+			out.append(_parse_yaml_scalar(part.strip_edges()))
+		return out
+
+	if (value_text.begins_with("\"") and value_text.ends_with("\"")) or (value_text.begins_with("'") and value_text.ends_with("'")):
+		return value_text.substr(1, value_text.length() - 2)
+
+	if value_text.is_valid_float():
+		return value_text.to_float()
+	if value_text.is_valid_int():
+		return value_text.to_int()
+
+	return value_text
+
+
+func _apply_debug_material(model_root: Node3D) -> void:
+	var meshes: Array[MeshInstance3D] = []
+	_collect_mesh_instances(model_root, meshes)
+
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(0.72, 0.74, 0.68, 1.0)
+	mat.roughness = 1.0
+	mat.metallic = 0.0
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+
+	for mesh_instance in meshes:
+		mesh_instance.material_override = mat
+		mesh_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF

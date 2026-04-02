@@ -1,0 +1,14 @@
+models:
+  "44V-M70-001_LAYOUT_IFU_BENCH2.glb":
+    fit_height: false
+    place_on_pedestal: false
+    scale: 1.0
+    rotation_degrees: [90.0, 0.0, 180.0]
+    translation: [0.0, 1.0, 0.0]
+
+  "tioazul.gltf":
+    fit_height: true
+    place_on_pedestal: true
+    target_height: 1.5
+    rotation_degrees: [0.0, 0.0, 0.0]
+    translation: [0.0, 0.0, 0.0]

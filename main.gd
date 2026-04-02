@@ -296,8 +296,8 @@ func _switch_to_ar() -> bool:
 	environment.background_mode = Environment.BG_COLOR
 	environment.background_color = Color(0.0, 0.0, 0.0, 0.0)
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color = Color(0.82, 0.84, 0.88, 1.0)
-	environment.ambient_light_energy = 1.15
+	environment.ambient_light_color = Color(0.78, 0.8, 0.84, 1.0)
+	environment.ambient_light_energy = 1.0
 	floor_mesh.visible = false
 	_is_ar_mode = true
 	return true

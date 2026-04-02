@@ -8,6 +8,10 @@ models:
     scale: 1.0
     rotation_degrees: [90.0, 0.0, 180.0]
     translation: [0.0, 1.0, 0.0]
+    filtered_views:
+      view1:
+        button: "left_ax_button"
+        group: "optics"
     controls:
       right_stick_x:
         target_node: "44V-M70-460_POLARIMETRO_ASS_ASM"

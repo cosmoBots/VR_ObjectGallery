@@ -43,6 +43,7 @@ var _model_overrides: Dictionary = {}
 var _xr_active: bool = false
 var _desktop_pitch_degrees: float = 0.0
 var _active_model_controls: Array[Dictionary] = []
+var _active_filtered_views: Array[Dictionary] = []
 var _control_button_previous: Dictionary = {}
 var _button_press_events: Dictionary = {}
 var _left_hand_idle_material: StandardMaterial3D
@@ -178,6 +179,7 @@ func _process(delta: float) -> void:
 		if _xr_active:
 			_process_ar_vr_toggle()
 			_process_xr_locomotion(delta)
+		_process_filtered_views()
 		_process_model_controls(delta)
 		_update_hand_button_feedback()
 	if _xr_active:
@@ -328,6 +330,7 @@ func _switch_to_vr() -> bool:
 func _spawn_gallery() -> void:
 	_clear_children(gallery_root)
 	_active_model_controls.clear()
+	_active_filtered_views.clear()
 	_enable_control_debug_visuals = false
 	var model_paths: Array[String] = []
 	_collect_model_paths(models_dir, model_paths)
@@ -378,6 +381,7 @@ func _spawn_gallery() -> void:
 			_fit_model_height(instance, float(override.get("target_height", default_target_model_height)))
 		if _place_on_pedestal_for_override(override):
 			_place_model_on_pedestal(instance, pedestal_height)
+		_register_filtered_views(instance, override)
 		_register_model_controls(instance, override)
 		if _show_cookie_for_override(override):
 			slot.add_child(_make_shadow_cookie(instance))
@@ -463,7 +467,7 @@ func _resolve_scene_override_path(path: String) -> String:
 		return path
 
 	var scene_override_path: String = "%s.tscn" % path.get_basename()
-	if FileAccess.file_exists(scene_override_path):
+	if ResourceLoader.exists(scene_override_path):
 		return scene_override_path
 	return path
 
@@ -654,6 +658,8 @@ func _load_model_overrides(path: String) -> Dictionary:
 	var current_model: String = ""
 	var in_controls_section: bool = false
 	var current_control: String = ""
+	var in_filtered_views_section: bool = false
+	var current_filtered_view: String = ""
 
 	while not file.eof_reached():
 		var raw_line: String = file.get_line()
@@ -676,6 +682,8 @@ func _load_model_overrides(path: String) -> Dictionary:
 			overrides[current_model] = {}
 			in_controls_section = false
 			current_control = ""
+			in_filtered_views_section = false
+			current_filtered_view = ""
 			continue
 
 		if current_model.is_empty():
@@ -687,11 +695,26 @@ func _load_model_overrides(path: String) -> Dictionary:
 				overrides[current_model]["controls"] = {}
 				in_controls_section = true
 				current_control = ""
+				in_filtered_views_section = false
+				current_filtered_view = ""
+				continue
+
+			if entry == "filtered_views:":
+				overrides[current_model]["filtered_views"] = {}
+				in_filtered_views_section = true
+				current_filtered_view = ""
+				in_controls_section = false
+				current_control = ""
 				continue
 
 			if in_controls_section and line.begins_with("      ") and not line.begins_with("        "):
 				current_control = entry.trim_suffix(":")
 				overrides[current_model]["controls"][current_control] = {}
+				continue
+
+			if in_filtered_views_section and line.begins_with("      ") and not line.begins_with("        "):
+				current_filtered_view = entry.trim_suffix(":")
+				overrides[current_model]["filtered_views"][current_filtered_view] = {}
 				continue
 
 			if in_controls_section and current_control != "" and line.begins_with("        "):
@@ -705,6 +728,17 @@ func _load_model_overrides(path: String) -> Dictionary:
 				overrides[current_model]["controls"][current_control][control_key] = _parse_yaml_scalar(control_value_text)
 				continue
 
+			if in_filtered_views_section and current_filtered_view != "" and line.begins_with("        "):
+				var filtered_entry: String = line.strip_edges()
+				var filtered_sep: int = filtered_entry.find(":")
+				if filtered_sep == -1:
+					continue
+
+				var filtered_key: String = filtered_entry.substr(0, filtered_sep).strip_edges()
+				var filtered_value_text: String = filtered_entry.substr(filtered_sep + 1).strip_edges()
+				overrides[current_model]["filtered_views"][current_filtered_view][filtered_key] = _parse_yaml_scalar(filtered_value_text)
+				continue
+
 			var sep: int = entry.find(":")
 			if sep == -1:
 				continue
@@ -714,6 +748,8 @@ func _load_model_overrides(path: String) -> Dictionary:
 			overrides[current_model][key] = _parse_yaml_scalar(value_text)
 			in_controls_section = false
 			current_control = ""
+			in_filtered_views_section = false
+			current_filtered_view = ""
 
 	return overrides
 
@@ -808,6 +844,71 @@ func _apply_material_mode(model_root: Node3D, override: Dictionary) -> void:
 				matte_material.albedo_color = Color(0.82, 0.82, 0.78, 1.0)
 
 			mesh_instance.set_surface_override_material(surface_index, matte_material)
+
+
+func _register_filtered_views(model_root: Node3D, override: Dictionary) -> void:
+	if not override.has("filtered_views"):
+		return
+
+	var filtered_views = override["filtered_views"]
+	if not (filtered_views is Dictionary):
+		return
+
+	for view_name in filtered_views.keys():
+		var view_config = filtered_views[view_name]
+		if not (view_config is Dictionary):
+			continue
+
+		var group_name: String = str(view_config.get("group", "")).strip_edges()
+		if group_name.is_empty():
+			continue
+
+		var visuals: Array[VisualInstance3D] = []
+		var initial_visibility: Dictionary = {}
+		for node in model_root.find_children("*", "VisualInstance3D", true, false):
+			var visual := node as VisualInstance3D
+			if visual == null:
+				continue
+			visuals.append(visual)
+			initial_visibility[visual] = visual.visible
+
+		var filtered_view := {
+			"name": String(view_name),
+			"button": str(view_config.get("button", "left_ax_button")),
+			"group": group_name,
+			"visuals": visuals,
+			"initial_visibility": initial_visibility,
+			"active": bool(view_config.get("start_active", false)),
+			"was_pressed": false,
+		}
+		_apply_filtered_view_visibility(filtered_view)
+		_active_filtered_views.append(filtered_view)
+
+
+func _process_filtered_views() -> void:
+	for i in _active_filtered_views.size():
+		var filtered_view: Dictionary = _active_filtered_views[i]
+		var button_name: String = str(filtered_view["button"])
+		var pressed: bool = _control_button_pressed(button_name)
+		var was_pressed: bool = bool(filtered_view.get("was_pressed", false))
+		if pressed and not was_pressed:
+			filtered_view["active"] = not bool(filtered_view.get("active", false))
+			_apply_filtered_view_visibility(filtered_view)
+		filtered_view["was_pressed"] = pressed
+		_active_filtered_views[i] = filtered_view
+
+
+func _apply_filtered_view_visibility(filtered_view: Dictionary) -> void:
+	var visuals: Array[VisualInstance3D] = filtered_view["visuals"]
+	var initial_visibility: Dictionary = filtered_view["initial_visibility"]
+	var only_group: bool = bool(filtered_view.get("active", false))
+	var group_name: String = str(filtered_view["group"])
+
+	for visual in visuals:
+		if only_group:
+			visual.visible = visual.is_in_group(group_name)
+		else:
+			visual.visible = bool(initial_visibility.get(visual, true))
 
 
 func _register_model_controls(model_root: Node3D, override: Dictionary) -> void:

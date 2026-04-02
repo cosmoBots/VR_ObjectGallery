@@ -61,32 +61,37 @@ models:
   "BancoIFU.glb":
     fit_height: false
     place_on_pedestal: false
-    show_pedestal: true
-    show_cookie: true
+    show_pedestal: false
+    show_cookie: false
+    material_mode: "matte"
     scale: 1.0
-    rotation_degrees: [0.0, 0.0, 90.0]
+    rotation_degrees: [90.0, 0.0, 180.0]
     translation: [0.0, 1.0, 0.0]
+    filtered_views:
+      view1:
+        button: "left_ax_button"
+        group: "optics"
     controls:
       right_stick_x:
         target_node: "44V-M70-460_POLARIMETRO_ASS_ASM"
-        reset_binding: "right_ax_button"
+        reset_binding: "right_stick_click"
         axis: "x"
         min: -1.0
         max: 1.0
-        speed: 0.10
+        speed: -0.10
       right_stick_y:
         target_node: "44V-M70-511_MOUNTANDBASE"
-        reset_binding: "right_ax_button"
+        reset_binding: "right_stick_click"
         axis: "z"
         min: -1.0
         max: 1.0
-        speed: 0.10
+        speed: -0.10
 
   "tioazul.gltf":
     fit_height: true
     place_on_pedestal: true
     show_pedestal: true
-    show_cookie: true
+    show_cookie: false
     target_height: 1.5
     rotation_degrees: [0.0, 0.0, 0.0]
     translation: [0.0, 0.0, 0.0]
@@ -103,6 +108,7 @@ Claves soportadas:
 - `scale`: escala final fija para ese archivo.
 - `rotation_degrees`: correccion Euler en grados `[x, y, z]`.
 - `translation`: desplazamiento local `[x, y, z]`.
+- `filtered_views`: vistas filtradas por grupo Godot, activables por boton.
 - `controls`: mapa de bindings de stick a movimientos de subarboles.
 
 Orden de aplicacion:
@@ -137,6 +143,11 @@ Campos por control:
 - `min`: desplazamiento minimo relativo a la posicion inicial del nodo.
 - `max`: desplazamiento maximo relativo a la posicion inicial del nodo.
 - `speed`: velocidad en metros por segundo a entrada maxima del stick.
+
+Campos por `filtered_views`:
+- `button`: boton que conmuta esa vista filtrada. Por defecto `left_ax_button`.
+- `group`: grupo Godot que debe permanecer visible cuando la vista esta activa.
+- `start_active`: si arranca ya en modo filtrado.
 
 ## Nota VR
 

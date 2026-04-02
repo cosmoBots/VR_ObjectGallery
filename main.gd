@@ -174,11 +174,13 @@ func _spawn_gallery() -> void:
 		gallery_root.add_child(slot)
 
 		var pedestal := _make_pedestal()
-		slot.add_child(pedestal)
+		if _show_pedestal_for_override(override):
+			slot.add_child(pedestal)
 
 		if instance == null:
 			push_warning("No se pudo instanciar: %s" % model_path)
-			slot.add_child(_make_shadow_cookie(null))
+			if _show_cookie_for_override(override):
+				slot.add_child(_make_shadow_cookie(null))
 			continue
 
 		instance.scale = Vector3.ONE * _model_scale_for_path(model_path, override)
@@ -192,7 +194,8 @@ func _spawn_gallery() -> void:
 		if _place_on_pedestal_for_override(override):
 			_place_model_on_pedestal(instance, pedestal_height)
 		_register_model_controls(instance, override)
-		slot.add_child(_make_shadow_cookie(instance))
+		if _show_cookie_for_override(override):
+			slot.add_child(_make_shadow_cookie(instance))
 
 
 func _collect_model_paths(base_dir: String, out_paths: Array[String]) -> void:
@@ -398,6 +401,18 @@ func _override_for_model(model_name: String) -> Dictionary:
 func _place_on_pedestal_for_override(override: Dictionary) -> bool:
 	if override.has("place_on_pedestal"):
 		return bool(override["place_on_pedestal"])
+	return true
+
+
+func _show_pedestal_for_override(override: Dictionary) -> bool:
+	if override.has("show_pedestal"):
+		return bool(override["show_pedestal"])
+	return true
+
+
+func _show_cookie_for_override(override: Dictionary) -> bool:
+	if override.has("show_cookie"):
+		return bool(override["show_cookie"])
 	return true
 
 

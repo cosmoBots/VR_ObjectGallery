@@ -53,6 +53,8 @@ models:
   "BancoIFU.glb":
     fit_height: false
     place_on_pedestal: false
+    show_pedestal: true
+    show_cookie: true
     scale: 1.0
     rotation_degrees: [0.0, 0.0, 90.0]
     translation: [0.0, 1.0, 0.0]
@@ -73,6 +75,8 @@ models:
   "tioazul.gltf":
     fit_height: true
     place_on_pedestal: true
+    show_pedestal: true
+    show_cookie: true
     target_height: 1.5
     rotation_degrees: [0.0, 0.0, 0.0]
     translation: [0.0, 0.0, 0.0]
@@ -81,6 +85,8 @@ models:
 Claves soportadas:
 - `fit_height`: aplica o no `_fit_model_height`.
 - `place_on_pedestal`: recoloca el modelo para que apoye sobre la peana.
+- `show_pedestal`: muestra u oculta la peana.
+- `show_cookie`: muestra u oculta la galleta de depuracion.
 - `target_height`: altura objetivo en metros.
 - `scale`: escala final fija para ese archivo.
 - `rotation_degrees`: correccion Euler en grados `[x, y, z]`.

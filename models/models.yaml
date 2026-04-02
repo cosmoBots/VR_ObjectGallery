@@ -2,6 +2,8 @@ models:
   "BancoIFU.glb":
     fit_height: false
     place_on_pedestal: false
+    show_pedestal: false
+    show_cookie: false
     scale: 1.0
     rotation_degrees: [90.0, 0.0, 180.0]
     translation: [0.0, 1.0, 0.0]
@@ -22,6 +24,8 @@ models:
   "tioazul.gltf":
     fit_height: true
     place_on_pedestal: true
+    show_pedestal: true
+    show_cookie: false
     target_height: 1.5
     rotation_degrees: [0.0, 0.0, 0.0]
     translation: [0.0, 0.0, 0.0]

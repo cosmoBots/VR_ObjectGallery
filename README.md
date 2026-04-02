@@ -40,6 +40,7 @@ En el nodo raiz `Main` (script `main.gd`):
 - `default_target_model_height`: altura usada por `fit_height` si el YAML no define otra.
 - `gallery_origin`: origen de la cuadricula.
 - `xr_render_target_size_multiplier`: escala de resolucion XR en Pico/OpenXR.
+- `start_in_ar`: arranca en passthrough/AR por defecto si esta soportado.
 - `xr_move_speed`, `xr_turn_speed_degrees`, `xr_stick_deadzone`: locomocion XR con stick izquierdo.
 - `desktop_forward_move_speed`, `desktop_strafe_move_speed`, `desktop_vertical_move_speed`: velocidad de navegacion en preview Linux.
 
@@ -141,6 +142,8 @@ Locomocion XR actual:
 - stick izquierdo vertical: avanza y retrocede
 - manteniendo `grip_click` izquierdo: el stick izquierdo horizontal desplaza lateralmente en lugar de girar
 - stick derecho: reservado para controles de subarboles definidos en `models.yaml`
+- `Y` izquierdo (`left_by_button`): alterna entre AR y VR
+- en AR desaparece el suelo, pero no las peanas
 
 ## Preview en Linux
 
@@ -160,6 +163,8 @@ Simulacion de sticks en Linux:
 - flechas `abajo/arriba`: `right_stick_y`
 - `U`: `left_stick_click`
 - `O`: `right_stick_click`
+- `B`: `left_by_button`
+- `N`: `right_by_button`
 - `Y`: `left_trigger_click`
 - `P`: `right_trigger_click`
 - `1`: `left_ax_button`

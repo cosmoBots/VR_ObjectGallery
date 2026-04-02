@@ -14,6 +14,7 @@ extends Node3D
 @export var cookie_min_radius: float = 0.18
 @export var cookie_margin: float = 0.05
 @export_range(0.5, 2.0, 0.05) var xr_render_target_size_multiplier: float = 1.3
+@export var start_in_ar: bool = true
 @export var xr_move_speed: float = 1.5
 @export var xr_turn_speed_degrees: float = 90.0
 @export var xr_stick_deadzone: float = 0.15
@@ -24,6 +25,8 @@ extends Node3D
 @export var desktop_look_sensitivity: float = 0.1
 @export var desktop_stick_simulation_enabled: bool = true
 
+@onready var world_environment: WorldEnvironment = $WorldEnvironment
+@onready var floor_mesh: MeshInstance3D = $Floor
 @onready var gallery_root: Node3D = $GalleryRoot
 @onready var xr_origin: XROrigin3D = $XROrigin3D
 @onready var xr_camera: XRCamera3D = $XROrigin3D/XRCamera3D
@@ -50,6 +53,8 @@ var _debug_brown_material: StandardMaterial3D
 var _debug_black_material: StandardMaterial3D
 var _right_debug_material: StandardMaterial3D = null
 var _enable_control_debug_visuals: bool = false
+var _is_ar_mode: bool = false
+var _toggle_ar_button_previous: bool = false
 
 func _ready() -> void:
 	_xr_active = _enable_xr_if_available()
@@ -80,9 +85,11 @@ func _enable_xr_if_available() -> bool:
 
 func _late_xr_setup() -> void:
 	if _xr_active:
+		_apply_initial_xr_mode()
 		return
 	_xr_active = _enable_xr_if_available()
 	_configure_preview_mode()
+	_apply_initial_xr_mode()
 
 
 func _configure_preview_mode() -> void:
@@ -169,6 +176,7 @@ func _unhandled_input(event: InputEvent) -> void:
 func _process(delta: float) -> void:
 	if _xr_active or desktop_stick_simulation_enabled:
 		if _xr_active:
+			_process_ar_vr_toggle()
 			_process_xr_locomotion(delta)
 		_process_model_controls(delta)
 		_update_hand_button_feedback()
@@ -245,6 +253,73 @@ func _rotate_xr_origin_around_camera(angle_radians: float) -> void:
 	relative = relative.rotated(Vector3.UP, angle_radians)
 	xr_origin.global_position = pivot + relative
 	xr_origin.rotate_y(angle_radians)
+
+
+func _apply_initial_xr_mode() -> void:
+	if not _xr_active:
+		return
+	if start_in_ar:
+		_switch_to_ar()
+	else:
+		_switch_to_vr()
+
+
+func _process_ar_vr_toggle() -> void:
+	var toggle_pressed: bool = _control_button_pressed("left_by_button")
+	if toggle_pressed and not _toggle_ar_button_previous:
+		if _is_ar_mode:
+			_switch_to_vr()
+		else:
+			_switch_to_ar()
+	_toggle_ar_button_previous = toggle_pressed
+
+
+func _switch_to_ar() -> bool:
+	var xr_interface: XRInterface = XRServer.primary_interface
+	if xr_interface == null:
+		return false
+
+	if xr_interface.is_passthrough_supported():
+		if not xr_interface.start_passthrough():
+			return false
+	else:
+		var modes: PackedInt32Array = xr_interface.get_supported_environment_blend_modes()
+		if XRInterface.XR_ENV_BLEND_MODE_ALPHA_BLEND in modes:
+			xr_interface.environment_blend_mode = XRInterface.XR_ENV_BLEND_MODE_ALPHA_BLEND
+		elif XRInterface.XR_ENV_BLEND_MODE_ADDITIVE in modes:
+			xr_interface.environment_blend_mode = XRInterface.XR_ENV_BLEND_MODE_ADDITIVE
+		else:
+			return false
+
+	get_viewport().transparent_bg = true
+	var environment: Environment = world_environment.environment
+	environment.background_mode = Environment.BG_COLOR
+	environment.background_color = Color(0.0, 0.0, 0.0, 0.0)
+	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	floor_mesh.visible = false
+	_is_ar_mode = true
+	return true
+
+
+func _switch_to_vr() -> bool:
+	var xr_interface: XRInterface = XRServer.primary_interface
+	if xr_interface == null:
+		return false
+
+	if xr_interface.is_passthrough_supported():
+		xr_interface.stop_passthrough()
+
+	var modes: PackedInt32Array = xr_interface.get_supported_environment_blend_modes()
+	if XRInterface.XR_ENV_BLEND_MODE_OPAQUE in modes:
+		xr_interface.environment_blend_mode = XRInterface.XR_ENV_BLEND_MODE_OPAQUE
+
+	get_viewport().transparent_bg = false
+	var environment: Environment = world_environment.environment
+	environment.background_mode = Environment.BG_SKY
+	environment.ambient_light_source = Environment.AMBIENT_SOURCE_BG
+	floor_mesh.visible = true
+	_is_ar_mode = false
+	return true
 
 
 func _spawn_gallery() -> void:
@@ -785,6 +860,10 @@ func _control_button_pressed(binding: String) -> bool:
 			return left_hand.is_button_pressed("primary_click")
 		"right_stick_click":
 			return right_hand.is_button_pressed("primary_click")
+		"left_by_button":
+			return left_hand.is_button_pressed("by_button")
+		"right_by_button":
+			return right_hand.is_button_pressed("by_button")
 		"left_ax_button":
 			return left_hand.is_button_pressed("ax_button")
 		"right_ax_button":
@@ -829,6 +908,10 @@ func _desktop_control_button_pressed(binding: String) -> bool:
 			return Input.is_key_pressed(KEY_U)
 		"right_stick_click":
 			return Input.is_key_pressed(KEY_O)
+		"left_by_button":
+			return Input.is_key_pressed(KEY_B)
+		"right_by_button":
+			return Input.is_key_pressed(KEY_N)
 		"left_ax_button":
 			return Input.is_key_pressed(KEY_1)
 		"right_ax_button":

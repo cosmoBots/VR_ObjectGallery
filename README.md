@@ -171,6 +171,10 @@ Simulacion de sticks en Linux:
 - keypad `2/8`: `right_secondary_y`
 - `0`: `right_secondary_click`
 
+Feedback visual de varitas:
+- solo se iluminan en blanco con el gatillo del controlador correspondiente
+- en Linux: `Y` para la izquierda y `P` para la derecha
+
 ## Despliegue Pico
 
 Usa `./deploy_pico.sh` para verificar que el APK es mas reciente que el ultimo cambio fuente, reinstalar y lanzar la app en las Pico.

@@ -133,8 +133,8 @@ func _setup_hand_feedback_materials() -> void:
 
 
 func _update_hand_button_feedback() -> void:
-	var left_active: bool = _control_button_pressed("left_ax_button")
-	var right_active: bool = _control_button_pressed("right_ax_button")
+	var left_active: bool = _control_button_pressed("left_trigger_click")
+	var right_active: bool = _control_button_pressed("right_trigger_click")
 	left_hand_mesh.material_override = _hand_active_material if left_active else _left_hand_idle_material
 	right_hand_mesh.material_override = _right_debug_material if _right_debug_material != null else (_hand_active_material if right_active else _right_hand_idle_material)
 	desktop_left_marker.material_override = _hand_active_material if left_active else _left_hand_idle_material

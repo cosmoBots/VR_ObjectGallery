@@ -92,6 +92,7 @@ Claves soportadas:
 - `show_pedestal`: muestra u oculta la peana.
 - `show_cookie`: muestra u oculta la galleta de depuracion.
 - `debug_control_visuals`: activa chivatos visuales de depuracion para controles y reset.
+- `material_mode`: `original`, `matte` o `unshaded`.
 - `target_height`: altura objetivo en metros.
 - `scale`: escala final fija para ese archivo.
 - `rotation_degrees`: correccion Euler en grados `[x, y, z]`.

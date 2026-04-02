@@ -4,6 +4,7 @@ models:
     place_on_pedestal: false
     show_pedestal: false
     show_cookie: false
+    material_mode: "matte"
     scale: 1.0
     rotation_degrees: [90.0, 0.0, 180.0]
     translation: [0.0, 1.0, 0.0]

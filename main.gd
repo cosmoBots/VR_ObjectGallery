@@ -296,6 +296,8 @@ func _switch_to_ar() -> bool:
 	environment.background_mode = Environment.BG_COLOR
 	environment.background_color = Color(0.0, 0.0, 0.0, 0.0)
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	environment.ambient_light_color = Color(0.82, 0.84, 0.88, 1.0)
+	environment.ambient_light_energy = 1.15
 	floor_mesh.visible = false
 	_is_ar_mode = true
 	return true
@@ -317,6 +319,7 @@ func _switch_to_vr() -> bool:
 	var environment: Environment = world_environment.environment
 	environment.background_mode = Environment.BG_SKY
 	environment.ambient_light_source = Environment.AMBIENT_SOURCE_BG
+	environment.ambient_light_energy = 1.0
 	floor_mesh.visible = true
 	_is_ar_mode = false
 	return true
@@ -367,6 +370,7 @@ func _spawn_gallery() -> void:
 		instance.scale = Vector3.ONE * _model_scale_for_path(model_path, override)
 		instance.position = _vector3_from_override(override, "translation", Vector3.ZERO)
 		instance.rotation_degrees = _vector3_from_override(override, "rotation_degrees", Vector3.ZERO)
+		_apply_material_mode(instance, override)
 		if use_unshaded_debug_material:
 			_apply_debug_material(instance)
 		slot.add_child(instance)
@@ -729,6 +733,52 @@ func _apply_debug_material(model_root: Node3D) -> void:
 	for mesh_instance in meshes:
 		mesh_instance.material_override = mat
 		mesh_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+func _apply_material_mode(model_root: Node3D, override: Dictionary) -> void:
+	var material_mode: String = str(override.get("material_mode", "original")).to_lower()
+	if material_mode == "original":
+		return
+
+	var meshes: Array[MeshInstance3D] = []
+	_collect_mesh_instances(model_root, meshes)
+
+	for mesh_instance in meshes:
+		if material_mode == "unshaded":
+			var unshaded := StandardMaterial3D.new()
+			unshaded.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+			unshaded.albedo_color = Color(0.82, 0.82, 0.78, 1.0)
+			mesh_instance.material_override = unshaded
+			continue
+
+		if material_mode != "matte":
+			continue
+
+		if mesh_instance.mesh == null:
+			continue
+
+		var surface_count: int = mesh_instance.mesh.get_surface_count()
+		for surface_index in range(surface_count):
+			var source_material: Material = mesh_instance.mesh.surface_get_material(surface_index)
+			var matte_material := StandardMaterial3D.new()
+			matte_material.roughness = 1.0
+			matte_material.metallic = 0.0
+			matte_material.specular = 0.0
+			matte_material.emission_enabled = false
+			matte_material.rim_enabled = false
+			matte_material.clearcoat_enabled = false
+			matte_material.anisotropy_enabled = false
+
+			if source_material is BaseMaterial3D:
+				var base := source_material as BaseMaterial3D
+				matte_material.albedo_color = base.albedo_color
+				matte_material.albedo_texture = base.albedo_texture
+				matte_material.transparency = base.transparency
+				matte_material.cull_mode = base.cull_mode
+			else:
+				matte_material.albedo_color = Color(0.82, 0.82, 0.78, 1.0)
+
+			mesh_instance.set_surface_override_material(surface_index, matte_material)
 
 
 func _register_model_controls(model_root: Node3D, override: Dictionary) -> void:

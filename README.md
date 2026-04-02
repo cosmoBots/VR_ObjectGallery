@@ -60,15 +60,17 @@ models:
     rotation_degrees: [0.0, 0.0, 90.0]
     translation: [0.0, 1.0, 0.0]
     controls:
-      left_stick_x:
+      right_stick_x:
         target_node: "44V-M70-460_POLARIMETRO_ASS_ASM"
+        reset_binding: "right_ax_button"
         axis: "x"
         min: -1.0
         max: 1.0
         speed: 0.10
-      left_stick_y:
+      right_stick_y:
         target_node: "44V-M70-511_MOUNTANDBASE"
-        axis: "x"
+        reset_binding: "right_ax_button"
+        axis: "z"
         min: -1.0
         max: 1.0
         speed: 0.10
@@ -88,6 +90,7 @@ Claves soportadas:
 - `place_on_pedestal`: recoloca el modelo para que apoye sobre la peana.
 - `show_pedestal`: muestra u oculta la peana.
 - `show_cookie`: muestra u oculta la galleta de depuracion.
+- `debug_control_visuals`: activa chivatos visuales de depuracion para controles y reset.
 - `target_height`: altura objetivo en metros.
 - `scale`: escala final fija para ese archivo.
 - `rotation_degrees`: correccion Euler en grados `[x, y, z]`.
@@ -104,15 +107,24 @@ Orden de aplicacion:
 Bindings soportados en `controls`:
 - `left_stick_x`
 - `left_stick_y`
+- `left_stick_click`
 - `right_stick_x`
 - `right_stick_y`
+- `right_stick_click`
+- `left_trigger_click`
+- `right_trigger_click`
+- `left_ax_button`
+- `right_ax_button`
 - `left_secondary_x`
 - `left_secondary_y`
+- `left_secondary_click`
 - `right_secondary_x`
 - `right_secondary_y`
+- `right_secondary_click`
 
 Campos por control:
 - `target_node`: nombre exacto del nodo hijo a mover.
+- `reset_binding`: boton que devuelve ese nodo a su posicion de reposo.
 - `axis`: eje local a modificar (`x`, `y` o `z`).
 - `min`: desplazamiento minimo relativo a la posicion inicial del nodo.
 - `max`: desplazamiento maximo relativo a la posicion inicial del nodo.
@@ -127,6 +139,7 @@ Para exportar a Android (Pico/Quest), reutiliza el flujo de SDK/JDK ya validado 
 Locomocion XR actual:
 - stick izquierdo horizontal: gira la camara/origen a izquierda y derecha
 - stick izquierdo vertical: avanza y retrocede
+- manteniendo `grip_click` izquierdo: el stick izquierdo horizontal desplaza lateralmente en lugar de girar
 - stick derecho: reservado para controles de subarboles definidos en `models.yaml`
 
 ## Preview en Linux
@@ -145,7 +158,15 @@ Simulacion de sticks en Linux:
 - `K/I`: `left_stick_y`
 - flechas `izquierda/derecha`: `right_stick_x`
 - flechas `abajo/arriba`: `right_stick_y`
+- `U`: `left_stick_click`
+- `O`: `right_stick_click`
+- `Y`: `left_trigger_click`
+- `P`: `right_trigger_click`
+- `1`: `left_ax_button`
+- `2`: `right_ax_button`
 - `F/H`: `left_secondary_x`
 - `G/T`: `left_secondary_y`
+- `7`: `left_secondary_click`
 - keypad `4/6`: `right_secondary_x`
 - keypad `2/8`: `right_secondary_y`
+- `0`: `right_secondary_click`

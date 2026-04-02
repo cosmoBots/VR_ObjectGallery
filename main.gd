@@ -28,18 +28,34 @@ extends Node3D
 @onready var xr_origin: XROrigin3D = $XROrigin3D
 @onready var xr_camera: XRCamera3D = $XROrigin3D/XRCamera3D
 @onready var left_hand: XRController3D = $XROrigin3D/LeftHand
+@onready var left_hand_mesh: MeshInstance3D = $XROrigin3D/LeftHand/LeftHandMesh
 @onready var right_hand: XRController3D = $XROrigin3D/RightHand
+@onready var right_hand_mesh: MeshInstance3D = $XROrigin3D/RightHand/RightHandMesh
 @onready var desktop_preview: Node3D = $DesktopPreview
 @onready var desktop_camera: Camera3D = $DesktopPreview/DesktopCamera3D
+@onready var desktop_left_marker: MeshInstance3D = $DesktopPreview/DesktopLeftMarker
+@onready var desktop_right_marker: MeshInstance3D = $DesktopPreview/DesktopRightMarker
 
 var _model_overrides: Dictionary = {}
 var _xr_active: bool = false
 var _desktop_pitch_degrees: float = 0.0
 var _active_model_controls: Array[Dictionary] = []
+var _control_button_previous: Dictionary = {}
+var _button_press_events: Dictionary = {}
+var _left_hand_idle_material: StandardMaterial3D
+var _right_hand_idle_material: StandardMaterial3D
+var _hand_active_material: StandardMaterial3D
+var _debug_red_material: StandardMaterial3D
+var _debug_brown_material: StandardMaterial3D
+var _debug_black_material: StandardMaterial3D
+var _right_debug_material: StandardMaterial3D = null
+var _enable_control_debug_visuals: bool = false
 
 func _ready() -> void:
 	_xr_active = _enable_xr_if_available()
 	call_deferred("_late_xr_setup")
+	_connect_controller_signals()
+	_setup_hand_feedback_materials()
 	_model_overrides = _load_model_overrides(model_overrides_file)
 	_configure_preview_mode()
 	_spawn_gallery()
@@ -82,6 +98,49 @@ func _configure_preview_mode() -> void:
 		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
 
 
+func _connect_controller_signals() -> void:
+	if not left_hand.button_pressed.is_connected(_on_left_controller_button_pressed):
+		left_hand.button_pressed.connect(_on_left_controller_button_pressed)
+	if not right_hand.button_pressed.is_connected(_on_right_controller_button_pressed):
+		right_hand.button_pressed.connect(_on_right_controller_button_pressed)
+
+
+func _on_left_controller_button_pressed(name: String) -> void:
+	_button_press_events[name] = true
+
+
+func _on_right_controller_button_pressed(name: String) -> void:
+	_button_press_events[name] = true
+
+
+func _setup_hand_feedback_materials() -> void:
+	_left_hand_idle_material = StandardMaterial3D.new()
+	_left_hand_idle_material.albedo_color = Color(0.2, 0.9, 0.35, 1.0)
+	_right_hand_idle_material = StandardMaterial3D.new()
+	_right_hand_idle_material.albedo_color = Color(0.2, 0.8, 0.95, 1.0)
+	_hand_active_material = StandardMaterial3D.new()
+	_hand_active_material.albedo_color = Color(1.0, 1.0, 1.0, 1.0)
+	_debug_red_material = StandardMaterial3D.new()
+	_debug_red_material.albedo_color = Color(1.0, 0.0, 0.0, 1.0)
+	_debug_brown_material = StandardMaterial3D.new()
+	_debug_brown_material.albedo_color = Color(0.45, 0.26, 0.08, 1.0)
+	_debug_black_material = StandardMaterial3D.new()
+	_debug_black_material.albedo_color = Color(0.0, 0.0, 0.0, 1.0)
+	left_hand_mesh.material_override = _left_hand_idle_material
+	right_hand_mesh.material_override = _right_hand_idle_material
+	desktop_left_marker.material_override = _left_hand_idle_material
+	desktop_right_marker.material_override = _right_hand_idle_material
+
+
+func _update_hand_button_feedback() -> void:
+	var left_active: bool = _control_button_pressed("left_ax_button")
+	var right_active: bool = _control_button_pressed("right_ax_button")
+	left_hand_mesh.material_override = _hand_active_material if left_active else _left_hand_idle_material
+	right_hand_mesh.material_override = _right_debug_material if _right_debug_material != null else (_hand_active_material if right_active else _right_hand_idle_material)
+	desktop_left_marker.material_override = _hand_active_material if left_active else _left_hand_idle_material
+	desktop_right_marker.material_override = _right_debug_material if _right_debug_material != null else (_hand_active_material if right_active else _right_hand_idle_material)
+
+
 func _unhandled_input(event: InputEvent) -> void:
 	if not desktop_preview_enabled or _xr_active:
 		return
@@ -112,6 +171,7 @@ func _process(delta: float) -> void:
 		if _xr_active:
 			_process_xr_locomotion(delta)
 		_process_model_controls(delta)
+		_update_hand_button_feedback()
 	if _xr_active:
 		return
 	if not desktop_preview_enabled:
@@ -155,15 +215,26 @@ func _process_xr_locomotion(delta: float) -> void:
 	if stick.length() < xr_stick_deadzone:
 		return
 
+	var camera_basis: Basis = xr_camera.global_transform.basis
+	var forward: Vector3 = -camera_basis.z
+	forward.y = 0.0
+	if forward.length_squared() > 0.0001:
+		forward = forward.normalized()
+
+	var right: Vector3 = camera_basis.x
+	right.y = 0.0
+	if right.length_squared() > 0.0001:
+		right = right.normalized()
+
+	var grip_pressed: bool = left_hand.is_button_pressed("grip_click")
 	if absf(stick.x) >= xr_stick_deadzone:
-		_rotate_xr_origin_around_camera(-stick.x * deg_to_rad(xr_turn_speed_degrees) * delta)
+		if grip_pressed:
+			xr_origin.global_position += right * (stick.x * xr_move_speed * delta)
+		else:
+			_rotate_xr_origin_around_camera(-stick.x * deg_to_rad(xr_turn_speed_degrees) * delta)
 
 	if absf(stick.y) >= xr_stick_deadzone:
-		var camera_basis: Basis = xr_camera.global_transform.basis
-		var forward: Vector3 = -camera_basis.z
-		forward.y = 0.0
 		if forward.length_squared() > 0.0001:
-			forward = forward.normalized()
 			xr_origin.global_position += forward * (stick.y * xr_move_speed * delta)
 
 
@@ -179,6 +250,7 @@ func _rotate_xr_origin_around_camera(angle_radians: float) -> void:
 func _spawn_gallery() -> void:
 	_clear_children(gallery_root)
 	_active_model_controls.clear()
+	_enable_control_debug_visuals = false
 	var model_paths: Array[String] = []
 	_collect_model_paths(models_dir, model_paths)
 	model_paths.sort()
@@ -199,6 +271,8 @@ func _spawn_gallery() -> void:
 		var instance := _instantiate_model(model_path)
 		var model_name := model_path.get_file()
 		var override: Dictionary = _override_for_model(model_name)
+		if bool(override.get("debug_control_visuals", false)):
+			_enable_control_debug_visuals = true
 
 		var slot := Node3D.new()
 		slot.name = "Slot_%02d" % i
@@ -616,6 +690,7 @@ func _register_model_controls(model_root: Node3D, override: Dictionary) -> void:
 		var target_3d := target_node as Node3D
 		_active_model_controls.append({
 			"binding": String(control_name),
+			"reset_binding": String(control_config.get("reset_binding", "")),
 			"node": target_3d,
 			"axis_index": axis_index,
 			"axis_name": axis_name,
@@ -628,8 +703,33 @@ func _register_model_controls(model_root: Node3D, override: Dictionary) -> void:
 
 
 func _process_model_controls(delta: float) -> void:
+	_right_debug_material = null
+	var reset_states: Dictionary = {}
+	for control in _active_model_controls:
+		var reset_binding: String = str(control.get("reset_binding", ""))
+		if reset_binding.is_empty() or reset_states.has(reset_binding):
+			continue
+		reset_states[reset_binding] = _control_button_pressed(reset_binding)
+
+	if _enable_control_debug_visuals and bool(reset_states.get("right_ax_button", false)):
+		_right_debug_material = _debug_red_material
+
 	for i in _active_model_controls.size():
 		var control: Dictionary = _active_model_controls[i]
+		var reset_binding: String = str(control.get("reset_binding", ""))
+		if not reset_binding.is_empty():
+			var reset_now: bool = bool(reset_states.get(reset_binding, false)) or bool(_button_press_events.get(reset_binding, false))
+			if _enable_control_debug_visuals and reset_binding == "right_ax_button":
+				_right_debug_material = _debug_brown_material
+			if reset_now:
+				control["offset"] = 0.0
+				var reset_node := control["node"] as Node3D
+				reset_node.position = control["base_position"]
+				if _enable_control_debug_visuals and reset_binding == "right_ax_button":
+					_right_debug_material = _debug_black_material
+				_active_model_controls[i] = control
+				continue
+
 		var input_value: float = _control_input_value(str(control["binding"]))
 		if absf(input_value) < 0.15:
 			continue
@@ -645,6 +745,10 @@ func _process_model_controls(delta: float) -> void:
 		target_node.position = new_position
 
 		_active_model_controls[i] = control
+
+	for reset_binding in reset_states.keys():
+		_control_button_previous[reset_binding] = reset_states[reset_binding]
+	_button_press_events.clear()
 
 
 func _control_input_value(binding: String) -> float:
@@ -672,6 +776,31 @@ func _control_input_value(binding: String) -> float:
 			return 0.0
 
 
+func _control_button_pressed(binding: String) -> bool:
+	if not _xr_active and desktop_stick_simulation_enabled:
+		return _desktop_control_button_pressed(binding)
+
+	match binding:
+		"left_stick_click":
+			return left_hand.is_button_pressed("primary_click")
+		"right_stick_click":
+			return right_hand.is_button_pressed("primary_click")
+		"left_ax_button":
+			return left_hand.is_button_pressed("ax_button")
+		"right_ax_button":
+			return right_hand.is_button_pressed("ax_button")
+		"left_trigger_click":
+			return left_hand.is_button_pressed("trigger_click")
+		"right_trigger_click":
+			return right_hand.is_button_pressed("trigger_click")
+		"left_secondary_click":
+			return left_hand.is_button_pressed("secondary_click")
+		"right_secondary_click":
+			return right_hand.is_button_pressed("secondary_click")
+		_:
+			return false
+
+
 func _desktop_control_input_value(binding: String) -> float:
 	match binding:
 		"left_stick_x":
@@ -692,6 +821,28 @@ func _desktop_control_input_value(binding: String) -> float:
 			return _desktop_axis_value(KEY_KP_2, KEY_KP_8)
 		_:
 			return 0.0
+
+
+func _desktop_control_button_pressed(binding: String) -> bool:
+	match binding:
+		"left_stick_click":
+			return Input.is_key_pressed(KEY_U)
+		"right_stick_click":
+			return Input.is_key_pressed(KEY_O)
+		"left_ax_button":
+			return Input.is_key_pressed(KEY_1)
+		"right_ax_button":
+			return Input.is_key_pressed(KEY_2)
+		"left_trigger_click":
+			return Input.is_key_pressed(KEY_Y)
+		"right_trigger_click":
+			return Input.is_key_pressed(KEY_P)
+		"left_secondary_click":
+			return Input.is_key_pressed(KEY_7)
+		"right_secondary_click":
+			return Input.is_key_pressed(KEY_0)
+		_:
+			return false
 
 
 func _desktop_axis_value(negative_key: Key, positive_key: Key) -> float:

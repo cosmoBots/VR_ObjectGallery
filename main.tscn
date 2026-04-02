@@ -21,6 +21,9 @@ size = Vector2(20, 20)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hand"]
 albedo_color = Color(0.2, 0.8, 0.95, 1)
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hand_active"]
+albedo_color = Color(1, 1, 1, 1)
+
 [sub_resource type="BoxMesh" id="BoxMesh_hand"]
 size = Vector3(0.02, 0.25, 0.02)
 
@@ -72,3 +75,11 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 2.5)
 
 [node name="DesktopCamera3D" type="Camera3D" parent="DesktopPreview" unique_id=541002]
 current = false
+
+[node name="DesktopLeftMarker" type="MeshInstance3D" parent="DesktopPreview" unique_id=541003]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, -0.1, -0.7)
+mesh = SubResource("BoxMesh_hand")
+
+[node name="DesktopRightMarker" type="MeshInstance3D" parent="DesktopPreview" unique_id=541004]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, -0.1, -0.7)
+mesh = SubResource("BoxMesh_hand")

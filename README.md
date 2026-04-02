@@ -48,7 +48,7 @@ Ejemplo:
 
 ```yaml
 models:
-  "44V-M70-001_LAYOUT_IFU_BENCH2.glb":
+  "BancoIFU.glb":
     fit_height: false
     place_on_pedestal: false
     scale: 1.0

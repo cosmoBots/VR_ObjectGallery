@@ -170,3 +170,7 @@ Simulacion de sticks en Linux:
 - keypad `4/6`: `right_secondary_x`
 - keypad `2/8`: `right_secondary_y`
 - `0`: `right_secondary_click`
+
+## Despliegue Pico
+
+Usa `./deploy_pico.sh` para verificar que el APK es mas reciente que el ultimo cambio fuente, reinstalar y lanzar la app en las Pico.

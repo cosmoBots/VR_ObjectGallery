@@ -10,18 +10,18 @@ models:
     controls:
       right_stick_x:
         target_node: "44V-M70-460_POLARIMETRO_ASS_ASM"
-        reset_binding: "right_ax_button"
+        reset_binding: "right_stick_click"
         axis: "x"
         min: -1.0
         max: 1.0
-        speed: 0.10
+        speed: -0.10
       right_stick_y:
         target_node: "44V-M70-511_MOUNTANDBASE"
-        reset_binding: "right_ax_button"
+        reset_binding: "right_stick_click"
         axis: "z"
         min: -1.0
         max: 1.0
-        speed: 0.10
+        speed: -0.10
 
   "tioazul.gltf":
     fit_height: true

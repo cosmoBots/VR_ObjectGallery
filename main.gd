@@ -13,6 +13,7 @@ extends Node3D
 @export var default_target_model_height: float = 1.5
 @export var cookie_min_radius: float = 0.18
 @export var cookie_margin: float = 0.05
+@export_range(0.5, 2.0, 0.05) var xr_render_target_size_multiplier: float = 1.3
 @export var desktop_preview_enabled: bool = true
 @export var desktop_forward_move_speed: float = 3.5
 @export var desktop_strafe_move_speed: float = 1.5
@@ -44,6 +45,8 @@ func _enable_xr_if_available() -> bool:
 	var interface: OpenXRInterface = XRServer.find_interface("OpenXR")
 	if interface == null:
 		return false
+
+	interface.render_target_size_multiplier = xr_render_target_size_multiplier
 
 	if not interface.is_initialized():
 		if not interface.initialize():

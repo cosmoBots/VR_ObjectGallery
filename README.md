@@ -39,6 +39,7 @@ En el nodo raiz `Main` (script `main.gd`):
 - `gltf_model_scale`, `fbx_model_scale`: escala base por formato.
 - `default_target_model_height`: altura usada por `fit_height` si el YAML no define otra.
 - `gallery_origin`: origen de la cuadricula.
+- `xr_render_target_size_multiplier`: escala de resolucion XR en Pico/OpenXR.
 - `desktop_forward_move_speed`, `desktop_strafe_move_speed`, `desktop_vertical_move_speed`: velocidad de navegacion en preview Linux.
 
 ## YAML por modelo

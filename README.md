@@ -201,3 +201,9 @@ Feedback visual de varitas:
 ## Despliegue Pico
 
 Usa `./deploy_pico.sh` para verificar que el APK es mas reciente que el ultimo cambio fuente, reinstalar y lanzar la app en las Pico.
+
+## Despliegue Meta Quest 3
+
+- preset de exportacion Android: `Meta Quest 3`
+- APK esperado: `./VR_ObjectGallery_MetaQuest3.apk`
+- despliegue: `./deploy_meta.sh`

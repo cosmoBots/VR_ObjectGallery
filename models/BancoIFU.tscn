@@ -6,15 +6,593 @@
 
 [node name="BancoIFU" parent="." unique_id=926546593 instance=ExtResource("1_a6h5c")]
 
+[node name="ISO2338-10M6X20-ST" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-100_LAYOUT_BP" parent_id_path=PackedInt32Array(926546593, 1295685380) index="9" unique_id=1615191247]
+visible = false
+
+[node name="ISO2338-3M6X10-ST" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-100_LAYOUT_BP" parent_id_path=PackedInt32Array(926546593, 1295685380) index="10" unique_id=373282794]
+visible = false
+
+[node name="ISO2338-3M6X10-ST_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-100_LAYOUT_BP" parent_id_path=PackedInt32Array(926546593, 1295685380) index="11" unique_id=312967206]
+visible = false
+
+[node name="ISO2338-3M6X10-ST_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-100_LAYOUT_BP" parent_id_path=PackedInt32Array(926546593, 1295685380) index="12" unique_id=764218102]
+visible = false
+
+[node name="ISO2338-3M6X10-ST_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-100_LAYOUT_BP" parent_id_path=PackedInt32Array(926546593, 1295685380) index="13" unique_id=470740429]
+visible = false
+
+[node name="ISO2338-4M6X10-ST" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-100_LAYOUT_BP" parent_id_path=PackedInt32Array(926546593, 1295685380) index="14" unique_id=1049793004]
+visible = false
+
+[node name="ISO2338-4M6X10-ST_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-100_LAYOUT_BP" parent_id_path=PackedInt32Array(926546593, 1295685380) index="15" unique_id=1414218627]
+visible = false
+
+[node name="ISO2338-6M6X12-ST" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-100_LAYOUT_BP" parent_id_path=PackedInt32Array(926546593, 1295685380) index="16" unique_id=1863081246]
+visible = false
+
+[node name="DIN433-1-6" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="10" unique_id=1344567341]
+visible = false
+
+[node name="DIN433-1-6_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="11" unique_id=1590574822]
+visible = false
+
+[node name="DIN84-M2X4-4_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="12" unique_id=2112097263]
+visible = false
+
+[node name="DIN84-M2X4-4_8_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="13" unique_id=1016788341]
+visible = false
+
+[node name="DIN84-M3X10-4_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="14" unique_id=1426083089]
+visible = false
+
+[node name="DIN84-M3X10-4_8_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="15" unique_id=121564797]
+visible = false
+
+[node name="DIN912-M03X12" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="16" unique_id=2047541461]
+visible = false
+
+[node name="DIN912-M03X12_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="17" unique_id=372400962]
+visible = false
+
+[node name="DIN912-M03X12_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="18" unique_id=1468485111]
+visible = false
+
+[node name="DIN912-M03X12_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="19" unique_id=676901156]
+visible = false
+
+[node name="DIN912-M6X12-10_9" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="20" unique_id=340137543]
+visible = false
+
+[node name="DIN912-M6X12-10_9_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="21" unique_id=1138397166]
+visible = false
+
+[node name="DIN912-M6X14-8_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="22" unique_id=1943488927]
+visible = false
+
+[node name="DIN912-M6X14-8_8_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="23" unique_id=188042484]
+visible = false
+
+[node name="DIN912-M6X14-8_8_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="24" unique_id=816457573]
+visible = false
+
+[node name="DIN912-M6X14-8_8_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="25" unique_id=1824044193]
+visible = false
+
+[node name="DIN_TRACK_35" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="26" unique_id=1645112204]
+visible = false
+
+[node name="GREG_ISO2338-4M6X12-ST" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="27" unique_id=116940626]
+visible = false
+
+[node name="GREG_ISO2338-4M6X12-ST_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="28" unique_id=993100262]
+visible = false
+
+[node name="GREG_ISO2338-4M6X12-ST_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="29" unique_id=949511221]
+visible = false
+
+[node name="GREG_ISO2338-4M6X12-ST_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="30" unique_id=678406171]
+visible = false
+
+[node name="ISO2338-3M6X12-ST" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="31" unique_id=399095968]
+visible = false
+
+[node name="ISO2338-3M6X12-ST_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-210_FOV_LS2" parent_id_path=PackedInt32Array(926546593, 1481909449) index="32" unique_id=996476702]
+visible = false
+
+[node name="DIN127-B4-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="4" unique_id=1865523171]
+visible = false
+
+[node name="DIN127-B4-6_5_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="5" unique_id=594872442]
+visible = false
+
+[node name="DIN127-B4-6_5_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="6" unique_id=797635412]
+visible = false
+
+[node name="DIN127-B4-6_5_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="7" unique_id=455340009]
+visible = false
+
+[node name="DIN127-B4-6_5_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="8" unique_id=636509491]
+visible = false
+
+[node name="DIN127-B4-6_5_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="9" unique_id=355530955]
+visible = false
+
+[node name="DIN127-B4-6_5_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="10" unique_id=1795347704]
+visible = false
+
+[node name="DIN127-B4-6_5_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="11" unique_id=1236793869]
+visible = false
+
+[node name="DIN127-B4-6_5_008" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="12" unique_id=594869757]
+visible = false
+
+[node name="DIN127-B4-6_5_009" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="13" unique_id=1875557212]
+visible = false
+
+[node name="DIN127-B4-6_5_010" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="14" unique_id=638071764]
+visible = false
+
+[node name="DIN127-B6" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="15" unique_id=551354717]
+visible = false
+
+[node name="DIN127-B6_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="16" unique_id=1368375252]
+visible = false
+
+[node name="DIN127-B6_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="17" unique_id=1674784476]
+visible = false
+
+[node name="DIN127-B6_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="18" unique_id=6051044]
+visible = false
+
+[node name="DIN127-B6_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="19" unique_id=722091344]
+visible = false
+
+[node name="DIN127-B6_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="20" unique_id=943574945]
+visible = false
+
+[node name="DIN127-B6_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="21" unique_id=841909742]
+visible = false
+
+[node name="DIN912-M4X14-8_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="22" unique_id=970979622]
+visible = false
+
+[node name="DIN912-M4X14-8_8_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="23" unique_id=1563026768]
+visible = false
+
+[node name="DIN912-M6X10-8_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="24" unique_id=757829478]
+visible = false
+
+[node name="DIN912-M6X10-8_8_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="25" unique_id=541002127]
+visible = false
+
+[node name="DIN912-M6X18-8_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="26" unique_id=1608056676]
+visible = false
+
+[node name="DIN912-M6X18-8_8_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="27" unique_id=827740763]
+visible = false
+
+[node name="DIN912-M6X18-8_8_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="28" unique_id=495983305]
+visible = false
+
+[node name="DIN912-M6X18-8_8_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="29" unique_id=903017796]
+visible = false
+
+[node name="DIN912-M6X18-8_8_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="30" unique_id=466837092]
+visible = false
+
+[node name="GR_ISO4762-M4X10-8_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="31" unique_id=2117871592]
+visible = false
+
+[node name="GR_ISO4762-M4X10-8_8_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="32" unique_id=2003338057]
+visible = false
+
+[node name="GR_ISO4762-M4X10-8_8_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="33" unique_id=1735669965]
+visible = false
+
+[node name="GR_ISO4762-M4X10-8_8_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="34" unique_id=360117369]
+visible = false
+
+[node name="GREG_DIN912-M4X12-8_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="35" unique_id=103830762]
+visible = false
+
+[node name="GREG_DIN912-M4X12-8_8_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="36" unique_id=333080897]
+visible = false
+
+[node name="GREG_DIN912-M4X12-8_8_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="37" unique_id=1914308700]
+visible = false
+
+[node name="GREG_DIN912-M4X12-8_8_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="38" unique_id=1865891856]
+visible = false
+
+[node name="GREG_DIN912-M4X12-8_8_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="39" unique_id=1361796196]
+visible = false
+
+[node name="GREG_DIN912-M4X12-8_8_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="40" unique_id=1005577885]
+visible = false
+
+[node name="GREG_DIN912-M4X12-8_8_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="41" unique_id=1090273248]
+visible = false
+
+[node name="GREG_DIN912-M4X12-8_8_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="42" unique_id=320152892]
+visible = false
+
+[node name="ISO2338-3M6X12-ST_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="43" unique_id=2011430924]
+visible = false
+
+[node name="ISO2338-3M6X12-ST_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="44" unique_id=905996533]
+visible = false
+
+[node name="ISO2338-3M6X12-ST_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="45" unique_id=1355108539]
+visible = false
+
+[node name="ISO2338-3M6X12-ST_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-220_FOV_LS1" parent_id_path=PackedInt32Array(926546593, 1168407883) index="46" unique_id=674094057]
+visible = false
+
+[node name="DIN127-B4-6_5_011" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="10" unique_id=745263579]
+visible = false
+
+[node name="DIN127-B4-6_5_012" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="11" unique_id=688823467]
+visible = false
+
+[node name="DIN127-B4-6_5_013" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="12" unique_id=1046608344]
+visible = false
+
+[node name="DIN127-B4-6_5_014" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="13" unique_id=930270223]
+visible = false
+
+[node name="DIN127-B4-6_5_015" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="14" unique_id=1907850501]
+visible = false
+
+[node name="DIN127-B4-6_5_016" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="15" unique_id=486540807]
+visible = false
+
+[node name="DIN127-B4-6_5_017" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="16" unique_id=1205396579]
+visible = false
+
+[node name="DIN127-B4-6_5_018" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="17" unique_id=1121168794]
+visible = false
+
+[node name="DIN127-B4-6_5_019" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="18" unique_id=1702611932]
+visible = false
+
+[node name="DIN127-B4-6_5_020" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="19" unique_id=1759856851]
+visible = false
+
+[node name="DIN127-B4-6_5_021" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="20" unique_id=2077104387]
+visible = false
+
+[node name="DIN127-B4-6_5_022" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="21" unique_id=697599931]
+visible = false
+
+[node name="DIN127-B4-6_5_023" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="22" unique_id=1384492477]
+visible = false
+
+[node name="DIN127-B4-6_5_024" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="23" unique_id=1016881330]
+visible = false
+
+[node name="DIN84-M2X4-4_8_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="24" unique_id=1274032193]
+visible = false
+
+[node name="DIN912-M4X14-8_8_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="25" unique_id=1880741837]
+visible = false
+
+[node name="DIN912-M4X14-8_8_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="26" unique_id=2071731589]
+visible = false
+
+[node name="DIN912-M4X14-8_8_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="27" unique_id=918943430]
+visible = false
+
+[node name="DIN913-M2_5X03" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="28" unique_id=1118418704]
+visible = false
+
+[node name="GR_ISO4762-M4X10-8_8_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="31" unique_id=395148336]
+visible = false
+
+[node name="GR_ISO4762-M4X10-8_8_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="32" unique_id=444628510]
+visible = false
+
+[node name="GR_ISO4762-M4X10-8_8_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="33" unique_id=35216088]
+visible = false
+
+[node name="GREG_DIN912-M4X12-8_8_008" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="34" unique_id=1426159093]
+visible = false
+
+[node name="GREG_DIN912-M4X12-8_8_009" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="35" unique_id=572966592]
+visible = false
+
+[node name="GREG_DIN912-M4X12-8_8_010" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="36" unique_id=496729236]
+visible = false
+
+[node name="GREG_DIN912-M4X12-8_8_011" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="37" unique_id=22779777]
+visible = false
+
+[node name="GREG_DIN912-M4X12-8_8_012" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="38" unique_id=1302653902]
+visible = false
+
+[node name="GREG_DIN912-M4X12-8_8_013" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="39" unique_id=44706262]
+visible = false
+
+[node name="GREG_DIN912-M4X12-8_8_014" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="40" unique_id=1718346855]
+visible = false
+
+[node name="GREG_DIN912-M4X12-8_8_015" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="41" unique_id=5535951]
+visible = false
+
+[node name="ISO2338-3M6X12-ST_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="42" unique_id=1333724361]
+visible = false
+
+[node name="ISO2338-3M6X12-ST_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="43" unique_id=1702124868]
+visible = false
+
+[node name="ISO2338-3M6X12-ST_008" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="44" unique_id=851987794]
+visible = false
+
+[node name="ISO2338-3M6X12-ST_009" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="45" unique_id=106793297]
+visible = false
+
+[node name="TORNILLO_DIN-912_M3X12" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="49" unique_id=694935077]
+visible = false
+
+[node name="TORNILLO_DIN-912_M3X12_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="50" unique_id=1176503873]
+visible = false
+
+[node name="TORNILLO_DIN-912_M3X12_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-230_FOV_LS3" parent_id_path=PackedInt32Array(926546593, 904656297) index="51" unique_id=909498909]
+visible = false
+
+[node name="DIN127B-M02" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-240_FOV_SM1" parent_id_path=PackedInt32Array(926546593, 1342635120) index="13" unique_id=226884467]
+visible = false
+
+[node name="DIN127B-M02_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-240_FOV_SM1" parent_id_path=PackedInt32Array(926546593, 1342635120) index="14" unique_id=1878086235]
+visible = false
+
+[node name="DIN84-M1_6X4-4_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-240_FOV_SM1" parent_id_path=PackedInt32Array(926546593, 1342635120) index="15" unique_id=1454537301]
+visible = false
+
+[node name="DIN84-M1_6X4-4_8_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-240_FOV_SM1" parent_id_path=PackedInt32Array(926546593, 1342635120) index="16" unique_id=230882031]
+visible = false
+
+[node name="DIN912-M02X04" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-240_FOV_SM1" parent_id_path=PackedInt32Array(926546593, 1342635120) index="17" unique_id=1311190285]
+visible = false
+
+[node name="DIN912-M02X04_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-240_FOV_SM1" parent_id_path=PackedInt32Array(926546593, 1342635120) index="18" unique_id=665751442]
+visible = false
+
+[node name="DIN912-M02X04_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-240_FOV_SM1" parent_id_path=PackedInt32Array(926546593, 1342635120) index="19" unique_id=1692303218]
+visible = false
+
+[node name="DIN912-M02X04_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-240_FOV_SM1" parent_id_path=PackedInt32Array(926546593, 1342635120) index="20" unique_id=649312641]
+visible = false
+
+[node name="DIN912-M02X12" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-240_FOV_SM1" parent_id_path=PackedInt32Array(926546593, 1342635120) index="21" unique_id=161639733]
+visible = false
+
+[node name="DIN912-M02X12_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-240_FOV_SM1" parent_id_path=PackedInt32Array(926546593, 1342635120) index="22" unique_id=1365944021]
+visible = false
+
+[node name="DIN912-M03X10" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-240_FOV_SM1" parent_id_path=PackedInt32Array(926546593, 1342635120) index="23" unique_id=1897990663]
+visible = false
+
+[node name="DIN912-M03X10_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-240_FOV_SM1" parent_id_path=PackedInt32Array(926546593, 1342635120) index="24" unique_id=428495871]
+visible = false
+
 [node name="FLAT_MIRROR_10X10X02" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-240_FOV_SM1" parent_id_path=PackedInt32Array(926546593, 1342635120) index="25" unique_id=1718089031 groups=["optics"]]
+
+[node name="DIN127-B3-6_5_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-250_FOV_SM3" parent_id_path=PackedInt32Array(926546593, 82511672) index="15" unique_id=1794260920]
+visible = false
+
+[node name="DIN127B-M03" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-250_FOV_SM3" parent_id_path=PackedInt32Array(926546593, 82511672) index="16" unique_id=324716666]
+visible = false
+
+[node name="DIN84-M1_6X4-4_8_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-250_FOV_SM3" parent_id_path=PackedInt32Array(926546593, 82511672) index="17" unique_id=901133575]
+visible = false
+
+[node name="DIN84-M1_6X4-4_8_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-250_FOV_SM3" parent_id_path=PackedInt32Array(926546593, 82511672) index="18" unique_id=1002955995]
+visible = false
+
+[node name="DIN85-M3X10-4_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-250_FOV_SM3" parent_id_path=PackedInt32Array(926546593, 82511672) index="19" unique_id=1784686143]
+visible = false
+
+[node name="DIN912-M03X10_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-250_FOV_SM3" parent_id_path=PackedInt32Array(926546593, 82511672) index="20" unique_id=2105957785]
+visible = false
+
+[node name="DIN913-M02X04-NYL" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-250_FOV_SM3" parent_id_path=PackedInt32Array(926546593, 82511672) index="21" unique_id=1868147744]
+visible = false
+
+[node name="DIN913-M2_5X03_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-250_FOV_SM3" parent_id_path=PackedInt32Array(926546593, 82511672) index="22" unique_id=1139532464]
+visible = false
+
+[node name="DIN913-M2_5X03_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-250_FOV_SM3" parent_id_path=PackedInt32Array(926546593, 82511672) index="23" unique_id=1150214851]
+visible = false
+
+[node name="DIN913-M2_5X03_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-250_FOV_SM3" parent_id_path=PackedInt32Array(926546593, 82511672) index="24" unique_id=1818563807]
+visible = false
+
+[node name="DIN913-M2_5X03_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-250_FOV_SM3" parent_id_path=PackedInt32Array(926546593, 82511672) index="25" unique_id=329526461]
+visible = false
 
 [node name="FLAT_MIRROR_10X10X02_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-250_FOV_SM3" parent_id_path=PackedInt32Array(926546593, 82511672) index="28" unique_id=1252871390 groups=["optics"]]
 
+[node name="DIN84-M1_6X4-4_8_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-260_FOV_SM2" parent_id_path=PackedInt32Array(926546593, 1707309250) index="8" unique_id=609872763]
+visible = false
+
+[node name="DIN84-M1_6X4-4_8_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-260_FOV_SM2" parent_id_path=PackedInt32Array(926546593, 1707309250) index="9" unique_id=275027069]
+visible = false
+
 [node name="FLAT_MIRROR_10X10X02_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-260_FOV_SM2" parent_id_path=PackedInt32Array(926546593, 1707309250) index="10" unique_id=211737410 groups=["optics"]]
+
+[node name="DIN127-B4-6_5_025" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="11" unique_id=988137810]
+visible = false
+
+[node name="DIN127-B4-6_5_026" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="12" unique_id=1162693657]
+visible = false
+
+[node name="DIN127-B4-6_5_027" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="13" unique_id=794330280]
+visible = false
+
+[node name="DIN127B-M03_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="14" unique_id=738446283]
+visible = false
+
+[node name="DIN127B-M03_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="15" unique_id=148103472]
+visible = false
+
+[node name="DIN84-M1_6X4-4_8_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="16" unique_id=1000167659]
+visible = false
+
+[node name="DIN84-M1_6X4-4_8_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="17" unique_id=987131544]
+visible = false
+
+[node name="DIN84-M1_6X4-4_8_008" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="18" unique_id=1332006166]
+visible = false
+
+[node name="DIN912-M03X08" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="19" unique_id=894976477]
+visible = false
+
+[node name="DIN912-M03X16" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="20" unique_id=128671301]
+visible = false
+
+[node name="DIN912-M4X14-8_8_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="21" unique_id=1054539384]
+visible = false
+
+[node name="DIN912-M4X14-8_8_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="22" unique_id=2054025235]
+visible = false
+
+[node name="DIN912-M4X14-8_8_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="23" unique_id=228980747]
+visible = false
+
+[node name="DIN913-M2_5X05" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="24" unique_id=1814547803]
+visible = false
+
+[node name="DIN913-M2_5X05_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="25" unique_id=83323297]
+visible = false
+
+[node name="DIN913-M2_5X05_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="26" unique_id=208775597]
+visible = false
+
+[node name="DIN913-M2_5X05_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="27" unique_id=1566626313]
+visible = false
+
+[node name="DIN913-M2_5X05_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="28" unique_id=1997380685]
+visible = false
+
+[node name="DIN933-M3X12-8_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="29" unique_id=619047716]
+visible = false
+
+[node name="DIN934-M03" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="30" unique_id=1619556760]
+visible = false
+
+[node name="ISO2338-2M6X12-ST" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="33" unique_id=219949471]
+visible = false
+
+[node name="ISO2338-2M6X12-ST_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="34" unique_id=1359432434]
+visible = false
 
 [node name="RS01_MIRROR_D12_7_F150" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-270_FOV_RS01" parent_id_path=PackedInt32Array(926546593, 333883263) index="38" unique_id=1077525713 groups=["optics"]]
 
+[node name="DIN127B-M03_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="1" unique_id=157847598]
+visible = false
+
+[node name="DIN127B-M03_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="2" unique_id=1728838239]
+visible = false
+
+[node name="DIN127B-M03_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="3" unique_id=360157734]
+visible = false
+
+[node name="DIN127B-M03_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="4" unique_id=513932910]
+visible = false
+
+[node name="DIN127B-M03_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="5" unique_id=1471137538]
+visible = false
+
+[node name="DIN127B-M03_008" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="6" unique_id=997047940]
+visible = false
+
+[node name="DIN127B-M03_009" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="7" unique_id=2122593451]
+visible = false
+
+[node name="DIN127B-M03_010" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="8" unique_id=1482553140]
+visible = false
+
+[node name="DIN127B-M03_011" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="9" unique_id=132113313]
+visible = false
+
+[node name="DIN127B-M03_012" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="10" unique_id=52777359]
+visible = false
+
+[node name="DIN127B-M03_013" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="11" unique_id=2145236230]
+visible = false
+
+[node name="DIN127B-M03_014" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="12" unique_id=1787821647]
+visible = false
+
+[node name="DIN127B-M03_015" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="13" unique_id=491678202]
+visible = false
+
+[node name="DIN127B-M03_016" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="14" unique_id=67137672]
+visible = false
+
+[node name="DIN127B-M03_017" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="15" unique_id=910121186]
+visible = false
+
+[node name="DIN127B-M03_018" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="16" unique_id=1400434899]
+visible = false
+
+[node name="DIN127B-M03_019" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="17" unique_id=1896134741]
+visible = false
+
+[node name="DIN84-M3X12-4_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="18" unique_id=131876098]
+visible = false
+
+[node name="DIN84-M3X12-4_8_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="19" unique_id=731071349]
+visible = false
+
+[node name="DIN84-M3X12-4_8_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="20" unique_id=38474564]
+visible = false
+
+[node name="DIN84-M3X12-4_8_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="21" unique_id=684374231]
+visible = false
+
+[node name="DIN84-M3X8-4_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="22" unique_id=2131783949]
+visible = false
+
+[node name="DIN84-M3X8-4_8_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="23" unique_id=1125851082]
+visible = false
+
+[node name="DIN84-M3X8-4_8_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="24" unique_id=1901628652]
+visible = false
+
+[node name="DIN84-M3X8-4_8_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="25" unique_id=730082410]
+visible = false
+
+[node name="DIN84-M3X8-4_8_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="26" unique_id=1659122628]
+visible = false
+
+[node name="DIN84-M3X8-4_8_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="27" unique_id=224038006]
+visible = false
+
+[node name="DIN84-M3X8-4_8_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="28" unique_id=1974116346]
+visible = false
+
+[node name="DIN84-M3X8-4_8_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="29" unique_id=1212734575]
+visible = false
+
+[node name="DIN912-M03X12_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="30" unique_id=1794595022]
+visible = false
+
+[node name="DIN912-M03X12_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="31" unique_id=1871883696]
+visible = false
+
+[node name="DIN912-M03X12_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="32" unique_id=863054115]
+visible = false
+
+[node name="DIN912-M03X12_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="33" unique_id=1480128891]
+visible = false
+
+[node name="DIN912-M03X12_008" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-200_FOV_SCANNING/44V-M70-280_FOV_ELECTRONICS" parent_id_path=PackedInt32Array(926546593, 871670325) index="34" unique_id=717888765]
+visible = false
+
 [node name="WO4446-110-F001_FOLDING-MIRROR" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-310_IFU_OPTOMECHANICAL/WO4446-101-ENS1_SOLARNET-EST_AS/WO4446-110-ENS1_OPTICS" parent_id_path=PackedInt32Array(926546593, 855896760) index="0" unique_id=1783903675 groups=["optics"]]
+
+[node name="WO4446-110-F004_MASQUE-PUPILLE" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-310_IFU_OPTOMECHANICAL/WO4446-101-ENS1_SOLARNET-EST_AS/WO4446-110-ENS1_OPTICS" parent_id_path=PackedInt32Array(926546593, 855896760) index="3" unique_id=1001394248 groups=["optics"]]
 
 [node name="WO4446-111-F001_SLICE-CFG1" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-310_IFU_OPTOMECHANICAL/WO4446-101-ENS1_SOLARNET-EST_AS/WO4446-110-ENS1_OPTICS/WO4446-111-ENS1_SLICER" parent_id_path=PackedInt32Array(926546593, 2106602483) index="0" unique_id=1299504447 groups=["optics"]]
 
@@ -74,6 +652,608 @@
 
 [node name="44V-M70-420_PF_40_FMB_MIRROR4IN" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-420_FMB" parent_id_path=PackedInt32Array(926546593, 1414726390) index="2" unique_id=388272573 groups=["optics"]]
 
+[node name="44V-M70-450_NS65B_3D_MODEL" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-450_CONJUNTO_SHUTTER" parent_id_path=PackedInt32Array(926546593, 830907133) index="0" unique_id=104192169 groups=["optics"]]
+
+[node name="44V-M70-460_CARCASA_POLARIMETRO" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-460_POLARIMETRO_ASS_ASM/44V-M70-460_TUBO_POLARIMETRO" parent_id_path=PackedInt32Array(926546593, 689152512) index="3" unique_id=1328235206 groups=["case"]]
+
+[node name="44V-M70-460_POLARIMETRO_VISIBLE" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-460_POLARIMETRO_ASS_ASM/44V-M70-460_TUBO_POLARIMETRO" parent_id_path=PackedInt32Array(926546593, 689152512) index="6" unique_id=1595123605 groups=["optics"]]
+
+[node name="DIN125-1-A3-I" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-460_POLARIMETRO_ASS_ASM" parent_id_path=PackedInt32Array(926546593, 1149348469) index="17" unique_id=1946040077]
+visible = false
+
+[node name="DIN125-1-A3-I_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-460_POLARIMETRO_ASS_ASM" parent_id_path=PackedInt32Array(926546593, 1149348469) index="18" unique_id=1019916600]
+visible = false
+
+[node name="DIN127-B3-6_5_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-460_POLARIMETRO_ASS_ASM" parent_id_path=PackedInt32Array(926546593, 1149348469) index="19" unique_id=1250347853]
+visible = false
+
+[node name="DIN127-B3-6_5_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-460_POLARIMETRO_ASS_ASM" parent_id_path=PackedInt32Array(926546593, 1149348469) index="20" unique_id=1965516295]
+visible = false
+
+[node name="DIN912-M3X10-6_5_036" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-460_POLARIMETRO_ASS_ASM" parent_id_path=PackedInt32Array(926546593, 1149348469) index="21" unique_id=1903931001]
+visible = false
+
+[node name="DIN912-M3X10-6_5_037" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-460_POLARIMETRO_ASS_ASM" parent_id_path=PackedInt32Array(926546593, 1149348469) index="22" unique_id=1264472433]
+visible = false
+
+[node name="DIN912-M3X16-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-460_POLARIMETRO_ASS_ASM" parent_id_path=PackedInt32Array(926546593, 1149348469) index="23" unique_id=350421676]
+visible = false
+
+[node name="DIN912-M3X16-6_5_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-460_POLARIMETRO_ASS_ASM" parent_id_path=PackedInt32Array(926546593, 1149348469) index="24" unique_id=1202049072]
+visible = false
+
+[node name="DIN912-M3X16-6_5_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V-M70-460_POLARIMETRO_ASS_ASM" parent_id_path=PackedInt32Array(926546593, 1149348469) index="25" unique_id=919364150]
+visible = false
+
+[node name="DIN912-M8X60-8_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_320_IFU_MOUNT/44V_M70_320_ADJUSTMENT_SYSTEM" parent_id_path=PackedInt32Array(926546593, 1115817875) index="4" unique_id=1376768424]
+visible = false
+
+[node name="DIN912-M8X60-8_8_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_320_IFU_MOUNT/44V_M70_320_ADJUSTMENT_SYSTEM_001" parent_id_path=PackedInt32Array(926546593, 333276334) index="4" unique_id=1946281950]
+visible = false
+
+[node name="DIN912-M8X60-8_8_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_320_IFU_MOUNT/44V_M70_320_ADJUSTMENT_SYSTEM_002" parent_id_path=PackedInt32Array(926546593, 1895196208) index="4" unique_id=662136471]
+visible = false
+
+[node name="M8_DIN912_70MM" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_320_IFU_MOUNT/44V_M70_320_BALL_JOINT_PRELOAD" parent_id_path=PackedInt32Array(926546593, 1143684286) index="10" unique_id=812517393]
+visible = false
+
+[node name="TUERCA_ISO_4034-M8-5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_320_IFU_MOUNT/44V_M70_320_BALL_JOINT_PRELOAD" parent_id_path=PackedInt32Array(926546593, 1143684286) index="11" unique_id=606750014]
+visible = false
+
+[node name="Mesh_189_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_320_IFU_MOUNT/44V_M70_320_IFU_BASEPLATE_IAC/44V_M70_320_ENVELOPE" parent_id_path=PackedInt32Array(926546593, 1278744032) index="0" unique_id=357835315 groups=["case"]]
+
+[node name="ISO2338-8M6X14-ST" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_320_IFU_MOUNT/44V_M70_320_IFU_BASEPLATE_IAC" parent_id_path=PackedInt32Array(926546593, 925490470) index="9" unique_id=470319213]
+visible = false
+
+[node name="TUERCA_SOMBRERETE_DIN1587_M4" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_320_IFU_MOUNT/44V_M70_320_IFU_BASEPLATE_IAC" parent_id_path=PackedInt32Array(926546593, 925490470) index="14" unique_id=1803681946]
+visible = false
+
+[node name="TUERCA_SOMBRERETE_DIN1587_M4_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_320_IFU_MOUNT/44V_M70_320_IFU_BASEPLATE_IAC" parent_id_path=PackedInt32Array(926546593, 925490470) index="15" unique_id=673961979]
+visible = false
+
+[node name="TUERCA_SOMBRERETE_DIN1587_M4_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_320_IFU_MOUNT/44V_M70_320_IFU_BASEPLATE_IAC" parent_id_path=PackedInt32Array(926546593, 925490470) index="16" unique_id=557699311]
+visible = false
+
+[node name="TUERCA_SOMBRERETE_DIN1587_M4_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_320_IFU_MOUNT/44V_M70_320_IFU_BASEPLATE_IAC" parent_id_path=PackedInt32Array(926546593, 925490470) index="17" unique_id=291622829]
+visible = false
+
+[node name="DIN912-M8X40-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_320_IFU_MOUNT" parent_id_path=PackedInt32Array(926546593, 2122352926) index="21" unique_id=491931205]
+visible = false
+
+[node name="ISO2338-8M6X16-ST" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_320_IFU_MOUNT" parent_id_path=PackedInt32Array(926546593, 2122352926) index="22" unique_id=1511008778]
+visible = false
+
+[node name="ISO2338-8M6X16-ST_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_320_IFU_MOUNT" parent_id_path=PackedInt32Array(926546593, 2122352926) index="23" unique_id=381190660]
+visible = false
+
+[node name="ISO2338-8M6X16-ST_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_320_IFU_MOUNT" parent_id_path=PackedInt32Array(926546593, 2122352926) index="24" unique_id=1678754303]
+visible = false
+
+[node name="DIN127-B3-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_IDLER_ASSEMBLY" parent_id_path=PackedInt32Array(926546593, 1412938195) index="3" unique_id=247787220]
+visible = false
+
+[node name="DIN127-B3-6_5_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_IDLER_ASSEMBLY" parent_id_path=PackedInt32Array(926546593, 1412938195) index="4" unique_id=178269508]
+visible = false
+
+[node name="DIN912-M3X10-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_IDLER_ASSEMBLY" parent_id_path=PackedInt32Array(926546593, 1412938195) index="5" unique_id=232914453]
+visible = false
+
+[node name="DIN912-M3X10-6_5_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_IDLER_ASSEMBLY" parent_id_path=PackedInt32Array(926546593, 1412938195) index="6" unique_id=218220288]
+visible = false
+
+[node name="PAN_HEAD_CROSS_RECESS_SCREW_ISO" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_STEPPER_ASSEMBLY/44V-M70-440_NEMA23_STEPPERMOTOR/NEMA_23_MOTOR" parent_id_path=PackedInt32Array(926546593, 631585622) index="2" unique_id=1398081627]
+visible = false
+
+[node name="PAN_HEAD_CROSS_RECESS_SCREW_ISO_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_STEPPER_ASSEMBLY/44V-M70-440_NEMA23_STEPPERMOTOR/NEMA_23_MOTOR" parent_id_path=PackedInt32Array(926546593, 631585622) index="3" unique_id=632793790]
+visible = false
+
+[node name="PAN_HEAD_CROSS_RECESS_SCREW_ISO_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_STEPPER_ASSEMBLY/44V-M70-440_NEMA23_STEPPERMOTOR/NEMA_23_MOTOR" parent_id_path=PackedInt32Array(926546593, 631585622) index="4" unique_id=1095196961]
+visible = false
+
+[node name="PAN_HEAD_CROSS_RECESS_SCREW_ISO_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_STEPPER_ASSEMBLY/44V-M70-440_NEMA23_STEPPERMOTOR/NEMA_23_MOTOR" parent_id_path=PackedInt32Array(926546593, 631585622) index="5" unique_id=1975447758]
+visible = false
+
+[node name="RADIAL_BALL_BEARING_68_ISO_ISO_" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_STEPPER_ASSEMBLY/44V-M70-440_NEMA23_STEPPERMOTOR/NEMA_23_MOTOR" parent_id_path=PackedInt32Array(926546593, 631585622) index="6" unique_id=630305014]
+visible = false
+
+[node name="DIN127-B5-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_STEPPER_ASSEMBLY" parent_id_path=PackedInt32Array(926546593, 392758667) index="4" unique_id=1723245139]
+visible = false
+
+[node name="DIN127-B5-6_5_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_STEPPER_ASSEMBLY" parent_id_path=PackedInt32Array(926546593, 392758667) index="5" unique_id=1864921162]
+visible = false
+
+[node name="DIN127-B5-6_5_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_STEPPER_ASSEMBLY" parent_id_path=PackedInt32Array(926546593, 392758667) index="6" unique_id=1738429394]
+visible = false
+
+[node name="DIN127-B5-6_5_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_STEPPER_ASSEMBLY" parent_id_path=PackedInt32Array(926546593, 392758667) index="7" unique_id=1119067993]
+visible = false
+
+[node name="DIN912-M5X12-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_STEPPER_ASSEMBLY" parent_id_path=PackedInt32Array(926546593, 392758667) index="8" unique_id=273648367]
+visible = false
+
+[node name="DIN912-M5X12-6_5_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_STEPPER_ASSEMBLY" parent_id_path=PackedInt32Array(926546593, 392758667) index="9" unique_id=860072508]
+visible = false
+
+[node name="DIN912-M5X12-6_5_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_STEPPER_ASSEMBLY" parent_id_path=PackedInt32Array(926546593, 392758667) index="10" unique_id=1387137844]
+visible = false
+
+[node name="DIN912-M5X12-6_5_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM/44V-M70-440_PULLEY_SYSTEM/44V-M70-440_STEPPER_ASSEMBLY" parent_id_path=PackedInt32Array(926546593, 392758667) index="11" unique_id=1343400089]
+visible = false
+
+[node name="ISO2338-4M6X10-ST_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM" parent_id_path=PackedInt32Array(926546593, 1746012971) index="4" unique_id=1839670846]
+visible = false
+
+[node name="ISO2338-4M6X10-ST_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_440_POLAR_MECHANISM" parent_id_path=PackedInt32Array(926546593, 1746012971) index="5" unique_id=1081084042]
+visible = false
+
 [node name="44V-M70-410_PF40_FMA_MIRROR4IN_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="0" unique_id=1404840249 groups=["optics"]]
+
+[node name="DIN912-M2_5X6-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="6" unique_id=1678763335]
+visible = false
+
+[node name="DIN912-M2_5X6-6_5_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="7" unique_id=68165485]
+visible = false
+
+[node name="DIN912-M2_5X6-6_5_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="8" unique_id=644391873]
+visible = false
+
+[node name="DIN912-M2_5X6-6_5_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="9" unique_id=277302709]
+visible = false
+
+[node name="DIN912-M2_5X6-6_5_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="10" unique_id=1983935471]
+visible = false
+
+[node name="DIN912-M2_5X6-6_5_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="11" unique_id=1152090612]
+visible = false
+
+[node name="DIN912-M2_5X6-6_5_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="12" unique_id=1450586569]
+visible = false
+
+[node name="DIN912-M2_5X6-6_5_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="13" unique_id=84699315]
+visible = false
+
+[node name="DIN912-M2_5X6-6_5_008" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="14" unique_id=1406166889]
+visible = false
+
+[node name="DIN912-M2_5X6-6_5_009" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="15" unique_id=475345343]
+visible = false
+
+[node name="DIN912-M2_5X6-6_5_010" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="16" unique_id=1543382314]
+visible = false
+
+[node name="DIN912-M2_5X6-6_5_011" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="17" unique_id=623814597]
+visible = false
+
+[node name="DIN912-M2_5X6-6_5_012" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="18" unique_id=521260254]
+visible = false
+
+[node name="DIN912-M2_5X6-6_5_013" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="19" unique_id=552252992]
+visible = false
+
+[node name="DIN912-M2_5X6-6_5_014" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="20" unique_id=15924972]
+visible = false
+
+[node name="DIN912-M2_5X6-6_5_015" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="21" unique_id=1684361622]
+visible = false
+
+[node name="DIN912-M3X10-6_5_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="22" unique_id=363610834]
+visible = false
+
+[node name="DIN912-M3X10-6_5_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="23" unique_id=1357329902]
+visible = false
+
+[node name="DIN912-M3X10-6_5_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="24" unique_id=2068885469]
+visible = false
+
+[node name="DIN912-M3X6-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="25" unique_id=376582115]
+visible = false
+
+[node name="DIN912-M3X6-6_5_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="26" unique_id=936148465]
+visible = false
+
+[node name="DIN912-M3X6-6_5_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="27" unique_id=383411363]
+visible = false
+
+[node name="DIN912-M3X6-6_5_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="28" unique_id=1454284552]
+visible = false
+
+[node name="DIN912-M6X30-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="29" unique_id=1079102878]
+visible = false
+
+[node name="DIN912-M6X30-6_5_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="30" unique_id=986838669]
+visible = false
+
+[node name="DIN912-M6X30-6_5_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT/44V-M70-511_MOUNTANDBASE" parent_id_path=PackedInt32Array(926546593, 1254080555) index="31" unique_id=1914524601]
+visible = false
+
+[node name="DIN85-M2X4-4_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="9" unique_id=2111651423]
+visible = false
+
+[node name="DIN85-M2X4-4_8_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="10" unique_id=1404849028]
+visible = false
+
+[node name="DIN912-M3X6-6_5_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="11" unique_id=107246648]
+visible = false
+
+[node name="DIN912-M3X6-6_5_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="12" unique_id=902341464]
+visible = false
+
+[node name="DIN912-M3X6-6_5_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="13" unique_id=1635100657]
+visible = false
+
+[node name="DIN912-M3X6-6_5_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="14" unique_id=2120079521]
+visible = false
+
+[node name="DIN912-M3X6-6_5_008" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="15" unique_id=1012941356]
+visible = false
+
+[node name="DIN912-M3X6-6_5_009" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="16" unique_id=1126674309]
+visible = false
+
+[node name="DIN912-M3X6-6_5_010" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="17" unique_id=1135925072]
+visible = false
+
+[node name="DIN912-M3X6-6_5_011" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="18" unique_id=622151016]
+visible = false
+
+[node name="DIN912-M3X6-6_5_012" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="19" unique_id=1560983616]
+visible = false
+
+[node name="DIN912-M3X6-6_5_013" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="20" unique_id=933941186]
+visible = false
+
+[node name="DIN912-M3X6-6_5_014" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="21" unique_id=38742186]
+visible = false
+
+[node name="DIN912-M3X6-6_5_015" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="22" unique_id=1523430162]
+visible = false
+
+[node name="DIN912-M3X6-6_5_016" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="23" unique_id=1770132148]
+visible = false
+
+[node name="DIN912-M3X6-6_5_017" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="24" unique_id=964860731]
+visible = false
+
+[node name="DIN912-M4X8-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="25" unique_id=1532442576]
+visible = false
+
+[node name="DIN912-M4X8-6_5_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="26" unique_id=2073437056]
+visible = false
+
+[node name="ISO10642-M3X12-8_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="27" unique_id=807753323]
+visible = false
+
+[node name="ISO10642-M3X12-8_8_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="28" unique_id=1045322897]
+visible = false
+
+[node name="ISO10642-M3X12-8_8_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="29" unique_id=765939916]
+visible = false
+
+[node name="ISO10642-M3X12-8_8_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="30" unique_id=1096046676]
+visible = false
+
+[node name="ISO10642-M3X16-8_8" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="31" unique_id=1156237261]
+visible = false
+
+[node name="ISO10642-M3X16-8_8_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="32" unique_id=1936775308]
+visible = false
+
+[node name="ISO10642-M3X16-8_8_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="33" unique_id=1399714687]
+visible = false
+
+[node name="ISO10642-M3X16-8_8_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="34" unique_id=993089002]
+visible = false
+
+[node name="ISO10642-M3X16-8_8_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="35" unique_id=839905073]
+visible = false
+
+[node name="ISO10642-M3X16-8_8_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="36" unique_id=18829099]
+visible = false
+
+[node name="ISO10642-M3X16-8_8_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="37" unique_id=1052709214]
+visible = false
+
+[node name="ISO10642-M3X16-8_8_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="38" unique_id=1330529440]
+visible = false
+
+[node name="ISO10642-M3X16-8_8_008" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="39" unique_id=131228199]
+visible = false
+
+[node name="ISO10642-M3X16-8_8_009" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="40" unique_id=1940607518]
+visible = false
+
+[node name="ISO10642-M3X16-8_8_010" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="41" unique_id=549654211]
+visible = false
+
+[node name="ISO10642-M3X16-8_8_011" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="42" unique_id=1598676101]
+visible = false
+
+[node name="ISO10642-M3X16-8_8_012" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="43" unique_id=537176379]
+visible = false
+
+[node name="ISO10642-M3X16-8_8_013" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_510_FM1_MOUNT" parent_id_path=PackedInt32Array(926546593, 1917697890) index="44" unique_id=60905897]
+visible = false
+
+[node name="DIN912-M3X10-6_5_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_530_FM1_MECHANISM" parent_id_path=PackedInt32Array(926546593, 1488307400) index="7" unique_id=156801983]
+visible = false
+
+[node name="DIN912-M3X10-6_5_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_530_FM1_MECHANISM" parent_id_path=PackedInt32Array(926546593, 1488307400) index="8" unique_id=689405284]
+visible = false
+
+[node name="DIN912-M3X6-6_5_018" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_530_FM1_MECHANISM" parent_id_path=PackedInt32Array(926546593, 1488307400) index="9" unique_id=1477690975]
+visible = false
+
+[node name="DIN912-M3X8-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_530_FM1_MECHANISM" parent_id_path=PackedInt32Array(926546593, 1488307400) index="10" unique_id=1843037463]
+visible = false
+
+[node name="DIN912-M5X12-6_5_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_530_FM1_MECHANISM" parent_id_path=PackedInt32Array(926546593, 1488307400) index="11" unique_id=1853652158]
+visible = false
+
+[node name="DIN912-M5X12-6_5_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_530_FM1_MECHANISM" parent_id_path=PackedInt32Array(926546593, 1488307400) index="12" unique_id=2027037702]
+visible = false
+
+[node name="DIN912-M5X12-6_5_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_530_FM1_MECHANISM" parent_id_path=PackedInt32Array(926546593, 1488307400) index="13" unique_id=822387222]
+visible = false
+
+[node name="DIN912-M5X12-6_5_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_530_FM1_MECHANISM" parent_id_path=PackedInt32Array(926546593, 1488307400) index="14" unique_id=1975392615]
+visible = false
+
+[node name="PAN_HEAD_CROSS_RECESS_SCREW_ISO_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_530_FM1_MECHANISM/STEPPER_MOTOR_NEMA_23/STEPPE_MOTOR_NEMA_23/NEMA_23_MOTOR_001" parent_id_path=PackedInt32Array(926546593, 1769059620) index="2" unique_id=1406194042]
+visible = false
+
+[node name="PAN_HEAD_CROSS_RECESS_SCREW_ISO_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_530_FM1_MECHANISM/STEPPER_MOTOR_NEMA_23/STEPPE_MOTOR_NEMA_23/NEMA_23_MOTOR_001" parent_id_path=PackedInt32Array(926546593, 1769059620) index="3" unique_id=645500577]
+visible = false
+
+[node name="PAN_HEAD_CROSS_RECESS_SCREW_ISO_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_530_FM1_MECHANISM/STEPPER_MOTOR_NEMA_23/STEPPE_MOTOR_NEMA_23/NEMA_23_MOTOR_001" parent_id_path=PackedInt32Array(926546593, 1769059620) index="4" unique_id=1908822439]
+visible = false
+
+[node name="PAN_HEAD_CROSS_RECESS_SCREW_ISO_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_530_FM1_MECHANISM/STEPPER_MOTOR_NEMA_23/STEPPE_MOTOR_NEMA_23/NEMA_23_MOTOR_001" parent_id_path=PackedInt32Array(926546593, 1769059620) index="5" unique_id=1474441267]
+visible = false
+
+[node name="RADIAL_BALL_BEARING_68_ISO_ISO__001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/44V_M70_530_FM1_MECHANISM/STEPPER_MOTOR_NEMA_23/STEPPE_MOTOR_NEMA_23/NEMA_23_MOTOR_001" parent_id_path=PackedInt32Array(926546593, 1769059620) index="6" unique_id=1391788478]
+visible = false
+
+[node name="DIN125-1-A4-I" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="15" unique_id=194613763]
+visible = false
+
+[node name="DIN125-1-A4-I_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="16" unique_id=1381291399]
+visible = false
+
+[node name="DIN125-1-A4-I_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="17" unique_id=1641097086]
+visible = false
+
+[node name="DIN125-1-A4-I_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="18" unique_id=1898059293]
+visible = false
+
+[node name="DIN125-1-A4-I_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="19" unique_id=952567184]
+visible = false
+
+[node name="DIN125-1-A4-I_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="20" unique_id=1940710148]
+visible = false
+
+[node name="DIN125-1-A4-I_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="21" unique_id=1202373946]
+visible = false
+
+[node name="DIN125-1-A4-I_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="22" unique_id=1008259835]
+visible = false
+
+[node name="DIN125-1-A4-I_008" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="23" unique_id=1874803898]
+visible = false
+
+[node name="DIN125-1-A4-I_009" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="24" unique_id=770070021]
+visible = false
+
+[node name="DIN125-1-A4-I_010" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="25" unique_id=1291299019]
+visible = false
+
+[node name="DIN125-1-A4-I_011" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="26" unique_id=232130399]
+visible = false
+
+[node name="DIN125-1-A4-I_012" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="27" unique_id=885522532]
+visible = false
+
+[node name="DIN127-B4-6_5_028" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="28" unique_id=1149610186]
+visible = false
+
+[node name="DIN127-B4-6_5_029" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="29" unique_id=1353164801]
+visible = false
+
+[node name="DIN127-B4-6_5_030" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="30" unique_id=1742327058]
+visible = false
+
+[node name="DIN127-B6-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="31" unique_id=706095828]
+visible = false
+
+[node name="DIN127-B6-6_5_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="32" unique_id=537948311]
+visible = false
+
+[node name="DIN127-B6-6_5_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="33" unique_id=213224899]
+visible = false
+
+[node name="DIN127-B6-6_5_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="34" unique_id=1584514870]
+visible = false
+
+[node name="DIN127-B6-6_5_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="35" unique_id=1594682425]
+visible = false
+
+[node name="DIN127-B6-6_5_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="36" unique_id=1299762710]
+visible = false
+
+[node name="DIN127-B6-6_5_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="37" unique_id=1512934173]
+visible = false
+
+[node name="DIN127-B6-6_5_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="38" unique_id=1844258952]
+visible = false
+
+[node name="DIN912-M3X10-6_5_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="39" unique_id=1836462939]
+visible = false
+
+[node name="DIN912-M3X10-6_5_008" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="40" unique_id=1105462615]
+visible = false
+
+[node name="DIN912-M3X10-6_5_009" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="41" unique_id=2135491978]
+visible = false
+
+[node name="DIN912-M3X10-6_5_010" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="42" unique_id=318853585]
+visible = false
+
+[node name="DIN912-M3X10-6_5_011" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="43" unique_id=1405507527]
+visible = false
+
+[node name="DIN912-M3X10-6_5_012" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="44" unique_id=859963250]
+visible = false
+
+[node name="DIN912-M3X10-6_5_013" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="45" unique_id=1048613860]
+visible = false
+
+[node name="DIN912-M3X10-6_5_014" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="46" unique_id=1812465595]
+visible = false
+
+[node name="DIN912-M3X10-6_5_015" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="47" unique_id=476303532]
+visible = false
+
+[node name="DIN912-M3X10-6_5_016" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="48" unique_id=1531631122]
+visible = false
+
+[node name="DIN912-M3X10-6_5_017" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="49" unique_id=168464168]
+visible = false
+
+[node name="DIN912-M3X10-6_5_018" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="50" unique_id=731217030]
+visible = false
+
+[node name="DIN912-M3X10-6_5_019" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="51" unique_id=249790023]
+visible = false
+
+[node name="DIN912-M3X10-6_5_020" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="52" unique_id=1023670516]
+visible = false
+
+[node name="DIN912-M3X10-6_5_021" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="53" unique_id=1581553102]
+visible = false
+
+[node name="DIN912-M3X10-6_5_022" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="54" unique_id=678227379]
+visible = false
+
+[node name="DIN912-M3X10-6_5_023" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="55" unique_id=261490427]
+visible = false
+
+[node name="DIN912-M3X10-6_5_024" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="56" unique_id=1064305468]
+visible = false
+
+[node name="DIN912-M3X10-6_5_025" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="57" unique_id=2072916445]
+visible = false
+
+[node name="DIN912-M3X10-6_5_026" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="58" unique_id=1425125154]
+visible = false
+
+[node name="DIN912-M3X10-6_5_027" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="59" unique_id=1994348424]
+visible = false
+
+[node name="DIN912-M3X10-6_5_028" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="60" unique_id=1971386398]
+visible = false
+
+[node name="DIN912-M3X10-6_5_029" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="61" unique_id=664797907]
+visible = false
+
+[node name="DIN912-M3X10-6_5_030" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="62" unique_id=973878205]
+visible = false
+
+[node name="DIN912-M3X10-6_5_031" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="63" unique_id=1950161940]
+visible = false
+
+[node name="DIN912-M3X10-6_5_032" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="64" unique_id=1375513632]
+visible = false
+
+[node name="DIN912-M3X10-6_5_033" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="65" unique_id=989042509]
+visible = false
+
+[node name="DIN912-M3X10-6_5_034" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="66" unique_id=1664397770]
+visible = false
+
+[node name="DIN912-M3X10-6_5_035" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="67" unique_id=1683979644]
+visible = false
+
+[node name="DIN912-M4X12-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="68" unique_id=249691356]
+visible = false
+
+[node name="DIN912-M4X12-6_5_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="69" unique_id=39762842]
+visible = false
+
+[node name="DIN912-M4X12-6_5_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="70" unique_id=187238027]
+visible = false
+
+[node name="DIN912-M4X12-6_5_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="71" unique_id=1027681270]
+visible = false
+
+[node name="DIN912-M4X12-6_5_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="72" unique_id=2090726070]
+visible = false
+
+[node name="DIN912-M4X16-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="73" unique_id=494106636]
+visible = false
+
+[node name="DIN912-M4X16-6_5_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="74" unique_id=1045509317]
+visible = false
+
+[node name="DIN912-M4X16-6_5_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="75" unique_id=1807618224]
+visible = false
+
+[node name="DIN912-M4X16-6_5_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="76" unique_id=377293609]
+visible = false
+
+[node name="DIN912-M4X16-6_5_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="77" unique_id=533094269]
+visible = false
+
+[node name="DIN912-M4X16-6_5_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="78" unique_id=1218171403]
+visible = false
+
+[node name="DIN912-M4X16-6_5_006" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="79" unique_id=571715522]
+visible = false
+
+[node name="DIN912-M4X16-6_5_007" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="80" unique_id=390873435]
+visible = false
+
+[node name="DIN912-M6X12-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="81" unique_id=726098352]
+visible = false
+
+[node name="DIN912-M6X12-6_5_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="82" unique_id=390191368]
+visible = false
+
+[node name="DIN912-M6X12-6_5_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="83" unique_id=1283904559]
+visible = false
+
+[node name="DIN912-M6X12-6_5_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="84" unique_id=1175760876]
+visible = false
+
+[node name="DIN912-M6X12-6_5_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="85" unique_id=586500957]
+visible = false
+
+[node name="DIN912-M6X12-6_5_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="86" unique_id=861648160]
+visible = false
+
+[node name="DIN912-M6X16-6_5" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="87" unique_id=720690464]
+visible = false
+
+[node name="DIN912-M6X16-6_5_001" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="88" unique_id=1015703920]
+visible = false
+
+[node name="DIN912-M6X16-6_5_002" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="89" unique_id=2079983456]
+visible = false
+
+[node name="DIN912-M6X16-6_5_003" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM" parent_id_path=PackedInt32Array(926546593, 1202354508) index="90" unique_id=545236990]
+visible = false
+
+[node name="44V-M70-220_MASK_SLIT_HEX" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/KIS_MASK_MECHANISM_ASM/44V-M70-220_MASK_MOUNT/44V-M70-220_MASK_HEX_ASS" parent_id_path=PackedInt32Array(926546593, 233305630) index="1" unique_id=820621443 groups=["optics"]]
+
+[node name="44V-M70-220_MASK_SLIT_HEX_BASE" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/KIS_MASK_MECHANISM_ASM/44V-M70-220_MASK_MOUNT/44V-M70-220_MASK_HEX_ASS/44V-M70-220_MASK_SLIT_HEX" index="0" unique_id=98815637 groups=["optics"]]
+
+[node name="44V-M70-220_MASK_SLIT_HEX_SLIT" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/KIS_MASK_MECHANISM_ASM/44V-M70-220_MASK_MOUNT/44V-M70-220_MASK_HEX_ASS/44V-M70-220_MASK_SLIT_HEX" index="1" unique_id=1576927098 groups=["optics"]]
+
+[node name="DIN912-M02X04_004" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/KIS_MASK_MECHANISM_ASM/44V-M70-220_MASK_MOUNT" parent_id_path=PackedInt32Array(926546593, 20354219) index="4" unique_id=160645893]
+visible = false
+
+[node name="DIN912-M02X04_005" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/KIS_MASK_MECHANISM_ASM/44V-M70-220_MASK_MOUNT" parent_id_path=PackedInt32Array(926546593, 20354219) index="5" unique_id=1533985350]
+visible = false
+
+[node name="HEX_THIN_NUT_FINE_GRADEAB_DINHE" parent="BancoIFU/44V-M70-001_LAYOUT_IFU_BENCH_ASM/KIS_MASK_MECHANISM_ASM" parent_id_path=PackedInt32Array(926546593, 1753538362) index="20" unique_id=688581358]
+visible = false
 
 [editable path="BancoIFU"]

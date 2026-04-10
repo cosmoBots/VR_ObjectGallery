@@ -662,7 +662,7 @@ func _load_model_overrides(path: String) -> Dictionary:
 	var current_filtered_view: String = ""
 
 	while not file.eof_reached():
-		var raw_line: String = file.get_line()
+		var raw_line: String = _normalize_yaml_line(file.get_line())
 		var line: String = raw_line.split("#", true, 1)[0].rstrip("\r\n\t ")
 		if line.is_empty():
 			continue
@@ -752,6 +752,13 @@ func _load_model_overrides(path: String) -> Dictionary:
 			current_filtered_view = ""
 
 	return overrides
+
+
+func _normalize_yaml_line(raw_line: String) -> String:
+	# Godot puede guardar ficheros de texto con tabs segun la configuracion
+	# del editor. Nuestro YAML usa indentacion por espacios, asi que lo
+	# normalizamos antes de parsearlo.
+	return raw_line.replace("\t", "    ")
 
 
 func _parse_yaml_scalar(value_text: String):

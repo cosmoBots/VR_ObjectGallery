@@ -42,9 +42,41 @@ models:
 
   "Penta.glb":
     fit_height: true
-    place_on_pedestal: true
+    place_on_pedestal: false
     show_pedestal: true
     show_cookie: false
     target_height: 1.5
     rotation_degrees: [0.0, 0.0, 0.0]
-    translation: [0.0, 0.0, 0.0]
+    translation: [0.0, 0.2, 0.0]
+
+  "uploads_files_3843203_Kirby.glb":
+    fit_height: true
+    place_on_pedestal: false
+    show_pedestal: true
+    show_cookie: false
+    target_height: 1.5
+    rotation_degrees: [0.0, 0.0, 0.0]
+    translation: [-11.5, 0.2, -5.5]
+
+  "uploads_files_6409299_The+magic+Tower.glb":
+    target_height: 7.5
+    fit_height: true
+    fit_width: false
+    fit_depth: false
+    translation: [-6.0, 2, -3.0]
+    rotation_degrees: [0.0, 45.0, 0.0]
+
+  "javiflor.glb":
+    target_height: 4.5
+    fit_height: true
+    fit_width: false
+    fit_depth: false
+    translation: [-0.0, 0, -5.0]
+    rotation_degrees: [0.0, 45.0, 0.0]
+
+  "Steampunk_Automaton_0813060815_texture.glb":
+    target_height: 1.5
+    fit_height: true
+    fit_width: false
+    fit_depth: false
+    translation: [0.0, 1, 0.0]

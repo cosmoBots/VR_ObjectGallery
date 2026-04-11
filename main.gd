@@ -57,6 +57,23 @@ var _enable_control_debug_visuals: bool = false
 var _is_ar_mode: bool = false
 var _toggle_ar_button_previous: bool = false
 
+
+func _default_model_override() -> Dictionary:
+	return {
+		"fit_height": true,
+		"fit_width": true,
+		"fit_depth": true,
+		"place_on_pedestal": true,
+		"show_pedestal": true,
+		"show_cookie": false,
+		"target_height": 1.5,
+		"target_width": 1.5,
+		"target_depth": 1.5,
+		"rotation_degrees": [0.0, 0.0, 0.0],
+		"translation": [0.0, 0.0, 0.0],
+	}
+
+
 func _ready() -> void:
 	_xr_active = _enable_xr_if_available()
 	call_deferred("_late_xr_setup")
@@ -377,8 +394,15 @@ func _spawn_gallery() -> void:
 		if use_unshaded_debug_material:
 			_apply_debug_material(instance)
 		slot.add_child(instance)
-		if override.get("fit_height", false):
-			_fit_model_height(instance, float(override.get("target_height", default_target_model_height)))
+		_fit_model_size(
+			instance,
+			bool(override.get("fit_height", false)),
+			float(override.get("target_height", default_target_model_height)),
+			bool(override.get("fit_width", false)),
+			float(override.get("target_width", default_target_model_height)),
+			bool(override.get("fit_depth", false)),
+			float(override.get("target_depth", default_target_model_height))
+		)
 		if _place_on_pedestal_for_override(override):
 			_place_model_on_pedestal(instance, pedestal_height)
 		_register_filtered_views(instance, override)
@@ -546,12 +570,42 @@ func _unique_paths(paths: Array[String]) -> Array[String]:
 	return out
 
 
-func _fit_model_height(model_root: Node3D, desired_height: float) -> void:
+func _fit_model_size(
+	model_root: Node3D,
+	fit_height: bool,
+	desired_height: float,
+	fit_width: bool,
+	desired_width: float,
+	fit_depth: bool,
+	desired_depth: float
+) -> void:
 	var bounds: AABB = _compute_model_local_aabb(model_root)
-	if bounds.size.y <= 0.0001:
+	if bounds.size == Vector3.ZERO:
 		return
 
-	var scale_factor: float = desired_height / bounds.size.y
+	var scale_factor: float = 1.0
+	var has_scale_target: bool = false
+	if fit_height and bounds.size.y > 0.0001:
+		scale_factor = desired_height / bounds.size.y
+		has_scale_target = true
+	if fit_width:
+		if bounds.size.x > 0.0001:
+			var width_scale_factor: float = desired_width / bounds.size.x
+			if not has_scale_target:
+				scale_factor = width_scale_factor
+				has_scale_target = true
+			elif width_scale_factor < scale_factor:
+				scale_factor = width_scale_factor
+	if fit_depth and bounds.size.z > 0.0001:
+		var depth_scale_factor: float = desired_depth / bounds.size.z
+		if not has_scale_target:
+			scale_factor = depth_scale_factor
+			has_scale_target = true
+		elif depth_scale_factor < scale_factor:
+			scale_factor = depth_scale_factor
+	if not has_scale_target or is_equal_approx(scale_factor, 1.0):
+		return
+
 	model_root.scale *= Vector3.ONE * scale_factor
 
 
@@ -611,9 +665,12 @@ func _transform_aabb(aabb: AABB, xform: Transform3D) -> AABB:
 
 
 func _override_for_model(model_name: String) -> Dictionary:
+	var resolved := _default_model_override()
 	if _model_overrides.has(model_name):
-		return _model_overrides[model_name]
-	return {}
+		var model_override: Dictionary = _model_overrides[model_name]
+		for key in model_override.keys():
+			resolved[key] = model_override[key]
+	return resolved
 
 
 func _place_on_pedestal_for_override(override: Dictionary) -> bool:
@@ -631,7 +688,7 @@ func _show_pedestal_for_override(override: Dictionary) -> bool:
 func _show_cookie_for_override(override: Dictionary) -> bool:
 	if override.has("show_cookie"):
 		return bool(override["show_cookie"])
-	return true
+	return false
 
 
 func _vector3_from_override(data: Dictionary, key: String, default_value: Vector3) -> Vector3:

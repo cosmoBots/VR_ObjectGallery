@@ -11,6 +11,10 @@ die() {
   exit 1
 }
 
+check_adb_available() {
+  command -v adb >/dev/null 2>&1 || die "No encuentro 'adb' en PATH. Instala Android Platform Tools y asegurate de que 'adb' se puede ejecutar desde la terminal."
+}
+
 require_file() {
   local path="$1"
   [[ -f "$path" ]] || die "No existe: $path"
@@ -79,6 +83,7 @@ launch_app() {
 }
 
 main() {
+  check_adb_available
   check_apk_is_fresh
   check_adb_device
   uninstall_app

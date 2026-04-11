@@ -1,6 +1,9 @@
 models:
   "BancoIFU.glb":
     fit_height: false
+    fit_depth: false
+    fit_width: false
+
     place_on_pedestal: false
     show_pedestal: false
     show_cookie: false

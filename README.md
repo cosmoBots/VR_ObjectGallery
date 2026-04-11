@@ -89,22 +89,30 @@ models:
 
   "tioazul.gltf":
     fit_height: true
+    fit_width: true
+    fit_depth: true
     place_on_pedestal: true
     show_pedestal: true
     show_cookie: false
     target_height: 1.5
+    target_width: 1.5
+    target_depth: 1.5
     rotation_degrees: [0.0, 0.0, 0.0]
     translation: [0.0, 0.0, 0.0]
 ```
 
 Claves soportadas:
 - `fit_height`: aplica o no `_fit_model_height`.
+- `fit_width`: limita o no la anchura final del modelo.
+- `fit_depth`: limita o no la profundidad final del modelo.
 - `place_on_pedestal`: recoloca el modelo para que apoye sobre la peana.
 - `show_pedestal`: muestra u oculta la peana.
 - `show_cookie`: muestra u oculta la galleta de depuracion.
 - `debug_control_visuals`: activa chivatos visuales de depuracion para controles y reset.
 - `material_mode`: `original`, `matte` o `unshaded`.
 - `target_height`: altura objetivo en metros.
+- `target_width`: anchura objetivo en metros.
+- `target_depth`: profundidad objetivo en metros.
 - `scale`: escala final fija para ese archivo.
 - `rotation_degrees`: correccion Euler en grados `[x, y, z]`.
 - `translation`: desplazamiento local `[x, y, z]`.
@@ -115,7 +123,8 @@ Orden de aplicacion:
 - `scale`
 - `translation`
 - `rotation_degrees`
-- `fit_height` si procede
+- `fit_height`, `fit_width` y `fit_depth` si procede
+- si hay varias restricciones activas, se aplica el factor mas restrictivo
 - `place_on_pedestal` si esta activo
 
 Bindings soportados en `controls`:
@@ -154,6 +163,37 @@ Campos por `filtered_views`:
 Para exportar a Android (Pico/Quest), reutiliza el flujo de SDK/JDK ya validado en el otro proyecto:
 - SDK: `/home/txinto/Android/Sdk`
 - JDK: `/opt/android-studio/jbr`
+- referencia oficial de Godot para export Android: https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_android.html
+
+Requisitos adicionales para exportar y desplegar por USB:
+- `adb` instalado desde Android Platform Tools y accesible en `PATH`
+- modo desarrollador y depuracion USB activados en el visor
+- aceptar la huella RSA del equipo cuando el visor la pida
+
+Si ya instalaste `SDK Platform-Tools` desde Android Studio, normalmente `adb` queda en:
+- `/home/txinto/Android/Sdk/platform-tools/adb`
+
+Para exponerlo en `PATH` en `bash`, anade esto a `~/.bashrc`:
+
+```bash
+export ANDROID_SDK_ROOT="$HOME/Android/Sdk"
+export PATH="$ANDROID_SDK_ROOT/platform-tools:$PATH"
+```
+
+Despues recarga la shell:
+
+```bash
+source ~/.bashrc
+```
+
+Comprobacion rapida:
+- `adb version`
+- `adb devices`
+- `ls "$HOME/Android/Sdk/platform-tools/adb"`
+
+Si `adb` no existe en tu sistema:
+- Debian/Ubuntu: instala `android-sdk-platform-tools`
+- o bien instala Android Platform Tools manualmente y anade su carpeta a `PATH`
 
 Locomocion XR actual:
 - stick izquierdo horizontal: gira la camara/origen a izquierda y derecha
@@ -202,8 +242,13 @@ Feedback visual de varitas:
 
 Usa `./deploy_pico.sh` para verificar que el APK es mas reciente que el ultimo cambio fuente, reinstalar y lanzar la app en las Pico.
 
+Prerequisitos:
+- `adb` disponible en `PATH`
+- visor visible en `adb devices` con estado `device`
+
 ## Despliegue Meta Quest 3
 
 - preset de exportacion Android: `Meta Quest 3`
 - APK esperado: `./VR_ObjectGallery_MetaQuest3.apk`
 - despliegue: `./deploy_meta.sh`
+- mismos prerequisitos de `adb` y depuracion USB que en Pico

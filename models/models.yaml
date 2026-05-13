@@ -1,5 +1,6 @@
 models:
   "BancoIFU.glb":
+    mqtt_id: "banco_ifu"
     fit_height: false
     fit_depth: false
     fit_width: false
@@ -15,14 +16,16 @@ models:
       view1:
         button: "left_ax_button"
         group: "optics"
+        mqtt: true
     controls:
       right_stick_x:
         target_node: "44V-M70-460_POLARIMETRO_ASS_ASM"
         reset_binding: "right_stick_click"
         axis: "x"
-        min: -1.0
-        max: 1.0
+        min: -0.10
+        max: 0.22
         speed: -0.10
+        mqtt: true
       right_stick_y:
         target_node: "44V-M70-511_MOUNTANDBASE"
         reset_binding: "right_stick_click"
@@ -30,6 +33,7 @@ models:
         min: -1.0
         max: 1.0
         speed: -0.10
+        mqtt: true
 
   "tioazul.gltf":
     fit_height: true

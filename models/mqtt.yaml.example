@@ -1,0 +1,9 @@
+mqtt:
+  enabled: true
+  host: "big.cosmobots.eu"
+  port: 1883
+  username: "user"
+  password: "change-me"
+  client_id: "vr_object_gallery"
+  topic_prefix: "gallery"
+  keepalive_seconds: 30

@@ -158,6 +158,50 @@ Campos por `filtered_views`:
 - `group`: grupo Godot que debe permanecer visible cuando la vista esta activa.
 - `start_active`: si arranca ya en modo filtrado.
 
+## MQTT
+
+Archivo local de credenciales: [`models/mqtt.yaml`](models/mqtt.yaml). Este archivo esta ignorado por git. Usa [`models/mqtt.yaml.example`](models/mqtt.yaml.example) como plantilla:
+
+```yaml
+mqtt:
+  enabled: true
+  host: "big.cosmobots.eu"
+  port: 1883
+  username: "user"
+  password: "change-me"
+  client_id: "vr_object_gallery"
+  topic_prefix: "gallery"
+  keepalive_seconds: 30
+```
+
+Para activar MQTT en un modelo, define `mqtt_id` en el modelo y `mqtt: true` en cada accion:
+
+```yaml
+models:
+  "BancoIFU.glb":
+    mqtt_id: "banco_ifu"
+    filtered_views:
+      view1:
+        button: "left_ax_button"
+        group: "optics"
+        mqtt: true
+    controls:
+      right_stick_x:
+        target_node: "44V-M70-460_POLARIMETRO_ASS_ASM"
+        reset_binding: "right_stick_click"
+        axis: "x"
+        min: -1.0
+        max: 1.0
+        speed: -0.10
+        mqtt: true
+```
+
+Topics:
+- filtros: `<prefix>/<mqtt_id>/<accion>` con payload booleano (`true` activa, `false` desactiva).
+- movimiento relativo: `<prefix>/<mqtt_id>/<accion>/rel` con payload numerico entre `-1` y `1`; `0` es reposo, `-1` es `min` y `1` es `max`.
+- movimiento absoluto: `<prefix>/<mqtt_id>/<accion>/abs` con payload numerico en coordenada local absoluta del eje configurado.
+- estado: `<prefix>/<mqtt_id>/<accion>/state` publica `ack`, `done` u `outofrange`.
+
 ## Nota VR
 
 Para exportar a Android (Pico/Quest), reutiliza el flujo de SDK/JDK ya validado en el otro proyecto:

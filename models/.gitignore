@@ -13,3 +13,4 @@
 *.jpg
 *.json
 *.tscn
+mqtt.yaml

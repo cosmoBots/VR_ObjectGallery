@@ -1,7 +1,11 @@
 extends Node3D
 
+const MqttClientScript = preload("res://mqtt_client.gd")
+const MQTT_STATUS_CONNECTING := 0
+
 @export_dir var models_dir: String = "res://models"
 @export_file("*.yaml") var model_overrides_file: String = "res://models/models.yaml"
+@export_file("*.yaml") var mqtt_config_file: String = "res://models/mqtt.yaml"
 @export var columns: int = 4
 @export var spacing_x: float = 2.0
 @export var spacing_z: float = 2.0
@@ -56,6 +60,10 @@ var _right_debug_material: StandardMaterial3D = null
 var _enable_control_debug_visuals: bool = false
 var _is_ar_mode: bool = false
 var _toggle_ar_button_previous: bool = false
+var _mqtt_config: Dictionary = {}
+var _mqtt_client = null
+var _mqtt_topic_handlers: Dictionary = {}
+var _mqtt_reconnect_timer: float = 0.0
 
 
 func _default_model_override() -> Dictionary:
@@ -80,8 +88,10 @@ func _ready() -> void:
 	_connect_controller_signals()
 	_setup_hand_feedback_materials()
 	_model_overrides = _load_model_overrides(model_overrides_file)
+	_mqtt_config = _load_mqtt_config(mqtt_config_file)
 	_configure_preview_mode()
 	_spawn_gallery()
+	_setup_mqtt()
 
 
 func _enable_xr_if_available() -> bool:
@@ -192,6 +202,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _process(delta: float) -> void:
+	_process_mqtt(delta)
 	if _xr_active or desktop_stick_simulation_enabled:
 		if _xr_active:
 			_process_ar_vr_toggle()
@@ -348,6 +359,7 @@ func _spawn_gallery() -> void:
 	_clear_children(gallery_root)
 	_active_model_controls.clear()
 	_active_filtered_views.clear()
+	_mqtt_topic_handlers.clear()
 	_enable_control_debug_visuals = false
 	var model_paths: Array[String] = []
 	_collect_model_paths(models_dir, model_paths)
@@ -811,6 +823,39 @@ func _load_model_overrides(path: String) -> Dictionary:
 	return overrides
 
 
+func _load_mqtt_config(path: String) -> Dictionary:
+	if path.is_empty() or not FileAccess.file_exists(path):
+		return {}
+
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		push_warning("No se pudo abrir YAML de MQTT: %s" % path)
+		return {}
+
+	var config: Dictionary = {}
+	var in_mqtt_section: bool = false
+	while not file.eof_reached():
+		var raw_line: String = _normalize_yaml_line(file.get_line())
+		var line: String = raw_line.split("#", true, 1)[0].rstrip("\r\n\t ")
+		if line.is_empty():
+			continue
+		if line == "mqtt:":
+			in_mqtt_section = true
+			continue
+		if not in_mqtt_section:
+			continue
+		if not line.begins_with("  ") or line.begins_with("    "):
+			continue
+		var entry: String = line.strip_edges()
+		var sep: int = entry.find(":")
+		if sep == -1:
+			continue
+		var key: String = entry.substr(0, sep).strip_edges()
+		var value_text: String = entry.substr(sep + 1).strip_edges()
+		config[key] = _parse_yaml_scalar(value_text)
+	return config
+
+
 func _normalize_yaml_line(raw_line: String) -> String:
 	# Godot puede guardar ficheros de texto con tabs segun la configuracion
 	# del editor. Nuestro YAML usa indentacion por espacios, asi que lo
@@ -910,6 +955,178 @@ func _apply_material_mode(model_root: Node3D, override: Dictionary) -> void:
 			mesh_instance.set_surface_override_material(surface_index, matte_material)
 
 
+func _setup_mqtt() -> void:
+	if not bool(_mqtt_config.get("enabled", false)):
+		return
+	if _mqtt_topic_handlers.is_empty():
+		return
+
+	_mqtt_client = MqttClientScript.new()
+	_mqtt_client.configure(_mqtt_config)
+	_mqtt_client.message.connect(_on_mqtt_message)
+	_mqtt_client.connected.connect(_on_mqtt_connected)
+	_mqtt_client.disconnected.connect(_on_mqtt_disconnected)
+	for topic in _mqtt_topic_handlers.keys():
+		_mqtt_client.subscribe(str(topic))
+	_mqtt_client.connect_to_broker()
+
+
+func _process_mqtt(delta: float) -> void:
+	if _mqtt_client == null:
+		return
+	_mqtt_client.poll()
+	if _mqtt_client.is_broker_connected():
+		_mqtt_reconnect_timer = 0.0
+		return
+	if _mqtt_client.get_connection_status() == MQTT_STATUS_CONNECTING:
+		return
+	_mqtt_reconnect_timer -= delta
+	if _mqtt_reconnect_timer <= 0.0:
+		_mqtt_reconnect_timer = 5.0
+		_mqtt_client.connect_to_broker()
+
+
+func _on_mqtt_connected() -> void:
+	print("MQTT conectado a %s:%d" % [str(_mqtt_config.get("host", "")), int(_mqtt_config.get("port", 1883))])
+
+
+func _on_mqtt_disconnected() -> void:
+	push_warning("MQTT desconectado")
+
+
+func _register_mqtt_filtered_view(override: Dictionary, action_name: String, view_index: int) -> void:
+	var mqtt_id: String = str(override.get("mqtt_id", "")).strip_edges()
+	if mqtt_id.is_empty():
+		return
+	var base_topic: String = _mqtt_action_topic(mqtt_id, action_name)
+	_mqtt_topic_handlers[base_topic] = {
+		"type": "filter",
+		"index": view_index,
+		"state_topic": "%s/state" % base_topic,
+	}
+
+
+func _register_mqtt_control(override: Dictionary, action_name: String, control_index: int) -> void:
+	var mqtt_id: String = str(override.get("mqtt_id", "")).strip_edges()
+	if mqtt_id.is_empty():
+		return
+	var base_topic: String = _mqtt_action_topic(mqtt_id, action_name)
+	var rel_topic: String = "%s/rel" % base_topic
+	var abs_topic: String = "%s/abs" % base_topic
+	var state_topic: String = "%s/state" % base_topic
+	_mqtt_topic_handlers[rel_topic] = {
+		"type": "control",
+		"mode": "rel",
+		"index": control_index,
+		"state_topic": state_topic,
+	}
+	_mqtt_topic_handlers[abs_topic] = {
+		"type": "control",
+		"mode": "abs",
+		"index": control_index,
+		"state_topic": state_topic,
+	}
+	if control_index >= 0 and control_index < _active_model_controls.size():
+		_active_model_controls[control_index]["mqtt_state_topic"] = state_topic
+
+
+func _on_mqtt_message(topic: String, payload: String) -> void:
+	if not _mqtt_topic_handlers.has(topic):
+		return
+	var handler: Dictionary = _mqtt_topic_handlers[topic]
+	match str(handler.get("type", "")):
+		"filter":
+			_apply_mqtt_filter(handler, payload)
+		"control":
+			_apply_mqtt_control(handler, payload)
+		_:
+			pass
+
+
+func _apply_mqtt_filter(handler: Dictionary, payload: String) -> void:
+	var value = _parse_mqtt_bool(payload)
+	var state_topic: String = str(handler.get("state_topic", ""))
+	if value == null:
+		_publish_mqtt_state(state_topic, "outofrange")
+		return
+	var index: int = int(handler.get("index", -1))
+	if index < 0 or index >= _active_filtered_views.size():
+		_publish_mqtt_state(state_topic, "outofrange")
+		return
+	_publish_mqtt_state(state_topic, "ack")
+	var filtered_view: Dictionary = _active_filtered_views[index]
+	filtered_view["active"] = bool(value)
+	_apply_filtered_view_visibility(filtered_view)
+	_active_filtered_views[index] = filtered_view
+	_publish_mqtt_state(state_topic, "done")
+
+
+func _apply_mqtt_control(handler: Dictionary, payload: String) -> void:
+	var state_topic: String = str(handler.get("state_topic", ""))
+	if not payload.strip_edges().is_valid_float():
+		_publish_mqtt_state(state_topic, "outofrange")
+		return
+	var index: int = int(handler.get("index", -1))
+	if index < 0 or index >= _active_model_controls.size():
+		_publish_mqtt_state(state_topic, "outofrange")
+		return
+
+	var control: Dictionary = _active_model_controls[index]
+	var requested_value: float = payload.strip_edges().to_float()
+	var target_offset: float = 0.0
+	if str(handler.get("mode", "")) == "rel":
+		if requested_value < -1.0 or requested_value > 1.0:
+			_publish_mqtt_state(state_topic, "outofrange")
+			return
+		if requested_value >= 0.0:
+			target_offset = requested_value * float(control.get("max", 1.0))
+		else:
+			target_offset = absf(requested_value) * float(control.get("min", -1.0))
+	else:
+		var base_position: Vector3 = control["base_position"]
+		var axis_index: int = int(control["axis_index"])
+		target_offset = requested_value - base_position[axis_index]
+
+	if target_offset < float(control.get("min", -1.0)) or target_offset > float(control.get("max", 1.0)):
+		_publish_mqtt_state(state_topic, "outofrange")
+		return
+
+	_publish_mqtt_state(state_topic, "ack")
+	control["mqtt_target_offset"] = target_offset
+	control["mqtt_move_active"] = true
+	control["mqtt_state_topic"] = state_topic
+	_active_model_controls[index] = control
+
+
+func _publish_mqtt_state(topic: String, state: String) -> void:
+	if _mqtt_client == null or topic.is_empty():
+		return
+	_mqtt_client.publish(topic, state)
+
+
+func _parse_mqtt_bool(payload: String):
+	var value: String = payload.strip_edges().to_lower()
+	if value == "true" or value == "1" or value == "yes" or value == "on":
+		return true
+	if value == "false" or value == "0" or value == "no" or value == "off":
+		return false
+	return null
+
+
+func _mqtt_action_topic(mqtt_id: String, action_name: String) -> String:
+	var parts := PackedStringArray()
+	var prefix: String = _clean_topic_part(str(_mqtt_config.get("topic_prefix", "")))
+	if not prefix.is_empty():
+		parts.append(prefix)
+	parts.append(_clean_topic_part(mqtt_id))
+	parts.append(_clean_topic_part(action_name))
+	return "/".join(parts)
+
+
+func _clean_topic_part(value: String) -> String:
+	return value.strip_edges().trim_prefix("/").trim_suffix("/")
+
+
 func _register_filtered_views(model_root: Node3D, override: Dictionary) -> void:
 	if not override.has("filtered_views"):
 		return
@@ -947,6 +1164,8 @@ func _register_filtered_views(model_root: Node3D, override: Dictionary) -> void:
 		}
 		_apply_filtered_view_visibility(filtered_view)
 		_active_filtered_views.append(filtered_view)
+		if bool(view_config.get("mqtt", false)):
+			_register_mqtt_filtered_view(override, String(view_name), _active_filtered_views.size() - 1)
 
 
 func _process_filtered_views() -> void:
@@ -1018,7 +1237,12 @@ func _register_model_controls(model_root: Node3D, override: Dictionary) -> void:
 			"speed": float(control_config.get("speed", 0.1)),
 			"base_position": target_3d.position,
 			"offset": 0.0,
+			"mqtt_move_active": false,
+			"mqtt_target_offset": 0.0,
+			"mqtt_state_topic": "",
 		})
+		if bool(control_config.get("mqtt", false)):
+			_register_mqtt_control(override, String(control_name), _active_model_controls.size() - 1)
 
 
 func _process_model_controls(delta: float) -> void:
@@ -1042,6 +1266,7 @@ func _process_model_controls(delta: float) -> void:
 				_right_debug_material = _debug_brown_material
 			if reset_now:
 				control["offset"] = 0.0
+				control["mqtt_move_active"] = false
 				var reset_node := control["node"] as Node3D
 				reset_node.position = control["base_position"]
 				if _enable_control_debug_visuals and reset_binding == "right_ax_button":
@@ -1049,25 +1274,40 @@ func _process_model_controls(delta: float) -> void:
 				_active_model_controls[i] = control
 				continue
 
+		if bool(control.get("mqtt_move_active", false)):
+			var mqtt_target: float = float(control.get("mqtt_target_offset", 0.0))
+			var mqtt_speed: float = maxf(absf(float(control.get("speed", 0.1))), 0.0001)
+			var mqtt_offset: float = move_toward(float(control["offset"]), mqtt_target, mqtt_speed * delta)
+			control["offset"] = mqtt_offset
+			_apply_control_offset(control)
+			if is_equal_approx(mqtt_offset, mqtt_target):
+				control["mqtt_move_active"] = false
+				_publish_mqtt_state(str(control.get("mqtt_state_topic", "")), "done")
+			_active_model_controls[i] = control
+			continue
+
 		var input_value: float = _control_input_value(str(control["binding"]))
 		if absf(input_value) < 0.15:
 			continue
 
 		var new_offset: float = clampf(float(control["offset"]) + (input_value * float(control["speed"]) * delta), float(control["min"]), float(control["max"]))
 		control["offset"] = new_offset
-
-		var target_node := control["node"] as Node3D
-		var base_position: Vector3 = control["base_position"]
-		var axis_index: int = int(control["axis_index"])
-		var new_position: Vector3 = base_position
-		new_position[axis_index] = base_position[axis_index] + new_offset
-		target_node.position = new_position
+		_apply_control_offset(control)
 
 		_active_model_controls[i] = control
 
 	for reset_binding in reset_states.keys():
 		_control_button_previous[reset_binding] = reset_states[reset_binding]
 	_button_press_events.clear()
+
+
+func _apply_control_offset(control: Dictionary) -> void:
+	var target_node := control["node"] as Node3D
+	var base_position: Vector3 = control["base_position"]
+	var axis_index: int = int(control["axis_index"])
+	var new_position: Vector3 = base_position
+	new_position[axis_index] = base_position[axis_index] + float(control["offset"])
+	target_node.position = new_position
 
 
 func _control_input_value(binding: String) -> float:

@@ -206,7 +206,7 @@ Topics:
 - movimiento normalizado: `<prefix>/<mqtt_id>/<accion>/norm` con payload numerico entre `-1` y `1`; `0` es reposo, `-1` es `min` y `1` es `max`.
 - movimiento absoluto: `<prefix>/<mqtt_id>/<accion>/abs` con payload numerico en coordenada local absoluta del eje configurado.
 - incremento absoluto: `<prefix>/<mqtt_id>/<accion>/incr` con payload numerico en las mismas unidades que `abs`; se suma a la posicion actual y luego se valida como un `abs`.
-- estado: `<prefix>/<mqtt_id>/<accion>/state` publica `ack`, `done` u `outofrange`.
+- estado: `<prefix>/<mqtt_id>/<accion>/state` publica JSON. En controles de movimiento incluye `r` (resultado), `p` (posicion absoluta actual), `n` (posicion normalizada actual) y, en `outofrange`, tambien `v` con el rango absoluto valido `[min_abs, max_abs]`.
 
 ## Nota VR
 

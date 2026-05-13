@@ -27,6 +27,8 @@ models:
         max: 0.17
         speed: -0.10
         mqtt: true
+        round_decimals: 4
+        step: 0.0001
       fm1:
         local_ctrl: "right_stick_y"
         target_node: "44V-M70-511_MOUNTANDBASE"
@@ -36,3 +38,5 @@ models:
         max: 0.02
         speed: -0.10
         mqtt: true
+        round_decimals: 4
+        step: 0.0001

@@ -88,6 +88,7 @@ func _ready() -> void:
 	_connect_controller_signals()
 	_setup_hand_feedback_materials()
 	_model_overrides = _load_model_overrides(model_overrides_file)
+	_validate_model_overrides(_model_overrides)
 	_mqtt_config = _load_mqtt_config(mqtt_config_file)
 	_configure_preview_mode()
 	_spawn_gallery()
@@ -856,6 +857,35 @@ func _load_mqtt_config(path: String) -> Dictionary:
 	return config
 
 
+func _validate_model_overrides(overrides: Dictionary) -> void:
+	var used_local_ctrls: Dictionary = {}
+	for model_name in overrides.keys():
+		var override = overrides[model_name]
+		if not (override is Dictionary):
+			continue
+		var controls = override.get("controls", {})
+		if not (controls is Dictionary):
+			continue
+		for action_name in controls.keys():
+			var control_config = controls[action_name]
+			if not (control_config is Dictionary):
+				continue
+			var local_ctrl: String = str(control_config.get("local_ctrl", "")).strip_edges()
+			if local_ctrl.is_empty():
+				continue
+			if used_local_ctrls.has(local_ctrl):
+				push_warning(
+					"local_ctrl repetido '%s' en %s/%s; ya usado en %s" % [
+						local_ctrl,
+						str(model_name),
+						str(action_name),
+						str(used_local_ctrls[local_ctrl]),
+					]
+				)
+				continue
+			used_local_ctrls[local_ctrl] = "%s/%s" % [str(model_name), str(action_name)]
+
+
 func _normalize_yaml_line(raw_line: String) -> String:
 	# Godot puede guardar ficheros de texto con tabs segun la configuracion
 	# del editor. Nuestro YAML usa indentacion por espacios, asi que lo
@@ -1207,6 +1237,7 @@ func _register_model_controls(model_root: Node3D, override: Dictionary) -> void:
 		if not (control_config is Dictionary):
 			continue
 
+		var local_ctrl: String = str(control_config.get("local_ctrl", "")).strip_edges()
 		var target_name: String = str(control_config.get("target_node", ""))
 		if target_name.is_empty():
 			continue
@@ -1227,7 +1258,8 @@ func _register_model_controls(model_root: Node3D, override: Dictionary) -> void:
 
 		var target_3d := target_node as Node3D
 		_active_model_controls.append({
-			"binding": String(control_name),
+			"action_name": String(control_name),
+			"local_ctrl": local_ctrl,
 			"reset_binding": String(control_config.get("reset_binding", "")),
 			"node": target_3d,
 			"axis_index": axis_index,
@@ -1286,7 +1318,10 @@ func _process_model_controls(delta: float) -> void:
 			_active_model_controls[i] = control
 			continue
 
-		var input_value: float = _control_input_value(str(control["binding"]))
+		var input_value: float = 0.0
+		var local_ctrl: String = str(control.get("local_ctrl", ""))
+		if not local_ctrl.is_empty():
+			input_value = _control_input_value(local_ctrl)
 		if absf(input_value) < 0.15:
 			continue
 

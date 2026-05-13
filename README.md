@@ -72,14 +72,16 @@ models:
         button: "left_ax_button"
         group: "optics"
     controls:
-      right_stick_x:
+      polarimeter:
+        local_ctrl: "right_stick_x"
         target_node: "44V-M70-460_POLARIMETRO_ASS_ASM"
         reset_binding: "right_stick_click"
         axis: "x"
         min: -1.0
         max: 1.0
         speed: -0.10
-      right_stick_y:
+      fm1:
+        local_ctrl: "right_stick_y"
         target_node: "44V-M70-511_MOUNTANDBASE"
         reset_binding: "right_stick_click"
         axis: "z"
@@ -117,7 +119,7 @@ Claves soportadas:
 - `rotation_degrees`: correccion Euler en grados `[x, y, z]`.
 - `translation`: desplazamiento local `[x, y, z]`.
 - `filtered_views`: vistas filtradas por grupo Godot, activables por boton.
-- `controls`: mapa de bindings de stick a movimientos de subarboles.
+- `controls`: mapa de acciones de movimiento sobre subarboles.
 
 Orden de aplicacion:
 - `scale`
@@ -127,7 +129,7 @@ Orden de aplicacion:
 - si hay varias restricciones activas, se aplica el factor mas restrictivo
 - `place_on_pedestal` si esta activo
 
-Bindings soportados en `controls`:
+Valores soportados en `local_ctrl`:
 - `left_stick_x`
 - `left_stick_y`
 - `left_stick_click`
@@ -146,6 +148,8 @@ Bindings soportados en `controls`:
 - `right_secondary_click`
 
 Campos por control:
+- nombre del control: identificador logico de la accion. Se usa en MQTT y no tiene por que coincidir con el control fisico local.
+- `local_ctrl`: binding local opcional para teclado/mandos. Si no se define, la accion no responde a control local pero puede seguir usando MQTT y `reset_binding`.
 - `target_node`: nombre exacto del nodo hijo a mover.
 - `reset_binding`: boton que devuelve ese nodo a su posicion de reposo.
 - `axis`: eje local a modificar (`x`, `y` o `z`).
@@ -186,7 +190,8 @@ models:
         group: "optics"
         mqtt: true
     controls:
-      right_stick_x:
+      polarimeter:
+        local_ctrl: "right_stick_x"
         target_node: "44V-M70-460_POLARIMETRO_ASS_ASM"
         reset_binding: "right_stick_click"
         axis: "x"

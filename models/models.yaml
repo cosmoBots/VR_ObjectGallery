@@ -18,7 +18,8 @@ models:
         group: "optics"
         mqtt: true
     controls:
-      right_stick_x:
+      polarimeter:
+        local_ctrl: "right_stick_x"
         target_node: "44V-M70-460_POLARIMETRO_ASS_ASM"
         reset_binding: "right_stick_click"
         axis: "x"
@@ -26,7 +27,8 @@ models:
         max: 0.22
         speed: -0.10
         mqtt: true
-      right_stick_y:
+      fm1:
+        local_ctrl: "right_stick_y"
         target_node: "44V-M70-511_MOUNTANDBASE"
         reset_binding: "right_stick_click"
         axis: "z"
@@ -34,53 +36,3 @@ models:
         max: 1.0
         speed: -0.10
         mqtt: true
-
-  "tioazul.gltf":
-    fit_height: true
-    place_on_pedestal: true
-    show_pedestal: true
-    show_cookie: false
-    target_height: 1.5
-    rotation_degrees: [0.0, 0.0, 0.0]
-    translation: [0.0, 0.0, 0.0]
-
-  "Penta.glb":
-    fit_height: true
-    place_on_pedestal: false
-    show_pedestal: true
-    show_cookie: false
-    target_height: 1.5
-    rotation_degrees: [0.0, 0.0, 0.0]
-    translation: [0.0, 0.2, 0.0]
-
-  "uploads_files_3843203_Kirby.glb":
-    fit_height: true
-    place_on_pedestal: false
-    show_pedestal: true
-    show_cookie: false
-    target_height: 1.5
-    rotation_degrees: [0.0, 0.0, 0.0]
-    translation: [-11.5, 0.2, -5.5]
-
-  "uploads_files_6409299_The+magic+Tower.glb":
-    target_height: 7.5
-    fit_height: true
-    fit_width: false
-    fit_depth: false
-    translation: [-6.0, 2, -3.0]
-    rotation_degrees: [0.0, 45.0, 0.0]
-
-  "javiflor.glb":
-    target_height: 4.5
-    fit_height: true
-    fit_width: false
-    fit_depth: false
-    translation: [-0.0, 0, -5.0]
-    rotation_degrees: [0.0, 45.0, 0.0]
-
-  "Steampunk_Automaton_0813060815_texture.glb":
-    target_height: 1.5
-    fit_height: true
-    fit_width: false
-    fit_depth: false
-    translation: [0.0, 1, 0.0]

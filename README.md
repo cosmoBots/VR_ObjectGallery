@@ -156,8 +156,8 @@ Campos por control:
 - `min`: desplazamiento minimo relativo a la posicion inicial del nodo.
 - `max`: desplazamiento maximo relativo a la posicion inicial del nodo.
 - `speed`: velocidad en metros por segundo a entrada maxima del stick.
-- `round_decimals`: resolucion decimal usada para redondear comandos MQTT y respuestas JSON. Por defecto `4`.
-- `step`: tamano de paso opcional en unidades absolutas. Si se define, habilita el topic `stp`.
+- `round_decimals`: resolucion decimal usada para redondear comandos absolutos e incrementales MQTT, y tambien las respuestas JSON en posicion absoluta. Por defecto `4`.
+- `step`: tamano de paso opcional en unidades absolutas. Si no se define, toma por defecto el paso coherente con `round_decimals` y habilita el topic `stp`.
 
 Campos por `filtered_views`:
 - `button`: boton que conmuta esa vista filtrada. Por defecto `left_ax_button`.
@@ -207,11 +207,11 @@ models:
 
 Topics:
 - filtros: `<prefix>/<mqtt_id>/<accion>` con payload booleano (`true` activa, `false` desactiva).
-- movimiento normalizado: `<prefix>/<mqtt_id>/<accion>/norm` con payload numerico entre `-1` y `1`; `0` es reposo, `-1` es `min` y `1` es `max`.
+- movimiento normalizado: `<prefix>/<mqtt_id>/<accion>/norm` con payload numerico entre `-1` y `1`; `0` es reposo, `-1` es `min` y `1` es `max`. No se discretiza a partir de `round_decimals`.
 - movimiento absoluto: `<prefix>/<mqtt_id>/<accion>/abs` con payload numerico en coordenada local absoluta del eje configurado.
 - incremento absoluto: `<prefix>/<mqtt_id>/<accion>/incr` con payload numerico en las mismas unidades que `abs`; se suma a la posicion actual y luego se valida como un `abs`.
-- incremento por pasos: `<prefix>/<mqtt_id>/<accion>/stp` con payload entero positivo o negativo. Cada paso usa `step` como incremento absoluto.
-- estado: `<prefix>/<mqtt_id>/<accion>/state` publica JSON. En controles de movimiento incluye `r` (resultado), `p` (posicion absoluta actual), `n` (posicion normalizada actual) y, en `outofrange`, tambien `v` con el rango absoluto valido `[min_abs, max_abs]`.
+- incremento por pasos: `<prefix>/<mqtt_id>/<accion>/stp` con payload entero positivo o negativo, sin decimales. Cada paso usa `step` como incremento absoluto.
+- estado: `<prefix>/<mqtt_id>/<accion>/state` publica JSON. En controles de movimiento incluye `r` (resultado), `p` (posicion absoluta actual), `n` (posicion normalizada actual, mostrada con 4 decimales) y, en `outofrange`, tambien `v` con el rango absoluto valido `[min_abs, max_abs]`.
 
 ## Nota VR
 

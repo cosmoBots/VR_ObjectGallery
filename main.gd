@@ -2,6 +2,7 @@ extends Node3D
 
 const MqttClientScript = preload("res://mqtt_client.gd")
 const MQTT_STATUS_CONNECTING := 0
+const MQTT_NORMALIZED_DISPLAY_DECIMALS := 4
 
 @export_dir var models_dir: String = "res://models"
 @export_file("*.yaml") var model_overrides_file: String = "res://models/models.yaml"
@@ -1079,13 +1080,12 @@ func _register_mqtt_control(override: Dictionary, action_name: String, control_i
 		"state_topic": state_topic,
 	}
 	if control_index >= 0 and control_index < _active_model_controls.size():
-		if float(_active_model_controls[control_index].get("step", 0.0)) > 0.0:
-			_mqtt_topic_handlers[step_topic] = {
-				"type": "control",
-				"mode": "stp",
-				"index": control_index,
-				"state_topic": state_topic,
-			}
+		_mqtt_topic_handlers[step_topic] = {
+			"type": "control",
+			"mode": "stp",
+			"index": control_index,
+			"state_topic": state_topic,
+		}
 		_active_model_controls[control_index]["mqtt_state_topic"] = state_topic
 
 
@@ -1132,33 +1132,35 @@ func _apply_mqtt_control(handler: Dictionary, payload: String) -> void:
 	if not payload.strip_edges().is_valid_float():
 		_publish_mqtt_control_state(control, state_topic, "outofrange", _control_absolute_range(control))
 		return
-	var requested_value: float = _control_round_value(control, payload.strip_edges().to_float())
-	var absolute_value: float = requested_value
+	var raw_requested_value: float = payload.strip_edges().to_float()
+	var requested_value: float = _control_round_value(control, raw_requested_value)
+	var target_offset: float = float(control.get("offset", 0.0))
 	match mode:
 		"norm":
-			if requested_value < -1.0 or requested_value > 1.0:
+			if raw_requested_value < -1.0 or raw_requested_value > 1.0:
 				_publish_mqtt_control_state(control, state_topic, "outofrange", _control_absolute_range(control))
 				return
-			absolute_value = _control_absolute_value_from_norm(control, requested_value)
+			target_offset = _control_target_offset_from_norm(control, raw_requested_value)
 		"incr":
-			absolute_value = _control_round_value(control, _control_current_absolute_value(control) + requested_value)
+			var absolute_value: float = _control_round_value(control, _control_current_absolute_value(control) + requested_value)
+			target_offset = _control_offset_from_absolute_value(control, absolute_value)
 		"abs":
-			absolute_value = _control_round_value(control, requested_value)
+			var absolute_value: float = _control_round_value(control, requested_value)
+			target_offset = _control_offset_from_absolute_value(control, absolute_value)
 		"stp":
-			var step_count: float = round(requested_value)
-			if not is_equal_approx(requested_value, step_count):
+			if not _is_effective_integer(raw_requested_value):
 				_publish_mqtt_control_state(control, state_topic, "outofrange", _control_absolute_range(control))
 				return
+			var step_count: int = int(round(raw_requested_value))
 			var step_size: float = float(control.get("step", 0.0))
 			if step_size <= 0.0:
 				_publish_mqtt_control_state(control, state_topic, "outofrange", _control_absolute_range(control))
 				return
-			absolute_value = _control_round_value(control, _control_current_absolute_value(control) + (step_count * step_size))
+			var absolute_value: float = _control_round_value(control, _control_current_absolute_value(control) + (step_count * step_size))
+			target_offset = _control_offset_from_absolute_value(control, absolute_value)
 		_:
 			_publish_mqtt_control_state(control, state_topic, "outofrange", _control_absolute_range(control))
 			return
-
-	var target_offset: float = _control_offset_from_absolute_value(control, absolute_value)
 
 	if target_offset < float(control.get("min", -1.0)) or target_offset > float(control.get("max", 1.0)):
 		_publish_mqtt_control_state(control, state_topic, "outofrange", _control_absolute_range(control))
@@ -1171,7 +1173,7 @@ func _apply_mqtt_control(handler: Dictionary, payload: String) -> void:
 	_active_model_controls[index] = control
 
 
-func _control_absolute_value_from_norm(control: Dictionary, normalized_value: float) -> float:
+func _control_target_offset_from_norm(control: Dictionary, normalized_value: float) -> float:
 	var target_offset: float = 0.0
 	var max_offset: float = float(control.get("max", 1.0))
 	var min_offset: float = float(control.get("min", -1.0))
@@ -1181,7 +1183,9 @@ func _control_absolute_value_from_norm(control: Dictionary, normalized_value: fl
 		target_offset = absf(normalized_value) * min_offset
 	else:
 		target_offset = 0.0
-	return _control_round_value(control, _control_absolute_value_from_offset(control, target_offset))
+	target_offset = clampf(target_offset, min_offset, max_offset)
+	var absolute_value: float = _control_round_value(control, _control_absolute_value_from_offset(control, target_offset))
+	return clampf(_control_offset_from_absolute_value(control, absolute_value), min_offset, max_offset)
 
 
 func _control_current_absolute_value(control: Dictionary) -> float:
@@ -1206,6 +1210,10 @@ func _control_current_normalized_value(control: Dictionary) -> float:
 	return 0.0
 
 
+func _control_display_normalized_value(control: Dictionary) -> float:
+	return _round_to_decimals(_control_current_normalized_value(control), MQTT_NORMALIZED_DISPLAY_DECIMALS)
+
+
 func _control_absolute_value_from_offset(control: Dictionary, offset: float) -> float:
 	var base_position: Vector3 = control["base_position"]
 	var axis_index: int = int(control["axis_index"])
@@ -1225,6 +1233,10 @@ func _control_absolute_range(control: Dictionary) -> Array:
 	]
 
 
+func _default_step_for_decimals(decimals: int) -> float:
+	return _round_to_decimals(1.0 / pow(10.0, maxi(0, decimals)), maxi(0, decimals))
+
+
 func _control_round_value(control: Dictionary, value: float) -> float:
 	return _round_to_decimals(value, int(control.get("round_decimals", 4)))
 
@@ -1241,11 +1253,15 @@ func _value_matches_rounding(value: float, decimals: int) -> bool:
 	return is_equal_approx(value, _round_to_decimals(value, decimals))
 
 
+func _is_effective_integer(value: float) -> bool:
+	return is_equal_approx(value, round(value))
+
+
 func _publish_mqtt_control_state(control: Dictionary, topic: String, result: String, valid_range: Array = []) -> void:
 	var payload := {
 		"r": result,
 		"p": _control_round_value(control, _control_current_absolute_value(control)),
-		"n": _control_round_value(control, _control_current_normalized_value(control)),
+		"n": _control_display_normalized_value(control),
 	}
 	if not valid_range.is_empty():
 		payload["v"] = valid_range
@@ -1381,6 +1397,12 @@ func _register_model_controls(model_root: Node3D, override: Dictionary) -> void:
 			continue
 
 		var target_3d := target_node as Node3D
+		var round_decimals: int = maxi(0, int(control_config.get("round_decimals", 4)))
+		var step_value: float = _default_step_for_decimals(round_decimals)
+		if control_config.has("step"):
+			step_value = float(control_config.get("step", step_value))
+			if step_value <= 0.0:
+				step_value = _default_step_for_decimals(round_decimals)
 		_active_model_controls.append({
 			"action_name": String(control_name),
 			"local_ctrl": local_ctrl,
@@ -1391,8 +1413,8 @@ func _register_model_controls(model_root: Node3D, override: Dictionary) -> void:
 			"min": float(control_config.get("min", -1.0)),
 			"max": float(control_config.get("max", 1.0)),
 			"speed": float(control_config.get("speed", 0.1)),
-			"round_decimals": maxi(0, int(control_config.get("round_decimals", 4))),
-			"step": float(control_config.get("step", 0.0)),
+			"round_decimals": round_decimals,
+			"step": step_value,
 			"base_position": target_3d.position,
 			"offset": 0.0,
 			"mqtt_move_active": false,

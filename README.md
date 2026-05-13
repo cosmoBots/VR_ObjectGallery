@@ -203,8 +203,9 @@ models:
 
 Topics:
 - filtros: `<prefix>/<mqtt_id>/<accion>` con payload booleano (`true` activa, `false` desactiva).
-- movimiento relativo: `<prefix>/<mqtt_id>/<accion>/rel` con payload numerico entre `-1` y `1`; `0` es reposo, `-1` es `min` y `1` es `max`.
+- movimiento normalizado: `<prefix>/<mqtt_id>/<accion>/norm` con payload numerico entre `-1` y `1`; `0` es reposo, `-1` es `min` y `1` es `max`.
 - movimiento absoluto: `<prefix>/<mqtt_id>/<accion>/abs` con payload numerico en coordenada local absoluta del eje configurado.
+- incremento absoluto: `<prefix>/<mqtt_id>/<accion>/incr` con payload numerico en las mismas unidades que `abs`; se suma a la posicion actual y luego se valida como un `abs`.
 - estado: `<prefix>/<mqtt_id>/<accion>/state` publica `ack`, `done` u `outofrange`.
 
 ## Nota VR

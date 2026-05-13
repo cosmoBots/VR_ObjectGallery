@@ -1041,18 +1041,25 @@ func _register_mqtt_control(override: Dictionary, action_name: String, control_i
 	if mqtt_id.is_empty():
 		return
 	var base_topic: String = _mqtt_action_topic(mqtt_id, action_name)
-	var rel_topic: String = "%s/rel" % base_topic
+	var norm_topic: String = "%s/norm" % base_topic
 	var abs_topic: String = "%s/abs" % base_topic
+	var incr_topic: String = "%s/incr" % base_topic
 	var state_topic: String = "%s/state" % base_topic
-	_mqtt_topic_handlers[rel_topic] = {
+	_mqtt_topic_handlers[norm_topic] = {
 		"type": "control",
-		"mode": "rel",
+		"mode": "norm",
 		"index": control_index,
 		"state_topic": state_topic,
 	}
 	_mqtt_topic_handlers[abs_topic] = {
 		"type": "control",
 		"mode": "abs",
+		"index": control_index,
+		"state_topic": state_topic,
+	}
+	_mqtt_topic_handlers[incr_topic] = {
+		"type": "control",
+		"mode": "incr",
 		"index": control_index,
 		"state_topic": state_topic,
 	}
@@ -1103,19 +1110,22 @@ func _apply_mqtt_control(handler: Dictionary, payload: String) -> void:
 
 	var control: Dictionary = _active_model_controls[index]
 	var requested_value: float = payload.strip_edges().to_float()
-	var target_offset: float = 0.0
-	if str(handler.get("mode", "")) == "rel":
-		if requested_value < -1.0 or requested_value > 1.0:
+	var absolute_value: float = requested_value
+	match str(handler.get("mode", "")):
+		"norm":
+			if requested_value < -1.0 or requested_value > 1.0:
+				_publish_mqtt_state(state_topic, "outofrange")
+				return
+			absolute_value = _control_absolute_value_from_norm(control, requested_value)
+		"incr":
+			absolute_value = _control_current_absolute_value(control) + requested_value
+		"abs":
+			pass
+		_:
 			_publish_mqtt_state(state_topic, "outofrange")
 			return
-		if requested_value >= 0.0:
-			target_offset = requested_value * float(control.get("max", 1.0))
-		else:
-			target_offset = absf(requested_value) * float(control.get("min", -1.0))
-	else:
-		var base_position: Vector3 = control["base_position"]
-		var axis_index: int = int(control["axis_index"])
-		target_offset = requested_value - base_position[axis_index]
+
+	var target_offset: float = _control_offset_from_absolute_value(control, absolute_value)
 
 	if target_offset < float(control.get("min", -1.0)) or target_offset > float(control.get("max", 1.0)):
 		_publish_mqtt_state(state_topic, "outofrange")
@@ -1126,6 +1136,31 @@ func _apply_mqtt_control(handler: Dictionary, payload: String) -> void:
 	control["mqtt_move_active"] = true
 	control["mqtt_state_topic"] = state_topic
 	_active_model_controls[index] = control
+
+
+func _control_absolute_value_from_norm(control: Dictionary, normalized_value: float) -> float:
+	var target_offset: float = 0.0
+	if normalized_value >= 0.0:
+		target_offset = normalized_value * float(control.get("max", 1.0))
+	else:
+		target_offset = absf(normalized_value) * float(control.get("min", -1.0))
+	return _control_absolute_value_from_offset(control, target_offset)
+
+
+func _control_current_absolute_value(control: Dictionary) -> float:
+	return _control_absolute_value_from_offset(control, float(control.get("offset", 0.0)))
+
+
+func _control_absolute_value_from_offset(control: Dictionary, offset: float) -> float:
+	var base_position: Vector3 = control["base_position"]
+	var axis_index: int = int(control["axis_index"])
+	return base_position[axis_index] + offset
+
+
+func _control_offset_from_absolute_value(control: Dictionary, absolute_value: float) -> float:
+	var base_position: Vector3 = control["base_position"]
+	var axis_index: int = int(control["axis_index"])
+	return absolute_value - base_position[axis_index]
 
 
 func _publish_mqtt_state(topic: String, state: String) -> void:

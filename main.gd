@@ -80,6 +80,7 @@ func _default_model_override() -> Dictionary:
 		"target_depth": 1.5,
 		"rotation_degrees": [0.0, 0.0, 0.0],
 		"translation": [0.0, 0.0, 0.0],
+		"double_sided": false,
 	}
 
 
@@ -407,6 +408,8 @@ func _spawn_gallery() -> void:
 		_apply_material_mode(instance, override)
 		if use_unshaded_debug_material:
 			_apply_debug_material(instance)
+		if _double_sided_for_override(override):
+			_apply_double_sided_materials(instance)
 		slot.add_child(instance)
 		_fit_model_size(
 			instance,
@@ -705,6 +708,14 @@ func _show_cookie_for_override(override: Dictionary) -> bool:
 	return false
 
 
+func _double_sided_for_override(override: Dictionary) -> bool:
+	if override.has("double_sided"):
+		return bool(override["double_sided"])
+	if override.has("double_side"):
+		return bool(override["double_side"])
+	return false
+
+
 func _vector3_from_override(data: Dictionary, key: String, default_value: Vector3) -> Vector3:
 	if not data.has(key):
 		return default_value
@@ -952,6 +963,38 @@ func _apply_debug_material(model_root: Node3D) -> void:
 	for mesh_instance in meshes:
 		mesh_instance.material_override = mat
 		mesh_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+
+
+func _apply_double_sided_materials(model_root: Node3D) -> void:
+	var meshes: Array[MeshInstance3D] = []
+	_collect_mesh_instances(model_root, meshes)
+
+	for mesh_instance in meshes:
+		if mesh_instance.material_override != null:
+			mesh_instance.material_override = _material_with_cull_disabled(mesh_instance.material_override)
+
+		if mesh_instance.mesh == null:
+			continue
+
+		var surface_count: int = mesh_instance.mesh.get_surface_count()
+		for surface_index in range(surface_count):
+			var source_material: Material = mesh_instance.get_surface_override_material(surface_index)
+			if source_material == null:
+				source_material = mesh_instance.mesh.surface_get_material(surface_index)
+			mesh_instance.set_surface_override_material(surface_index, _material_with_cull_disabled(source_material))
+
+
+func _material_with_cull_disabled(source_material: Material) -> Material:
+	if source_material is BaseMaterial3D:
+		var material := (source_material as BaseMaterial3D).duplicate(true) as BaseMaterial3D
+		material.cull_mode = BaseMaterial3D.CULL_DISABLED
+		return material
+
+	var fallback := StandardMaterial3D.new()
+	fallback.albedo_color = Color(0.82, 0.82, 0.78, 1.0)
+	fallback.roughness = 1.0
+	fallback.cull_mode = BaseMaterial3D.CULL_DISABLED
+	return fallback
 
 
 func _apply_material_mode(model_root: Node3D, override: Dictionary) -> void:

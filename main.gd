@@ -1258,13 +1258,13 @@ func _control_display_normalized_value(control: Dictionary) -> float:
 
 
 func _control_absolute_value_from_offset(control: Dictionary, offset: float) -> float:
-	var base_position: Vector3 = control["base_position"]
+	var base_position: Vector3 = control["base_value"]
 	var axis_index: int = int(control["axis_index"])
 	return base_position[axis_index] + offset
 
 
 func _control_offset_from_absolute_value(control: Dictionary, absolute_value: float) -> float:
-	var base_position: Vector3 = control["base_position"]
+	var base_position: Vector3 = control["base_value"]
 	var axis_index: int = int(control["axis_index"])
 	return absolute_value - base_position[axis_index]
 
@@ -1440,6 +1440,15 @@ func _register_model_controls(model_root: Node3D, override: Dictionary) -> void:
 			continue
 
 		var target_3d := target_node as Node3D
+		var transform_type: String = str(control_config.get("transform", "position")).to_lower()
+		if transform_type != "position" and transform_type != "rotation":
+			push_warning("Transform no soportado en control %s: %s" % [control_name, transform_type])
+			continue
+		var transform_space: String = str(control_config.get("space", "local")).to_lower()
+		if transform_space != "local" and transform_space != "global":
+			push_warning("Espacio no soportado en control %s: %s" % [control_name, transform_space])
+			continue
+		var base_value: Vector3 = _control_current_vector(target_3d, transform_type, transform_space)
 		var round_decimals: int = maxi(0, int(control_config.get("round_decimals", 4)))
 		var step_value: float = _default_step_for_decimals(round_decimals)
 		if control_config.has("step"):
@@ -1451,6 +1460,8 @@ func _register_model_controls(model_root: Node3D, override: Dictionary) -> void:
 			"local_ctrl": local_ctrl,
 			"reset_binding": String(control_config.get("reset_binding", "")),
 			"node": target_3d,
+			"transform": transform_type,
+			"space": transform_space,
 			"axis_index": axis_index,
 			"axis_name": axis_name,
 			"min": float(control_config.get("min", -1.0)),
@@ -1458,7 +1469,7 @@ func _register_model_controls(model_root: Node3D, override: Dictionary) -> void:
 			"speed": float(control_config.get("speed", 0.1)),
 			"round_decimals": round_decimals,
 			"step": step_value,
-			"base_position": target_3d.position,
+			"base_value": base_value,
 			"offset": 0.0,
 			"mqtt_move_active": false,
 			"mqtt_target_offset": 0.0,
@@ -1490,8 +1501,7 @@ func _process_model_controls(delta: float) -> void:
 			if reset_now:
 				control["offset"] = 0.0
 				control["mqtt_move_active"] = false
-				var reset_node := control["node"] as Node3D
-				reset_node.position = control["base_position"]
+				_apply_control_offset(control)
 				if _enable_control_debug_visuals and reset_binding == "right_ax_button":
 					_right_debug_material = _debug_black_material
 				_active_model_controls[i] = control
@@ -1529,11 +1539,43 @@ func _process_model_controls(delta: float) -> void:
 
 func _apply_control_offset(control: Dictionary) -> void:
 	var target_node := control["node"] as Node3D
-	var base_position: Vector3 = control["base_position"]
+	var base_value: Vector3 = control["base_value"]
 	var axis_index: int = int(control["axis_index"])
-	var new_position: Vector3 = base_position
-	new_position[axis_index] = base_position[axis_index] + float(control["offset"])
-	target_node.position = new_position
+	var new_value: Vector3 = base_value
+	new_value[axis_index] = base_value[axis_index] + float(control["offset"])
+	_control_set_vector(target_node, str(control.get("transform", "position")), str(control.get("space", "local")), new_value)
+
+
+func _control_current_vector(target_node: Node3D, transform_type: String, transform_space: String) -> Vector3:
+	if transform_type == "rotation":
+		if transform_space == "global":
+			return Vector3(
+				rad_to_deg(target_node.global_rotation.x),
+				rad_to_deg(target_node.global_rotation.y),
+				rad_to_deg(target_node.global_rotation.z)
+			)
+		return target_node.rotation_degrees
+	if transform_space == "global":
+		return target_node.global_position
+	return target_node.position
+
+
+func _control_set_vector(target_node: Node3D, transform_type: String, transform_space: String, value: Vector3) -> void:
+	if transform_type == "rotation":
+		if transform_space == "global":
+			target_node.global_rotation = Vector3(
+				deg_to_rad(value.x),
+				deg_to_rad(value.y),
+				deg_to_rad(value.z)
+			)
+		else:
+			target_node.rotation_degrees = value
+		return
+
+	if transform_space == "global":
+		target_node.global_position = value
+	else:
+		target_node.position = value
 
 
 func _control_input_value(binding: String) -> float:

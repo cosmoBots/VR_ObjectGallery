@@ -1,4 +1,41 @@
 models:
+  "NRT.glb":
+    mqtt_id: "nrt"
+    fit_height: false
+    fit_depth: false
+    fit_width: false
+    double_side: false
+    place_on_pedestal: false
+    show_pedestal: false
+    show_cookie: false
+    #material_mode: "matte"
+    scale: 1
+    translation: [0.0, 0.0, 0.0]
+    controls:
+      yaw:
+        mqtt: true
+        local_ctrl: "right_stick_x"
+        target_node: "Telescope"
+        transform: "rotation"
+        space: "global"
+        axis: "y"
+        min: -180.0
+        max: 180.0
+        speed: 90.0
+        round_decimals: 2
+        step: 1.0
+      pitch:
+        mqtt: true
+        local_ctrl: "right_stick_y"
+        target_node: "Telescope_Structure"
+        transform: "rotation"
+        axis: "x"
+        min: -45.0
+        max: 45.0
+        speed: 45.0
+        round_decimals: 2
+        step: 1.0
+
   "BancoIFU.glb":
     mqtt_id: "banco_ifu"
     fit_height: false

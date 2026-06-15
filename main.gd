@@ -175,19 +175,28 @@ func _setup_hand_feedback_materials() -> void:
 	_debug_brown_material.albedo_color = Color(0.45, 0.26, 0.08, 1.0)
 	_debug_black_material = StandardMaterial3D.new()
 	_debug_black_material.albedo_color = Color(0.0, 0.0, 0.0, 1.0)
-	left_hand_mesh.material_override = _left_hand_idle_material
-	right_hand_mesh.material_override = _right_hand_idle_material
-	desktop_left_marker.material_override = _left_hand_idle_material
-	desktop_right_marker.material_override = _right_hand_idle_material
+	_set_marker_material(left_hand_mesh, _left_hand_idle_material)
+	_set_marker_material(right_hand_mesh, _right_hand_idle_material)
+	_set_marker_material(desktop_left_marker, _left_hand_idle_material)
+	_set_marker_material(desktop_right_marker, _right_hand_idle_material)
 
 
 func _update_hand_button_feedback() -> void:
 	var left_active: bool = _control_button_pressed("left_trigger_click")
 	var right_active: bool = _control_button_pressed("right_trigger_click")
-	left_hand_mesh.material_override = _hand_active_material if left_active else _left_hand_idle_material
-	right_hand_mesh.material_override = _right_debug_material if _right_debug_material != null else (_hand_active_material if right_active else _right_hand_idle_material)
-	desktop_left_marker.material_override = _hand_active_material if left_active else _left_hand_idle_material
-	desktop_right_marker.material_override = _right_debug_material if _right_debug_material != null else (_hand_active_material if right_active else _right_hand_idle_material)
+	var left_material: StandardMaterial3D = _hand_active_material if left_active else _left_hand_idle_material
+	var right_material: StandardMaterial3D = _right_debug_material if _right_debug_material != null else (_hand_active_material if right_active else _right_hand_idle_material)
+	_set_marker_material(left_hand_mesh, left_material)
+	_set_marker_material(right_hand_mesh, right_material)
+	_set_marker_material(desktop_left_marker, left_material)
+	_set_marker_material(desktop_right_marker, right_material)
+
+
+func _set_marker_material(node: Node, material: Material) -> void:
+	if node is MeshInstance3D:
+		(node as MeshInstance3D).material_override = material
+	for child in node.get_children():
+		_set_marker_material(child, material)
 
 
 func _unhandled_input(event: InputEvent) -> void:

@@ -16,6 +16,7 @@ Thumbs.db
 *.pck
 *.x86_64
 *.zip
+*.wasm
 
 # Android export/build generated files
 android/build/
@@ -23,4 +24,9 @@ android/.gradle/
 android/local.properties
 android/gradlew
 android/gradlew.bat
+web/*.html
+web/*.js
+web/*.wasm
+web/*.pck
+web/*.png
 /backup

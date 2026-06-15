@@ -97,12 +97,19 @@ func _ready() -> void:
 	_setup_mqtt()
 
 
+func _is_web_export() -> bool:
+	return OS.get_name() == "Web" or OS.has_feature("web")
+
+
 func _enable_xr_if_available() -> bool:
-	var interface: OpenXRInterface = XRServer.find_interface("OpenXR")
+	if _is_web_export():
+		return false
+
+	var interface: XRInterface = XRServer.find_interface("OpenXR")
 	if interface == null:
 		return false
 
-	interface.render_target_size_multiplier = xr_render_target_size_multiplier
+	interface.set("render_target_size_multiplier", xr_render_target_size_multiplier)
 
 	if not interface.is_initialized():
 		if not interface.initialize():
@@ -365,9 +372,21 @@ func _spawn_gallery() -> void:
 	_mqtt_topic_handlers.clear()
 	_enable_control_debug_visuals = false
 	var model_paths: Array[String] = []
-	_collect_model_paths(models_dir, model_paths)
-	model_paths.sort()
-	model_paths = _unique_paths(model_paths)
+	if _is_web_export():
+		_collect_model_paths_from_overrides(model_paths)
+	else:
+		_collect_model_paths(models_dir, model_paths)
+		if model_paths.is_empty():
+			_collect_model_paths_from_overrides(model_paths)
+
+	if model_paths.is_empty():
+		var banco_ifu_path := "%s/BancoIFU.glb" % models_dir
+		if _model_resource_exists(banco_ifu_path):
+			model_paths.append(banco_ifu_path)
+
+	if not model_paths.is_empty():
+		model_paths.sort()
+		model_paths = _unique_paths(model_paths)
 
 	if model_paths.is_empty():
 		push_warning("No se encontraron modelos en %s" % models_dir)
@@ -398,6 +417,7 @@ func _spawn_gallery() -> void:
 
 		if instance == null:
 			push_warning("No se pudo instanciar: %s" % model_path)
+			slot.add_child(_make_missing_model_marker())
 			if _show_cookie_for_override(override):
 				slot.add_child(_make_shadow_cookie(null))
 			continue
@@ -427,6 +447,9 @@ func _spawn_gallery() -> void:
 		if _show_cookie_for_override(override):
 			slot.add_child(_make_shadow_cookie(instance))
 
+	if desktop_preview_enabled and not _xr_active:
+		_frame_desktop_preview_on_gallery()
+
 
 func _collect_model_paths(base_dir: String, out_paths: Array[String]) -> void:
 	var dir := DirAccess.open(base_dir)
@@ -455,6 +478,18 @@ func _collect_model_paths(base_dir: String, out_paths: Array[String]) -> void:
 				if _is_supported_model_extension(source_ext):
 					out_paths.append("%s/%s" % [base_dir, source_name])
 	dir.list_dir_end()
+
+
+func _collect_model_paths_from_overrides(out_paths: Array[String]) -> void:
+	for model_name in _model_overrides.keys():
+		var model_path := "%s/%s" % [models_dir, str(model_name)]
+		if _model_resource_exists(model_path):
+			out_paths.append(model_path)
+
+
+func _model_resource_exists(path: String) -> bool:
+	var resolved_path: String = _resolve_scene_override_path(path)
+	return ResourceLoader.exists(resolved_path) or FileAccess.file_exists(path)
 
 
 func _is_supported_model_extension(ext: String) -> bool:
@@ -563,12 +598,60 @@ func _make_shadow_cookie(model_root: Node3D) -> MeshInstance3D:
 	return cookie
 
 
+func _make_missing_model_marker() -> MeshInstance3D:
+	var marker := MeshInstance3D.new()
+	var mesh := BoxMesh.new()
+	mesh.size = Vector3(0.4, 0.4, 0.4)
+	marker.mesh = mesh
+
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(1.0, 0.0, 1.0, 1.0)
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	marker.material_override = mat
+	marker.position = Vector3(0.0, 1.0, 0.0)
+	return marker
+
+
 func _grid_position(index: int, total_items: int) -> Vector3:
 	var safe_columns: int = maxi(mini(columns, maxi(total_items, 1)), 1)
 	var col: int = index % safe_columns
 	var row: int = index / safe_columns
 	var centered_x: float = (float(col) - (float(safe_columns - 1) * 0.5)) * spacing_x
 	return gallery_origin + Vector3(centered_x, 0.0, float(row) * spacing_z)
+
+
+func _frame_desktop_preview_on_gallery() -> void:
+	var bounds: AABB = _compute_global_aabb(gallery_root)
+	if bounds.size == Vector3.ZERO:
+		return
+
+	var center: Vector3 = bounds.get_center()
+	var max_size: float = maxf(bounds.size.x, maxf(bounds.size.y, bounds.size.z))
+	var distance: float = maxf(3.0, max_size * 1.8)
+	var height_offset: float = maxf(0.6, bounds.size.y * 0.25)
+	desktop_preview.global_position = center + Vector3(0.0, height_offset, distance)
+	desktop_preview.look_at(center, Vector3.UP)
+	_desktop_pitch_degrees = 0.0
+	desktop_camera.rotation_degrees.x = 0.0
+
+
+func _compute_global_aabb(root: Node3D) -> AABB:
+	var meshes: Array[MeshInstance3D] = []
+	_collect_mesh_instances(root, meshes)
+
+	var has_bounds: bool = false
+	var bounds := AABB()
+	for mesh_instance in meshes:
+		if mesh_instance.mesh == null or not mesh_instance.is_visible_in_tree():
+			continue
+		var transformed: AABB = _transform_aabb(mesh_instance.get_aabb(), mesh_instance.global_transform)
+		if not has_bounds:
+			bounds = transformed
+			has_bounds = true
+		else:
+			bounds = bounds.merge(transformed)
+
+	return bounds if has_bounds else AABB()
 
 
 func _clear_children(node: Node) -> void:

@@ -317,3 +317,18 @@ Prerequisitos:
 - APK esperado: `./VR_ObjectGallery_MetaQuest3.apk`
 - despliegue: `./deploy_meta.sh`
 - mismos prerequisitos de `adb` y depuracion USB que en Pico
+
+## Export Web
+
+- preset de exportacion: `Web`
+- salida esperada: `./web/index.html`
+- exportacion por terminal: `./export_web.sh`
+- servidor local de prueba: `./serve_web.sh` y abrir `http://localhost:8000`
+
+El export Web genera los ficheros `.html`, `.js`, `.wasm` y `.pck` en `web/`. Si se quiere integrar en React, exporta el mismo preset directamente a una carpeta tipo `public/simulator/index.html`.
+
+Notas:
+- En navegador se usa el modo preview de escritorio, no OpenXR nativo.
+- El preset Web excluye `models/mqtt.yaml`, `addons/godotopenxrvendors/`, `web/` y `backup/` para no publicar credenciales, loaders nativos ni artefactos de exportacion dentro del `.pck`.
+- El export Web debe servirse desde HTTP/HTTPS; abrir el HTML con `file://` puede fallar al cargar WASM/PCK.
+- Si se activa `Use Threads` en el preset Web, el servidor debe enviar `Cross-Origin-Opener-Policy: same-origin` y `Cross-Origin-Embedder-Policy: require-corp`.

@@ -6,6 +6,7 @@ EXPORT_PRESET_NAME="Meta Quest 3"
 EXPORT_PRESETS_PATH="${ROOT_DIR}/export_presets.cfg"
 PACKAGE_NAME="eu.cosmobots.vr_objectgallery"
 ADB_CMD=(env ADB_LIBUSB=1 adb)
+ANDROID_ENV_PATH="${ROOT_DIR}/android.env"
 
 die() {
   echo "ERROR: $*" >&2
@@ -19,6 +20,13 @@ check_adb_available() {
 require_file() {
   local path="$1"
   [[ -f "$path" ]] || die "No existe: $path"
+}
+
+load_android_env() {
+  if [[ -f "$ANDROID_ENV_PATH" ]]; then
+    # shellcheck source=/dev/null
+    source "$ANDROID_ENV_PATH"
+  fi
 }
 
 preset_export_path() {
@@ -150,6 +158,7 @@ main() {
   local explicit_apk="${1:-}"
   APK_PATH="$(resolve_apk_path "$explicit_apk")"
 
+  load_android_env
   check_adb_available
   if [[ -z "$explicit_apk" ]]; then
     check_apk_is_fresh

@@ -72,3 +72,33 @@ Physical controls on the Vive controllers:
 | Banco IFU control reset | `right_stick_click` |
 | XR locomotion | left stick, handled in `main.gd` |
 | AR/VR toggle | `left_by_button`, handled in `main.gd` |
+
+## BancoIFU active mapping
+
+This is the short list to keep updated while validating the current
+`BancoIFU.glb` controls. It only covers the controls used by BancoIFU in
+`models/models.yaml`.
+
+| BancoIFU feature | YAML binding | Meta Quest physical/OpenXR | Pico physical/OpenXR | Vive XR Elite physical/OpenXR |
+|---|---|---|---|---|
+| Filtered view `view1` | `left_ax_button` | left X -> `/user/hand/left/input/x/click` | left X -> `/user/hand/left/input/x/click` | temporary: left trigger -> `/user/hand/left/input/trigger/*` |
+| Polarimeter motion | `right_stick_x` | right thumbstick X -> `/user/hand/right/input/thumbstick` | right thumbstick X -> `/user/hand/right/input/thumbstick` | right thumbstick X -> `/user/hand/right/input/thumbstick` |
+| FM1 motion | `right_stick_y` | right thumbstick Y -> `/user/hand/right/input/thumbstick` | right thumbstick Y -> `/user/hand/right/input/thumbstick` | right thumbstick Y -> `/user/hand/right/input/thumbstick` |
+| Reset BancoIFU controls | `right_stick_click` | right thumbstick click -> `/user/hand/right/input/thumbstick/click` | right thumbstick click -> `/user/hand/right/input/thumbstick/click` | right thumbstick click -> `/user/hand/right/input/thumbstick/click` |
+| AR/VR toggle | code-level `left_by_button` | left Y -> `/user/hand/left/input/y/click` | left Y -> `/user/hand/left/input/y/click` | temporary: right trigger -> `/user/hand/right/input/trigger/*` |
+
+## Vive button test history
+
+This table only tracks Vive button mapping attempts that affect BancoIFU or the
+AR/VR toggle. Sticks are intentionally out of scope here.
+
+| Step | Button mapping tested | Vive result | Conclusion |
+|---|---|---|---|
+| 1 | Existing YAML mapping: `view1` uses `left_ax_button`; AR/VR uses `left_by_button`; reset uses `right_stick_click` | `right_stick_click` reset worked; `view1` and AR/VR buttons did not work | Stick-click button path is valid; X/Y style buttons still unresolved |
+| 2 | Added broad fallback where `select_button` could satisfy A/X-style bindings | Left trigger activated `view1` | Too broad; `select_button`/trigger must not feed `left_ax_button` |
+| 3 | Removed `select_button` from A/X-style bindings and removed trigger as AR/VR toggle | `right_stick_click` reset worked; other buttons still did not work | Better baseline for buttons, but X/Y/A/B still unresolved |
+| 4 | Added event-based logical mapping for X/Y/A/B button press events | Reported as no improvement; current state should be rolled back or isolated | Event-based mapping needs a smaller diagnostic pass |
+| 5 | Vive-only temporary mapping: left trigger feeds `left_ax_button`; right trigger feeds AR/VR toggle | Pending test | Intended baseline recovery: keep sticks direct, avoid event mapping, avoid `select_button` fallback |
+
+Next Vive-only button test should change one thing at a time and should not
+touch stick polling or project action-map settings.

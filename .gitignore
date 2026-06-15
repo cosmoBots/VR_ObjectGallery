@@ -29,4 +29,5 @@ web/*.js
 web/*.wasm
 web/*.pck
 web/*.png
+android.env
 /backup

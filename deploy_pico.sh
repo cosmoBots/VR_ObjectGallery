@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-EXPORT_PRESET_NAME="VR_ObjectGallery"
+EXPORT_PRESET_NAME="PicoVR"
 EXPORT_PRESETS_PATH="${ROOT_DIR}/export_presets.cfg"
 PACKAGE_NAME="eu.cosmobots.vr_objectgallery"
 ADB_CMD=(env ADB_LIBUSB=1 adb)

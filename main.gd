@@ -101,8 +101,12 @@ func _is_web_export() -> bool:
 	return OS.get_name() == "Web" or OS.has_feature("web")
 
 
+func _should_enable_xr() -> bool:
+	return OS.has_feature("android") or OS.has_feature("linux_xr")
+
+
 func _enable_xr_if_available() -> bool:
-	if _is_web_export():
+	if not _should_enable_xr():
 		return false
 
 	var interface: XRInterface = XRServer.find_interface("OpenXR")

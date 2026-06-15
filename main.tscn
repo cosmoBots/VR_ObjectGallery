@@ -54,7 +54,7 @@ tracker = &"left_hand"
 pose = &"aim"
 
 [node name="LeftHandMesh" type="MeshInstance3D" parent="XROrigin3D/LeftHand" unique_id=858622846]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, -0.04)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, -0.04)
 material_override = SubResource("StandardMaterial3D_hand")
 mesh = SubResource("BoxMesh_hand_grip")
 
@@ -69,7 +69,7 @@ tracker = &"right_hand"
 pose = &"aim"
 
 [node name="RightHandMesh" type="MeshInstance3D" parent="XROrigin3D/RightHand" unique_id=1616859846]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, -0.04)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, -0.04)
 material_override = SubResource("StandardMaterial3D_hand")
 mesh = SubResource("BoxMesh_hand_grip")
 

@@ -117,6 +117,10 @@ check_adb_device() {
   echo "Dispositivo ADB: $(echo "$devices" | head -n1)"
 }
 
+force_stop_app() {
+  "${ADB_CMD[@]}" shell am force-stop "$PACKAGE_NAME" >/dev/null 2>&1 || true
+}
+
 prepare_adb_server() {
   export ADB_LIBUSB="${ADB_LIBUSB:-1}"
   if ! adb start-server >/dev/null 2>&1; then
@@ -188,8 +192,10 @@ main() {
   fi
 
   check_adb_device
+  force_stop_app
   uninstall_app
   install_app
+  force_stop_app
   launch_app
 }
 

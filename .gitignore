@@ -23,4 +23,5 @@ android/.gradle/
 android/local.properties
 android/gradlew
 android/gradlew.bat
+android.env
 /backup

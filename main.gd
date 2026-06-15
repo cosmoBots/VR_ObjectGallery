@@ -3,6 +3,7 @@ extends Node3D
 const MqttClientScript = preload("res://mqtt_client.gd")
 const MQTT_STATUS_CONNECTING := 0
 const MQTT_NORMALIZED_DISPLAY_DECIMALS := 4
+const XR_ANALOG_BUTTON_THRESHOLD := 0.55
 
 @export_dir var models_dir: String = "res://models"
 @export_file("*.yaml") var model_overrides_file: String = "res://models/models.yaml"
@@ -97,12 +98,23 @@ func _ready() -> void:
 	_setup_mqtt()
 
 
+func _is_web_export() -> bool:
+	return OS.get_name() == "Web" or OS.has_feature("web")
+
+
+func _should_enable_xr() -> bool:
+	return OS.has_feature("android") or OS.has_feature("linux_xr")
+
+
 func _enable_xr_if_available() -> bool:
-	var interface: OpenXRInterface = XRServer.find_interface("OpenXR")
+	if not _should_enable_xr():
+		return false
+
+	var interface: XRInterface = XRServer.find_interface("OpenXR")
 	if interface == null:
 		return false
 
-	interface.render_target_size_multiplier = xr_render_target_size_multiplier
+	interface.set("render_target_size_multiplier", xr_render_target_size_multiplier)
 
 	if not interface.is_initialized():
 		if not interface.initialize():
@@ -144,11 +156,42 @@ func _connect_controller_signals() -> void:
 
 
 func _on_left_controller_button_pressed(name: String) -> void:
-	_button_press_events[name] = true
+	_register_controller_button_press("left", name)
 
 
 func _on_right_controller_button_pressed(name: String) -> void:
+	_register_controller_button_press("right", name)
+
+
+func _register_controller_button_press(hand: String, name: String) -> void:
 	_button_press_events[name] = true
+	_button_press_events["%s:%s" % [hand, name]] = true
+
+	var logical_names: Array[String] = _logical_button_names_for_event(hand, name)
+	for logical_name in logical_names:
+		_button_press_events[logical_name] = true
+
+
+func _logical_button_names_for_event(hand: String, name: String) -> Array[String]:
+	match "%s:%s" % [hand, name]:
+		"left:primary_click":
+			return ["left_stick_click"]
+		"right:primary_click":
+			return ["right_stick_click"]
+		"left:ax_button":
+			return ["left_ax_button"]
+		"right:ax_button":
+			return ["right_ax_button"]
+		"left:by_button":
+			return ["left_by_button"]
+		"right:by_button":
+			return ["right_by_button"]
+		"left:trigger_click":
+			return ["left_trigger_click"]
+		"right:trigger_click":
+			return ["right_trigger_click"]
+		_:
+			return []
 
 
 func _setup_hand_feedback_materials() -> void:
@@ -164,19 +207,28 @@ func _setup_hand_feedback_materials() -> void:
 	_debug_brown_material.albedo_color = Color(0.45, 0.26, 0.08, 1.0)
 	_debug_black_material = StandardMaterial3D.new()
 	_debug_black_material.albedo_color = Color(0.0, 0.0, 0.0, 1.0)
-	left_hand_mesh.material_override = _left_hand_idle_material
-	right_hand_mesh.material_override = _right_hand_idle_material
-	desktop_left_marker.material_override = _left_hand_idle_material
-	desktop_right_marker.material_override = _right_hand_idle_material
+	_set_marker_material(left_hand_mesh, _left_hand_idle_material)
+	_set_marker_material(right_hand_mesh, _right_hand_idle_material)
+	_set_marker_material(desktop_left_marker, _left_hand_idle_material)
+	_set_marker_material(desktop_right_marker, _right_hand_idle_material)
 
 
 func _update_hand_button_feedback() -> void:
 	var left_active: bool = _control_button_pressed("left_trigger_click")
 	var right_active: bool = _control_button_pressed("right_trigger_click")
-	left_hand_mesh.material_override = _hand_active_material if left_active else _left_hand_idle_material
-	right_hand_mesh.material_override = _right_debug_material if _right_debug_material != null else (_hand_active_material if right_active else _right_hand_idle_material)
-	desktop_left_marker.material_override = _hand_active_material if left_active else _left_hand_idle_material
-	desktop_right_marker.material_override = _right_debug_material if _right_debug_material != null else (_hand_active_material if right_active else _right_hand_idle_material)
+	var left_material: StandardMaterial3D = _hand_active_material if left_active else _left_hand_idle_material
+	var right_material: StandardMaterial3D = _right_debug_material if _right_debug_material != null else (_hand_active_material if right_active else _right_hand_idle_material)
+	_set_marker_material(left_hand_mesh, left_material)
+	_set_marker_material(right_hand_mesh, right_material)
+	_set_marker_material(desktop_left_marker, left_material)
+	_set_marker_material(desktop_right_marker, right_material)
+
+
+func _set_marker_material(node: Node, material: Material) -> void:
+	if node is MeshInstance3D:
+		(node as MeshInstance3D).material_override = material
+	for child in node.get_children():
+		_set_marker_material(child, material)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -268,6 +320,8 @@ func _process_xr_locomotion(delta: float) -> void:
 		right = right.normalized()
 
 	var grip_pressed: bool = left_hand.is_button_pressed("grip_click")
+	if not grip_pressed:
+		grip_pressed = _controller_float_pressed(left_hand, "grip")
 	if absf(stick.x) >= xr_stick_deadzone:
 		if grip_pressed:
 			xr_origin.global_position += right * (stick.x * xr_move_speed * delta)
@@ -310,10 +364,12 @@ func _process_ar_vr_toggle() -> void:
 func _switch_to_ar() -> bool:
 	var xr_interface: XRInterface = XRServer.primary_interface
 	if xr_interface == null:
+		push_warning("No se puede activar AR: no hay interfaz XR primaria.")
 		return false
 
 	if xr_interface.is_passthrough_supported():
 		if not xr_interface.start_passthrough():
+			push_warning("No se puede activar AR: start_passthrough() fallo.")
 			return false
 	else:
 		var modes: PackedInt32Array = xr_interface.get_supported_environment_blend_modes()
@@ -322,6 +378,7 @@ func _switch_to_ar() -> bool:
 		elif XRInterface.XR_ENV_BLEND_MODE_ADDITIVE in modes:
 			xr_interface.environment_blend_mode = XRInterface.XR_ENV_BLEND_MODE_ADDITIVE
 		else:
+			push_warning("No se puede activar AR: el runtime OpenXR no expone passthrough ni blend mode transparente.")
 			return false
 
 	get_viewport().transparent_bg = true
@@ -365,9 +422,21 @@ func _spawn_gallery() -> void:
 	_mqtt_topic_handlers.clear()
 	_enable_control_debug_visuals = false
 	var model_paths: Array[String] = []
-	_collect_model_paths(models_dir, model_paths)
-	model_paths.sort()
-	model_paths = _unique_paths(model_paths)
+	if _is_web_export():
+		_collect_model_paths_from_overrides(model_paths)
+	else:
+		_collect_model_paths(models_dir, model_paths)
+		if model_paths.is_empty():
+			_collect_model_paths_from_overrides(model_paths)
+
+	if model_paths.is_empty():
+		var banco_ifu_path := "%s/BancoIFU.glb" % models_dir
+		if _model_resource_exists(banco_ifu_path):
+			model_paths.append(banco_ifu_path)
+
+	if not model_paths.is_empty():
+		model_paths.sort()
+		model_paths = _unique_paths(model_paths)
 
 	if model_paths.is_empty():
 		push_warning("No se encontraron modelos en %s" % models_dir)
@@ -398,6 +467,7 @@ func _spawn_gallery() -> void:
 
 		if instance == null:
 			push_warning("No se pudo instanciar: %s" % model_path)
+			slot.add_child(_make_missing_model_marker())
 			if _show_cookie_for_override(override):
 				slot.add_child(_make_shadow_cookie(null))
 			continue
@@ -427,6 +497,9 @@ func _spawn_gallery() -> void:
 		if _show_cookie_for_override(override):
 			slot.add_child(_make_shadow_cookie(instance))
 
+	if desktop_preview_enabled and not _xr_active:
+		_frame_desktop_preview_on_gallery()
+
 
 func _collect_model_paths(base_dir: String, out_paths: Array[String]) -> void:
 	var dir := DirAccess.open(base_dir)
@@ -455,6 +528,18 @@ func _collect_model_paths(base_dir: String, out_paths: Array[String]) -> void:
 				if _is_supported_model_extension(source_ext):
 					out_paths.append("%s/%s" % [base_dir, source_name])
 	dir.list_dir_end()
+
+
+func _collect_model_paths_from_overrides(out_paths: Array[String]) -> void:
+	for model_name in _model_overrides.keys():
+		var model_path := "%s/%s" % [models_dir, str(model_name)]
+		if _model_resource_exists(model_path):
+			out_paths.append(model_path)
+
+
+func _model_resource_exists(path: String) -> bool:
+	var resolved_path: String = _resolve_scene_override_path(path)
+	return ResourceLoader.exists(resolved_path) or FileAccess.file_exists(path)
 
 
 func _is_supported_model_extension(ext: String) -> bool:
@@ -563,12 +648,60 @@ func _make_shadow_cookie(model_root: Node3D) -> MeshInstance3D:
 	return cookie
 
 
+func _make_missing_model_marker() -> MeshInstance3D:
+	var marker := MeshInstance3D.new()
+	var mesh := BoxMesh.new()
+	mesh.size = Vector3(0.4, 0.4, 0.4)
+	marker.mesh = mesh
+
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = Color(1.0, 0.0, 1.0, 1.0)
+	mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+	marker.material_override = mat
+	marker.position = Vector3(0.0, 1.0, 0.0)
+	return marker
+
+
 func _grid_position(index: int, total_items: int) -> Vector3:
 	var safe_columns: int = maxi(mini(columns, maxi(total_items, 1)), 1)
 	var col: int = index % safe_columns
 	var row: int = index / safe_columns
 	var centered_x: float = (float(col) - (float(safe_columns - 1) * 0.5)) * spacing_x
 	return gallery_origin + Vector3(centered_x, 0.0, float(row) * spacing_z)
+
+
+func _frame_desktop_preview_on_gallery() -> void:
+	var bounds: AABB = _compute_global_aabb(gallery_root)
+	if bounds.size == Vector3.ZERO:
+		return
+
+	var center: Vector3 = bounds.get_center()
+	var max_size: float = maxf(bounds.size.x, maxf(bounds.size.y, bounds.size.z))
+	var distance: float = maxf(3.0, max_size * 1.8)
+	var height_offset: float = maxf(0.6, bounds.size.y * 0.25)
+	desktop_preview.global_position = center + Vector3(0.0, height_offset, distance)
+	desktop_preview.look_at(center, Vector3.UP)
+	_desktop_pitch_degrees = 0.0
+	desktop_camera.rotation_degrees.x = 0.0
+
+
+func _compute_global_aabb(root: Node3D) -> AABB:
+	var meshes: Array[MeshInstance3D] = []
+	_collect_mesh_instances(root, meshes)
+
+	var has_bounds: bool = false
+	var bounds := AABB()
+	for mesh_instance in meshes:
+		if mesh_instance.mesh == null or not mesh_instance.is_visible_in_tree():
+			continue
+		var transformed: AABB = _transform_aabb(mesh_instance.get_aabb(), mesh_instance.global_transform)
+		if not has_bounds:
+			bounds = transformed
+			has_bounds = true
+		else:
+			bounds = bounds.merge(transformed)
+
+	return bounds if has_bounds else AABB()
 
 
 func _clear_children(node: Node) -> void:
@@ -1386,8 +1519,9 @@ func _process_filtered_views() -> void:
 		var filtered_view: Dictionary = _active_filtered_views[i]
 		var button_name: String = str(filtered_view["button"])
 		var pressed: bool = _control_button_pressed(button_name)
+		var just_pressed: bool = bool(_button_press_events.get(button_name, false))
 		var was_pressed: bool = bool(filtered_view.get("was_pressed", false))
-		if pressed and not was_pressed:
+		if just_pressed or (pressed and not was_pressed):
 			filtered_view["active"] = not bool(filtered_view.get("active", false))
 			_apply_filtered_view_visibility(filtered_view)
 		filtered_view["was_pressed"] = pressed
@@ -1613,23 +1747,34 @@ func _control_button_pressed(binding: String) -> bool:
 		"right_stick_click":
 			return right_hand.is_button_pressed("primary_click")
 		"left_by_button":
-			return left_hand.is_button_pressed("by_button")
+			return _controller_button_pressed(left_hand, ["by_button"])
 		"right_by_button":
-			return right_hand.is_button_pressed("by_button")
+			return _controller_button_pressed(right_hand, ["by_button"])
 		"left_ax_button":
-			return left_hand.is_button_pressed("ax_button")
+			return _controller_button_pressed(left_hand, ["ax_button"])
 		"right_ax_button":
-			return right_hand.is_button_pressed("ax_button")
+			return _controller_button_pressed(right_hand, ["ax_button"])
 		"left_trigger_click":
-			return left_hand.is_button_pressed("trigger_click")
+			return _controller_button_pressed(left_hand, ["trigger_click", "select_button"]) or _controller_float_pressed(left_hand, "trigger")
 		"right_trigger_click":
-			return right_hand.is_button_pressed("trigger_click")
+			return _controller_button_pressed(right_hand, ["trigger_click", "select_button"]) or _controller_float_pressed(right_hand, "trigger")
 		"left_secondary_click":
 			return left_hand.is_button_pressed("secondary_click")
 		"right_secondary_click":
 			return right_hand.is_button_pressed("secondary_click")
 		_:
 			return false
+
+
+func _controller_button_pressed(controller: XRController3D, names: Array[String]) -> bool:
+	for name in names:
+		if controller.is_button_pressed(name):
+			return true
+	return false
+
+
+func _controller_float_pressed(controller: XRController3D, name: String) -> bool:
+	return controller.get_float(name) >= XR_ANALOG_BUTTON_THRESHOLD
 
 
 func _desktop_control_input_value(binding: String) -> float:

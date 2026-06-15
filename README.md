@@ -215,7 +215,7 @@ Topics:
 
 ## Nota VR
 
-Para exportar a Android (Pico/Quest), reutiliza el flujo de SDK/JDK ya validado en el otro proyecto:
+Para exportar a Android (Pico/Quest/Vive XR Elite), reutiliza el flujo de SDK/JDK ya validado en el otro proyecto:
 - SDK: `/home/txinto/Android/Sdk`
 - JDK: `/opt/android-studio/jbr`
 - referencia oficial de Godot para export Android: https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_android.html
@@ -257,6 +257,16 @@ Locomocion XR actual:
 - stick derecho: reservado para controles de subarboles definidos en `models.yaml`
 - `Y` izquierdo (`left_by_button`): alterna entre AR y VR
 - en AR desaparece el suelo, pero no las peanas
+
+Presets Android disponibles:
+- `VR_ObjectGallery`: Pico, usa el loader OpenXR Pico.
+- `Meta Quest 3`: Quest 3, usa el loader OpenXR Meta.
+- `HTC Vive XR Elite`: Vive XR Elite, usa el loader OpenXR Khronos.
+
+Despliegue USB por visor:
+- Pico: `./deploy_pico.sh`
+- Meta Quest: `./deploy_meta.sh`
+- HTC Vive XR Elite: `./deploy_vive.sh`
 
 ## Preview en Linux
 
@@ -307,3 +317,18 @@ Prerequisitos:
 - APK esperado: `./VR_ObjectGallery_MetaQuest3.apk`
 - despliegue: `./deploy_meta.sh`
 - mismos prerequisitos de `adb` y depuracion USB que en Pico
+
+## Export Web
+
+- preset de exportacion: `Web`
+- salida esperada: `./web/index.html`
+- exportacion por terminal: `./export_web.sh`
+- servidor local de prueba: `./serve_web.sh` y abrir `http://localhost:8000`
+
+El export Web genera los ficheros `.html`, `.js`, `.wasm` y `.pck` en `web/`. Si se quiere integrar en React, exporta el mismo preset directamente a una carpeta tipo `public/simulator/index.html`.
+
+Notas:
+- En navegador se usa el modo preview de escritorio, no OpenXR nativo.
+- El preset Web excluye `models/mqtt.yaml`, `addons/godotopenxrvendors/`, `web/` y `backup/` para no publicar credenciales, loaders nativos ni artefactos de exportacion dentro del `.pck`.
+- El export Web debe servirse desde HTTP/HTTPS; abrir el HTML con `file://` puede fallar al cargar WASM/PCK.
+- Si se activa `Use Threads` en el preset Web, el servidor debe enviar `Cross-Origin-Opener-Policy: same-origin` y `Cross-Origin-Embedder-Policy: require-corp`.

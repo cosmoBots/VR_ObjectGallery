@@ -21,8 +21,11 @@ size = Vector2(20, 20)
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_hand"]
 albedo_color = Color(0.2, 0.8, 0.95, 1)
 
-[sub_resource type="BoxMesh" id="BoxMesh_hand"]
-size = Vector3(0.02, 0.25, 0.02)
+[sub_resource type="BoxMesh" id="BoxMesh_hand_grip"]
+size = Vector3(0.06, 0.05, 0.07)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hand_pointer"]
+size = Vector3(0.01, 0.3, 0.01)
 
 [node name="Main" type="Node3D" unique_id=2075797965]
 script = ExtResource("1_main")
@@ -51,9 +54,14 @@ tracker = &"left_hand"
 pose = &"aim"
 
 [node name="LeftHandMesh" type="MeshInstance3D" parent="XROrigin3D/LeftHand" unique_id=858622846]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, -0.2)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, -0.04)
 material_override = SubResource("StandardMaterial3D_hand")
-mesh = SubResource("BoxMesh_hand")
+mesh = SubResource("BoxMesh_hand_grip")
+
+[node name="LeftHandPointer" type="MeshInstance3D" parent="XROrigin3D/LeftHand/LeftHandMesh" unique_id=858622847]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0)
+material_override = SubResource("StandardMaterial3D_hand")
+mesh = SubResource("BoxMesh_hand_pointer")
 
 [node name="RightHand" type="XRController3D" parent="XROrigin3D" unique_id=1842962176]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 1.45, -0.35)
@@ -61,9 +69,14 @@ tracker = &"right_hand"
 pose = &"aim"
 
 [node name="RightHandMesh" type="MeshInstance3D" parent="XROrigin3D/RightHand" unique_id=1616859846]
-transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, -0.2)
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, 1, 0, -1, -4.371139e-08, 0, 0, -0.04)
 material_override = SubResource("StandardMaterial3D_hand")
-mesh = SubResource("BoxMesh_hand")
+mesh = SubResource("BoxMesh_hand_grip")
+
+[node name="RightHandPointer" type="MeshInstance3D" parent="XROrigin3D/RightHand/RightHandMesh" unique_id=1616859847]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0)
+material_override = SubResource("StandardMaterial3D_hand")
+mesh = SubResource("BoxMesh_hand_pointer")
 
 [node name="GalleryRoot" type="Node3D" parent="." unique_id=1190689613]
 
@@ -74,8 +87,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6, 2.5)
 
 [node name="DesktopLeftMarker" type="MeshInstance3D" parent="DesktopPreview" unique_id=541003]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, -0.1, -0.7)
-mesh = SubResource("BoxMesh_hand")
+mesh = SubResource("BoxMesh_hand_grip")
+
+[node name="DesktopLeftPointer" type="MeshInstance3D" parent="DesktopPreview/DesktopLeftMarker" unique_id=541005]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0)
+mesh = SubResource("BoxMesh_hand_pointer")
 
 [node name="DesktopRightMarker" type="MeshInstance3D" parent="DesktopPreview" unique_id=541004]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, -0.1, -0.7)
-mesh = SubResource("BoxMesh_hand")
+mesh = SubResource("BoxMesh_hand_grip")
+
+[node name="DesktopRightPointer" type="MeshInstance3D" parent="DesktopPreview/DesktopRightMarker" unique_id=541006]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.175, 0)
+mesh = SubResource("BoxMesh_hand_pointer")

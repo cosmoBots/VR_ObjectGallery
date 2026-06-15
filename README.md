@@ -215,7 +215,7 @@ Topics:
 
 ## Nota VR
 
-Para exportar a Android (Pico/Quest), reutiliza el flujo de SDK/JDK ya validado en el otro proyecto:
+Para exportar a Android (Pico/Quest/Vive XR Elite), reutiliza el flujo de SDK/JDK ya validado en el otro proyecto:
 - SDK: `/home/txinto/Android/Sdk`
 - JDK: `/opt/android-studio/jbr`
 - referencia oficial de Godot para export Android: https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_android.html
@@ -257,6 +257,16 @@ Locomocion XR actual:
 - stick derecho: reservado para controles de subarboles definidos en `models.yaml`
 - `Y` izquierdo (`left_by_button`): alterna entre AR y VR
 - en AR desaparece el suelo, pero no las peanas
+
+Presets Android disponibles:
+- `VR_ObjectGallery`: Pico, usa el loader OpenXR Pico.
+- `Meta Quest 3`: Quest 3, usa el loader OpenXR Meta.
+- `HTC Vive XR Elite`: Vive XR Elite, usa el loader OpenXR Khronos.
+
+Despliegue USB por visor:
+- Pico: `./deploy_pico.sh`
+- Meta Quest: `./deploy_meta.sh`
+- HTC Vive XR Elite: `./deploy_vive.sh`
 
 ## Preview en Linux
 

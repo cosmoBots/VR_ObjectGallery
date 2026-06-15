@@ -35,4 +35,5 @@ textures/vram_compression/import_etc2_astc=true
 openxr/enabled=false
 openxr/enabled.android=true
 openxr/enabled.linux_xr=true
+openxr/default_action_map="res://openxr_action_map.tres"
 shaders/enabled=true

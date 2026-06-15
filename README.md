@@ -267,6 +267,7 @@ Despliegue USB por visor:
 - Pico: `./deploy_pico.sh`
 - Meta Quest: `./deploy_meta.sh`
 - HTC Vive XR Elite: `./deploy_vive.sh`
+- Build limpio + despliegue debug, por defecto Vive: `./clean_build_deploy.sh`
 
 ## Preview en Linux
 

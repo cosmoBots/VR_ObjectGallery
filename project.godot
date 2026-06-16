@@ -32,7 +32,6 @@ textures/vram_compression/import_etc2_astc=true
 
 [xr]
 
-openxr/enabled=false
+shaders/enabled=true
 openxr/enabled.android=true
 openxr/enabled.linux_xr=true
-shaders/enabled=true

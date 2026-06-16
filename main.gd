@@ -4,6 +4,19 @@ const MqttClientScript = preload("res://mqtt_client.gd")
 const MQTT_STATUS_CONNECTING := 0
 const MQTT_NORMALIZED_DISPLAY_DECIMALS := 4
 const XR_ANALOG_BUTTON_THRESHOLD := 0.55
+const XR_DEBUG_BUTTON_NAMES := [
+	"ax_button",
+	"ax_touch",
+	"by_button",
+	"by_touch",
+	"primary_click",
+	"secondary_click",
+	"trigger_click",
+	"select_button",
+	"grip_click",
+]
+const XR_DEBUG_FLOAT_NAMES := ["trigger", "grip"]
+const XR_DEBUG_VECTOR_NAMES := ["primary", "secondary"]
 
 @export_dir var models_dir: String = "res://models"
 @export_file("*.yaml") var model_overrides_file: String = "res://models/models.yaml"
@@ -66,6 +79,9 @@ var _mqtt_config: Dictionary = {}
 var _mqtt_client = null
 var _mqtt_topic_handlers: Dictionary = {}
 var _mqtt_reconnect_timer: float = 0.0
+var _xr_debug_button_states: Dictionary = {}
+var _xr_debug_float_states: Dictionary = {}
+var _xr_debug_vector_states: Dictionary = {}
 
 
 func _default_model_override() -> Dictionary:
@@ -104,6 +120,10 @@ func _is_web_export() -> bool:
 
 func _should_enable_xr() -> bool:
 	return OS.has_feature("android") or OS.has_feature("linux_xr")
+
+
+func _is_vive_xr_export() -> bool:
+	return OS.has_feature("vive_xr")
 
 
 func _enable_xr_if_available() -> bool:
@@ -151,47 +171,30 @@ func _configure_preview_mode() -> void:
 func _connect_controller_signals() -> void:
 	if not left_hand.button_pressed.is_connected(_on_left_controller_button_pressed):
 		left_hand.button_pressed.connect(_on_left_controller_button_pressed)
+	if not left_hand.button_released.is_connected(_on_left_controller_button_released):
+		left_hand.button_released.connect(_on_left_controller_button_released)
 	if not right_hand.button_pressed.is_connected(_on_right_controller_button_pressed):
 		right_hand.button_pressed.connect(_on_right_controller_button_pressed)
+	if not right_hand.button_released.is_connected(_on_right_controller_button_released):
+		right_hand.button_released.connect(_on_right_controller_button_released)
 
 
 func _on_left_controller_button_pressed(name: String) -> void:
-	_register_controller_button_press("left", name)
+	_button_press_events[name] = true
+	print("XRDBG left button_pressed ", name)
+
+
+func _on_left_controller_button_released(name: String) -> void:
+	print("XRDBG left button_released ", name)
 
 
 func _on_right_controller_button_pressed(name: String) -> void:
-	_register_controller_button_press("right", name)
-
-
-func _register_controller_button_press(hand: String, name: String) -> void:
 	_button_press_events[name] = true
-	_button_press_events["%s:%s" % [hand, name]] = true
-
-	var logical_names: Array[String] = _logical_button_names_for_event(hand, name)
-	for logical_name in logical_names:
-		_button_press_events[logical_name] = true
+	print("XRDBG right button_pressed ", name)
 
 
-func _logical_button_names_for_event(hand: String, name: String) -> Array[String]:
-	match "%s:%s" % [hand, name]:
-		"left:primary_click":
-			return ["left_stick_click"]
-		"right:primary_click":
-			return ["right_stick_click"]
-		"left:ax_button":
-			return ["left_ax_button"]
-		"right:ax_button":
-			return ["right_ax_button"]
-		"left:by_button":
-			return ["left_by_button"]
-		"right:by_button":
-			return ["right_by_button"]
-		"left:trigger_click":
-			return ["left_trigger_click"]
-		"right:trigger_click":
-			return ["right_trigger_click"]
-		_:
-			return []
+func _on_right_controller_button_released(name: String) -> void:
+	print("XRDBG right button_released ", name)
 
 
 func _setup_hand_feedback_materials() -> void:
@@ -260,6 +263,7 @@ func _process(delta: float) -> void:
 	_process_mqtt(delta)
 	if _xr_active or desktop_stick_simulation_enabled:
 		if _xr_active:
+			_debug_poll_xr_inputs()
 			_process_ar_vr_toggle()
 			_process_xr_locomotion(delta)
 		_process_filtered_views()
@@ -342,6 +346,36 @@ func _rotate_xr_origin_around_camera(angle_radians: float) -> void:
 	xr_origin.rotate_y(angle_radians)
 
 
+func _debug_poll_xr_inputs() -> void:
+	_debug_poll_controller_inputs("left", left_hand)
+	_debug_poll_controller_inputs("right", right_hand)
+
+
+func _debug_poll_controller_inputs(hand_name: String, controller: XRController3D) -> void:
+	for button_name: String in XR_DEBUG_BUTTON_NAMES:
+		var state_key: String = "%s.button.%s" % [hand_name, button_name]
+		var pressed: bool = controller.is_button_pressed(button_name)
+		if not _xr_debug_button_states.has(state_key) or bool(_xr_debug_button_states[state_key]) != pressed:
+			_xr_debug_button_states[state_key] = pressed
+			print("XRDBG ", hand_name, " poll_button ", button_name, "=", pressed)
+
+	for float_name: String in XR_DEBUG_FLOAT_NAMES:
+		var state_key: String = "%s.float.%s" % [hand_name, float_name]
+		var value: float = controller.get_float(float_name)
+		var previous: float = float(_xr_debug_float_states.get(state_key, INF))
+		if is_inf(previous) or absf(previous - value) >= 0.05:
+			_xr_debug_float_states[state_key] = value
+			print("XRDBG ", hand_name, " poll_float ", float_name, "=", value)
+
+	for vector_name: String in XR_DEBUG_VECTOR_NAMES:
+		var state_key: String = "%s.vector.%s" % [hand_name, vector_name]
+		var value: Vector2 = controller.get_vector2(vector_name)
+		var previous: Variant = _xr_debug_vector_states.get(state_key, null)
+		if previous == null or (previous as Vector2).distance_to(value) >= 0.05:
+			_xr_debug_vector_states[state_key] = value
+			print("XRDBG ", hand_name, " poll_vector ", vector_name, "=", value)
+
+
 func _apply_initial_xr_mode() -> void:
 	if not _xr_active:
 		return
@@ -353,6 +387,8 @@ func _apply_initial_xr_mode() -> void:
 
 func _process_ar_vr_toggle() -> void:
 	var toggle_pressed: bool = _control_button_pressed("left_by_button")
+	if _is_vive_xr_export():
+		toggle_pressed = toggle_pressed or _controller_trigger_pressed(right_hand)
 	if toggle_pressed and not _toggle_ar_button_previous:
 		if _is_ar_mode:
 			_switch_to_vr()
@@ -1519,9 +1555,8 @@ func _process_filtered_views() -> void:
 		var filtered_view: Dictionary = _active_filtered_views[i]
 		var button_name: String = str(filtered_view["button"])
 		var pressed: bool = _control_button_pressed(button_name)
-		var just_pressed: bool = bool(_button_press_events.get(button_name, false))
 		var was_pressed: bool = bool(filtered_view.get("was_pressed", false))
-		if just_pressed or (pressed and not was_pressed):
+		if pressed and not was_pressed:
 			filtered_view["active"] = not bool(filtered_view.get("active", false))
 			_apply_filtered_view_visibility(filtered_view)
 		filtered_view["was_pressed"] = pressed
@@ -1747,17 +1782,17 @@ func _control_button_pressed(binding: String) -> bool:
 		"right_stick_click":
 			return right_hand.is_button_pressed("primary_click")
 		"left_by_button":
-			return _controller_button_pressed(left_hand, ["by_button"])
+			return _controller_button_pressed(left_hand, ["by_button", "by_touch"])
 		"right_by_button":
-			return _controller_button_pressed(right_hand, ["by_button"])
+			return _controller_button_pressed(right_hand, ["by_button", "by_touch"])
 		"left_ax_button":
-			return _controller_button_pressed(left_hand, ["ax_button"])
+			return _controller_button_pressed(left_hand, ["ax_button", "ax_touch"]) or (_is_vive_xr_export() and _controller_button_pressed(left_hand, ["select_button"]))
 		"right_ax_button":
-			return _controller_button_pressed(right_hand, ["ax_button"])
+			return _controller_button_pressed(right_hand, ["ax_button", "ax_touch"])
 		"left_trigger_click":
-			return _controller_button_pressed(left_hand, ["trigger_click", "select_button"]) or _controller_float_pressed(left_hand, "trigger")
+			return _controller_trigger_pressed(left_hand)
 		"right_trigger_click":
-			return _controller_button_pressed(right_hand, ["trigger_click", "select_button"]) or _controller_float_pressed(right_hand, "trigger")
+			return _controller_trigger_pressed(right_hand)
 		"left_secondary_click":
 			return left_hand.is_button_pressed("secondary_click")
 		"right_secondary_click":
@@ -1771,6 +1806,10 @@ func _controller_button_pressed(controller: XRController3D, names: Array[String]
 		if controller.is_button_pressed(name):
 			return true
 	return false
+
+
+func _controller_trigger_pressed(controller: XRController3D) -> bool:
+	return _controller_button_pressed(controller, ["trigger_click"]) or _controller_float_pressed(controller, "trigger")
 
 
 func _controller_float_pressed(controller: XRController3D, name: String) -> bool:

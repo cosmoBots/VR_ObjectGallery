@@ -118,6 +118,10 @@ func _is_web_export() -> bool:
 	return OS.get_name() == "Web" or OS.has_feature("web")
 
 
+func _is_linux_desktop() -> bool:
+	return OS.get_name() == "Linux" and not OS.has_feature("android") and not OS.has_feature("web")
+
+
 func _should_enable_xr() -> bool:
 	return OS.has_feature("android") or OS.has_feature("linux_xr")
 
@@ -160,6 +164,9 @@ func _configure_preview_mode() -> void:
 	desktop_preview.visible = use_desktop_preview
 	desktop_camera.current = use_desktop_preview
 	xr_origin.visible = _xr_active
+	var show_desktop_hand_markers: bool = use_desktop_preview and not _is_linux_desktop()
+	desktop_left_marker.visible = show_desktop_hand_markers
+	desktop_right_marker.visible = show_desktop_hand_markers
 
 	if use_desktop_preview:
 		desktop_preview.rotation_degrees.x = 0.0
@@ -533,9 +540,6 @@ func _spawn_gallery() -> void:
 		if _show_cookie_for_override(override):
 			slot.add_child(_make_shadow_cookie(instance))
 
-	if desktop_preview_enabled and not _xr_active:
-		_frame_desktop_preview_on_gallery()
-
 
 func _collect_model_paths(base_dir: String, out_paths: Array[String]) -> void:
 	var dir := DirAccess.open(base_dir)
@@ -704,40 +708,6 @@ func _grid_position(index: int, total_items: int) -> Vector3:
 	var row: int = index / safe_columns
 	var centered_x: float = (float(col) - (float(safe_columns - 1) * 0.5)) * spacing_x
 	return gallery_origin + Vector3(centered_x, 0.0, float(row) * spacing_z)
-
-
-func _frame_desktop_preview_on_gallery() -> void:
-	var bounds: AABB = _compute_global_aabb(gallery_root)
-	if bounds.size == Vector3.ZERO:
-		return
-
-	var center: Vector3 = bounds.get_center()
-	var max_size: float = maxf(bounds.size.x, maxf(bounds.size.y, bounds.size.z))
-	var distance: float = maxf(3.0, max_size * 1.8)
-	var height_offset: float = maxf(0.6, bounds.size.y * 0.25)
-	desktop_preview.global_position = center + Vector3(0.0, height_offset, distance)
-	desktop_preview.look_at(center, Vector3.UP)
-	_desktop_pitch_degrees = 0.0
-	desktop_camera.rotation_degrees.x = 0.0
-
-
-func _compute_global_aabb(root: Node3D) -> AABB:
-	var meshes: Array[MeshInstance3D] = []
-	_collect_mesh_instances(root, meshes)
-
-	var has_bounds: bool = false
-	var bounds := AABB()
-	for mesh_instance in meshes:
-		if mesh_instance.mesh == null or not mesh_instance.is_visible_in_tree():
-			continue
-		var transformed: AABB = _transform_aabb(mesh_instance.get_aabb(), mesh_instance.global_transform)
-		if not has_bounds:
-			bounds = transformed
-			has_bounds = true
-		else:
-			bounds = bounds.merge(transformed)
-
-	return bounds if has_bounds else AABB()
 
 
 func _clear_children(node: Node) -> void:

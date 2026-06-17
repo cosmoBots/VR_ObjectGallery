@@ -34,7 +34,9 @@ const XR_DEBUG_VECTOR_NAMES := ["primary", "secondary"]
 @export var cookie_margin: float = 0.05
 @export_range(0.5, 2.0, 0.05) var xr_render_target_size_multiplier: float = 1.3
 @export var start_in_ar: bool = true
+@export var disable_ar: bool = false
 @export var xr_move_speed: float = 1.5
+@export var xr_vertical_move_speed: float = 1.0
 @export var xr_turn_speed_degrees: float = 90.0
 @export var xr_stick_deadzone: float = 0.15
 @export var desktop_preview_enabled: bool = true
@@ -75,6 +77,8 @@ var _right_debug_material: StandardMaterial3D = null
 var _enable_control_debug_visuals: bool = false
 var _is_ar_mode: bool = false
 var _toggle_ar_button_previous: bool = false
+var _initial_xr_origin_height: float = 0.0
+var _left_stick_click_previous: bool = false
 var _mqtt_config: Dictionary = {}
 var _mqtt_client = null
 var _mqtt_topic_handlers: Dictionary = {}
@@ -102,16 +106,18 @@ func _default_model_override() -> Dictionary:
 
 
 func _ready() -> void:
+	_initial_xr_origin_height = xr_origin.global_position.y
 	_xr_active = _enable_xr_if_available()
-	call_deferred("_late_xr_setup")
 	_connect_controller_signals()
 	_setup_hand_feedback_materials()
 	_model_overrides = _load_model_overrides(model_overrides_file)
+	_apply_gallery_config(_load_gallery_config(model_overrides_file))
 	_validate_model_overrides(_model_overrides)
 	_mqtt_config = _load_mqtt_config(mqtt_config_file)
 	_configure_preview_mode()
 	_spawn_gallery()
 	_setup_mqtt()
+	call_deferred("_late_xr_setup")
 
 
 func _is_web_export() -> bool:
@@ -188,6 +194,8 @@ func _connect_controller_signals() -> void:
 
 func _on_left_controller_button_pressed(name: String) -> void:
 	_button_press_events[name] = true
+	if name == "primary_click":
+		_button_press_events["left_stick_click"] = true
 	print("XRDBG left button_pressed ", name)
 
 
@@ -197,6 +205,8 @@ func _on_left_controller_button_released(name: String) -> void:
 
 func _on_right_controller_button_pressed(name: String) -> void:
 	_button_press_events[name] = true
+	if name == "primary_click":
+		_button_press_events["right_stick_click"] = true
 	print("XRDBG right button_pressed ", name)
 
 
@@ -316,7 +326,7 @@ func _process(delta: float) -> void:
 
 func _process_xr_locomotion(delta: float) -> void:
 	var stick: Vector2 = left_hand.get_vector2("primary")
-	if stick.length() < xr_stick_deadzone:
+	if _process_xr_height_reset():
 		return
 
 	var camera_basis: Basis = xr_camera.global_transform.basis
@@ -333,15 +343,30 @@ func _process_xr_locomotion(delta: float) -> void:
 	var grip_pressed: bool = left_hand.is_button_pressed("grip_click")
 	if not grip_pressed:
 		grip_pressed = _controller_float_pressed(left_hand, "grip")
+
+	if grip_pressed and absf(stick.y) >= xr_stick_deadzone:
+		xr_origin.global_position.y += stick.y * xr_vertical_move_speed * delta
+	elif absf(stick.y) >= xr_stick_deadzone:
+		if forward.length_squared() > 0.0001:
+			xr_origin.global_position += forward * (stick.y * xr_move_speed * delta)
+
 	if absf(stick.x) >= xr_stick_deadzone:
 		if grip_pressed:
 			xr_origin.global_position += right * (stick.x * xr_move_speed * delta)
 		else:
 			_rotate_xr_origin_around_camera(-stick.x * deg_to_rad(xr_turn_speed_degrees) * delta)
 
-	if absf(stick.y) >= xr_stick_deadzone:
-		if forward.length_squared() > 0.0001:
-			xr_origin.global_position += forward * (stick.y * xr_move_speed * delta)
+
+func _process_xr_height_reset() -> bool:
+	var reset_binding := "left_stick_click"
+	var left_stick_click: bool = _control_button_pressed(reset_binding)
+	var reset_now: bool = (left_stick_click and not _left_stick_click_previous) or bool(_button_press_events.get(reset_binding, false))
+	if reset_now:
+		xr_origin.global_position.y = _initial_xr_origin_height
+		_left_stick_click_previous = left_stick_click
+		return true
+	_left_stick_click_previous = left_stick_click
+	return false
 
 
 func _rotate_xr_origin_around_camera(angle_radians: float) -> void:
@@ -386,7 +411,7 @@ func _debug_poll_controller_inputs(hand_name: String, controller: XRController3D
 func _apply_initial_xr_mode() -> void:
 	if not _xr_active:
 		return
-	if start_in_ar:
+	if start_in_ar and not disable_ar:
 		_switch_to_ar()
 	else:
 		_switch_to_vr()
@@ -405,6 +430,11 @@ func _process_ar_vr_toggle() -> void:
 
 
 func _switch_to_ar() -> bool:
+	if disable_ar:
+		if _is_ar_mode:
+			_switch_to_vr()
+		return false
+
 	var xr_interface: XRInterface = XRServer.primary_interface
 	if xr_interface == null:
 		push_warning("No se puede activar AR: no hay interfaz XR primaria.")
@@ -973,6 +1003,42 @@ func _load_model_overrides(path: String) -> Dictionary:
 			current_filtered_view = ""
 
 	return overrides
+
+
+func _load_gallery_config(path: String) -> Dictionary:
+	if path.is_empty() or not FileAccess.file_exists(path):
+		return {}
+
+	var file := FileAccess.open(path, FileAccess.READ)
+	if file == null:
+		push_warning("No se pudo abrir YAML de modelos: %s" % path)
+		return {}
+
+	var config: Dictionary = {}
+	while not file.eof_reached():
+		var raw_line: String = _normalize_yaml_line(file.get_line())
+		var line: String = raw_line.split("#", true, 1)[0].rstrip("\r\n\t ")
+		if line.is_empty():
+			continue
+		if line.begins_with(" "):
+			continue
+		if line == "models:":
+			continue
+
+		var sep: int = line.find(":")
+		if sep == -1:
+			continue
+		var key: String = line.substr(0, sep).strip_edges()
+		var value_text: String = line.substr(sep + 1).strip_edges()
+		config[key] = _parse_yaml_scalar(value_text)
+	return config
+
+
+func _apply_gallery_config(config: Dictionary) -> void:
+	if config.has("default_ar"):
+		start_in_ar = bool(config["default_ar"])
+	if config.has("disable_ar"):
+		disable_ar = bool(config["disable_ar"])
 
 
 func _load_mqtt_config(path: String) -> Dictionary:

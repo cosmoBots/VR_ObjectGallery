@@ -41,8 +41,9 @@ En el nodo raiz `Main` (script `main.gd`):
 - `default_target_model_height`: altura usada por `fit_height` si el YAML no define otra.
 - `gallery_origin`: origen de la cuadricula.
 - `xr_render_target_size_multiplier`: escala de resolucion XR en Pico/OpenXR.
-- `start_in_ar`: arranca en passthrough/AR por defecto si esta soportado.
-- `xr_move_speed`, `xr_turn_speed_degrees`, `xr_stick_deadzone`: locomocion XR con stick izquierdo.
+- `start_in_ar`: arranque en passthrough/AR por defecto si esta soportado. Se puede sobrescribir con `default_ar` en `models/models.yaml`.
+- `disable_ar`: bloquea el modo AR aunque `default_ar` o el usuario intenten activarlo.
+- `xr_move_speed`, `xr_vertical_move_speed`, `xr_turn_speed_degrees`, `xr_stick_deadzone`: locomocion XR con stick izquierdo.
 - `desktop_forward_move_speed`, `desktop_strafe_move_speed`, `desktop_vertical_move_speed`: velocidad de navegacion en preview Linux.
 
 ## YAML por modelo
@@ -57,6 +58,9 @@ Convencion de override editable:
 Ejemplo:
 
 ```yaml
+default_ar: false
+disable_ar: true
+
 models:
   "BancoIFU.glb":
     fit_height: false
@@ -104,6 +108,8 @@ models:
 ```
 
 Claves soportadas:
+- `default_ar`: clave global, fuera de `models`; `true` arranca en AR y `false` arranca en VR.
+- `disable_ar`: clave global, fuera de `models`; si es `true`, fuerza VR y bloquea el cambio manual a AR.
 - `fit_height`: aplica o no `_fit_model_height`.
 - `fit_width`: limita o no la anchura final del modelo.
 - `fit_depth`: limita o no la profundidad final del modelo.
@@ -253,9 +259,11 @@ Si `adb` no existe en tu sistema:
 Locomocion XR actual:
 - stick izquierdo horizontal: gira la camara/origen a izquierda y derecha
 - stick izquierdo vertical: avanza y retrocede
-- manteniendo `grip_click` izquierdo: el stick izquierdo horizontal desplaza lateralmente en lugar de girar
+- manteniendo `grip_click` izquierdo: el stick izquierdo horizontal desplaza lateralmente y el vertical sube/baja
+- click del stick izquierdo (`left_stick_click`): resetea la altura al nivel inicial
 - stick derecho: reservado para controles de subarboles definidos en `models.yaml`
 - `Y` izquierdo (`left_by_button`): alterna entre AR y VR
+- si `disable_ar: true`, el cambio manual a AR queda bloqueado
 - en AR desaparece el suelo, pero no las peanas
 
 Presets Android disponibles:

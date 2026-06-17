@@ -35,6 +35,7 @@ const XR_DEBUG_VECTOR_NAMES := ["primary", "secondary"]
 @export_range(0.5, 2.0, 0.05) var xr_render_target_size_multiplier: float = 1.3
 @export var start_in_ar: bool = true
 @export var disable_ar: bool = false
+@export var sky_texture_file: String = "res://assets/sky/eso_milky_way_panorama.jpg"
 @export var xr_move_speed: float = 1.5
 @export var xr_vertical_move_speed: float = 1.0
 @export var xr_turn_speed_degrees: float = 90.0
@@ -112,6 +113,7 @@ func _ready() -> void:
 	_setup_hand_feedback_materials()
 	_model_overrides = _load_model_overrides(model_overrides_file)
 	_apply_gallery_config(_load_gallery_config(model_overrides_file))
+	_apply_sky_texture(sky_texture_file)
 	_validate_model_overrides(_model_overrides)
 	_mqtt_config = _load_mqtt_config(mqtt_config_file)
 	_configure_preview_mode()
@@ -1039,6 +1041,48 @@ func _apply_gallery_config(config: Dictionary) -> void:
 		start_in_ar = bool(config["default_ar"])
 	if config.has("disable_ar"):
 		disable_ar = bool(config["disable_ar"])
+	if config.has("texture_sky"):
+		sky_texture_file = _resolve_sky_texture_path(str(config["texture_sky"]))
+
+
+func _resolve_sky_texture_path(value: String) -> String:
+	var path: String = value.strip_edges()
+	if path.is_empty():
+		return ""
+	if path.begins_with("res://") or path.begins_with("user://"):
+		return path
+	if path.begins_with("assets/"):
+		return "res://%s" % path
+	if path.contains("/"):
+		return "res://%s" % path
+	return "res://assets/sky/%s" % path
+
+
+func _apply_sky_texture(path: String) -> void:
+	var resolved_path: String = _resolve_sky_texture_path(path)
+	if resolved_path.is_empty():
+		return
+
+	var texture_res := ResourceLoader.load(resolved_path)
+	if not texture_res is Texture2D:
+		push_warning("No se pudo cargar texture_sky como Texture2D: %s" % resolved_path)
+		return
+
+	var environment: Environment = world_environment.environment
+	if environment == null:
+		environment = Environment.new()
+		world_environment.environment = environment
+
+	var sky: Sky = environment.sky
+	if sky == null:
+		sky = Sky.new()
+
+	var sky_material := PanoramaSkyMaterial.new()
+	sky_material.panorama = texture_res as Texture2D
+	sky.sky_material = sky_material
+	environment.sky = sky
+	environment.background_mode = Environment.BG_SKY
+	sky_texture_file = resolved_path
 
 
 func _load_mqtt_config(path: String) -> Dictionary:

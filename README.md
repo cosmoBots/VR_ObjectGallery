@@ -20,6 +20,7 @@ Evitar si puedes:
 - `main.tscn`: escena VR base (OpenXR).
 - `main.gd`: carga y distribuye modelos en cuadricula.
 - `models/`: carpeta de modelos (`.glb`/`.gltf`).
+- `assets/sky/`: texturas de cielo y atribucion de fuente.
 
 ## Uso
 
@@ -43,6 +44,7 @@ En el nodo raiz `Main` (script `main.gd`):
 - `xr_render_target_size_multiplier`: escala de resolucion XR en Pico/OpenXR.
 - `start_in_ar`: arranque en passthrough/AR por defecto si esta soportado. Se puede sobrescribir con `default_ar` en `models/models.yaml`.
 - `disable_ar`: bloquea el modo AR aunque `default_ar` o el usuario intenten activarlo.
+- `sky_texture_file`: textura de cielo panoramica por defecto. Se puede sobrescribir con `texture_sky` en `models/models.yaml`.
 - `xr_move_speed`, `xr_vertical_move_speed`, `xr_turn_speed_degrees`, `xr_stick_deadzone`: locomocion XR con stick izquierdo.
 - `desktop_forward_move_speed`, `desktop_strafe_move_speed`, `desktop_vertical_move_speed`: velocidad de navegacion en preview Linux.
 
@@ -60,6 +62,7 @@ Ejemplo:
 ```yaml
 default_ar: false
 disable_ar: true
+texture_sky: "eso_milky_way_panorama.jpg"
 
 models:
   "BancoIFU.glb":
@@ -110,6 +113,7 @@ models:
 Claves soportadas:
 - `default_ar`: clave global, fuera de `models`; `true` arranca en AR y `false` arranca en VR.
 - `disable_ar`: clave global, fuera de `models`; si es `true`, fuerza VR y bloquea el cambio manual a AR.
+- `texture_sky`: clave global, fuera de `models`; imagen panoramica para el cielo. Un nombre simple como `"cielo.jpg"` se busca en `res://assets/sky/`; tambien acepta `assets/sky/cielo.jpg` o `res://assets/sky/cielo.jpg`.
 - `fit_height`: aplica o no `_fit_model_height`.
 - `fit_width`: limita o no la anchura final del modelo.
 - `fit_depth`: limita o no la profundidad final del modelo.
@@ -126,6 +130,12 @@ Claves soportadas:
 - `translation`: desplazamiento local `[x, y, z]`.
 - `filtered_views`: vistas filtradas por grupo Godot, activables por boton.
 - `controls`: mapa de acciones de movimiento sobre subarboles.
+
+Restricciones actuales de `texture_sky`:
+- debe ser una panoramica equirectangular 360 grados en proporcion `2:1`
+- formatos recomendados: `.jpg`, `.png` o `.webp`
+- ejemplo validado: `6000x3000`
+- por ahora no hay parametros de mapeo por YAML; la imagen se aplica como `PanoramaSkyMaterial`
 
 Orden de aplicacion:
 - `scale`

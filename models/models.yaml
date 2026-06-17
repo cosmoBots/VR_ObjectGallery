@@ -1,5 +1,6 @@
 default_ar: false
 disable_ar: true
+texture_sky: "eso_milky_way_panorama.jpg"
 
 models:
   "NRT.glb":

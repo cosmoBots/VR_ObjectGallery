@@ -29,6 +29,7 @@ const XR_DEBUG_VECTOR_NAMES := ["primary", "secondary"]
 @export var use_unshaded_debug_material: bool = false
 @export var gallery_origin: Vector3 = Vector3(0.0, 0.0, -1.0)
 @export var pedestal_height: float = 0.1
+@export var floor_size: Vector2 = Vector2(20.0, 20.0)
 @export var default_target_model_height: float = 1.5
 @export var cookie_min_radius: float = 0.18
 @export var cookie_margin: float = 0.05
@@ -36,6 +37,9 @@ const XR_DEBUG_VECTOR_NAMES := ["primary", "secondary"]
 @export var start_in_ar: bool = true
 @export var disable_ar: bool = false
 @export var sky_texture_file: String = "res://assets/sky/eso_milky_way_panorama.jpg"
+@export_enum("day", "night") var illumination: String = "day"
+@export_range(0.0, 4.0, 0.01) var ambient_light_energy: float = 0.28
+@export_range(0.0, 4.0, 0.01) var directional_light_energy: float = 2.2
 @export var xr_move_speed: float = 1.5
 @export var xr_vertical_move_speed: float = 1.0
 @export var xr_turn_speed_degrees: float = 90.0
@@ -48,6 +52,7 @@ const XR_DEBUG_VECTOR_NAMES := ["primary", "secondary"]
 @export var desktop_stick_simulation_enabled: bool = true
 
 @onready var world_environment: WorldEnvironment = $WorldEnvironment
+@onready var directional_light: DirectionalLight3D = $DirectionalLight3D
 @onready var floor_mesh: MeshInstance3D = $Floor
 @onready var gallery_root: Node3D = $GalleryRoot
 @onready var xr_origin: XROrigin3D = $XROrigin3D
@@ -113,7 +118,9 @@ func _ready() -> void:
 	_setup_hand_feedback_materials()
 	_model_overrides = _load_model_overrides(model_overrides_file)
 	_apply_gallery_config(_load_gallery_config(model_overrides_file))
+	_apply_floor_size()
 	_apply_sky_texture(sky_texture_file)
+	_apply_illumination()
 	_validate_model_overrides(_model_overrides)
 	_mqtt_config = _load_mqtt_config(mqtt_config_file)
 	_configure_preview_mode()
@@ -460,11 +467,9 @@ func _switch_to_ar() -> bool:
 	var environment: Environment = world_environment.environment
 	environment.background_mode = Environment.BG_COLOR
 	environment.background_color = Color(0.0, 0.0, 0.0, 0.0)
-	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-	environment.ambient_light_color = Color(0.78, 0.8, 0.84, 1.0)
-	environment.ambient_light_energy = 1.0
 	floor_mesh.visible = false
 	_is_ar_mode = true
+	_apply_illumination()
 	return true
 
 
@@ -483,10 +488,9 @@ func _switch_to_vr() -> bool:
 	get_viewport().transparent_bg = false
 	var environment: Environment = world_environment.environment
 	environment.background_mode = Environment.BG_SKY
-	environment.ambient_light_source = Environment.AMBIENT_SOURCE_BG
-	environment.ambient_light_energy = 1.0
 	floor_mesh.visible = true
 	_is_ar_mode = false
+	_apply_illumination()
 	return true
 
 
@@ -1043,6 +1047,37 @@ func _apply_gallery_config(config: Dictionary) -> void:
 		disable_ar = bool(config["disable_ar"])
 	if config.has("texture_sky"):
 		sky_texture_file = _resolve_sky_texture_path(str(config["texture_sky"]))
+	if config.has("illumination"):
+		illumination = str(config["illumination"]).strip_edges().to_lower()
+	if config.has("ambient_light_energy"):
+		ambient_light_energy = maxf(0.0, float(config["ambient_light_energy"]))
+	if config.has("directional_light_energy"):
+		directional_light_energy = maxf(0.0, float(config["directional_light_energy"]))
+	if config.has("floor_size"):
+		floor_size = _floor_size_from_config(config["floor_size"])
+
+
+func _floor_size_from_config(value) -> Vector2:
+	if value is Array:
+		var values := value as Array
+		if values.size() >= 2:
+			return Vector2(maxf(0.0, float(values[0])), maxf(0.0, float(values[1])))
+		if values.size() == 1:
+			var array_side: float = maxf(0.0, float(values[0]))
+			return Vector2(array_side, array_side)
+	if str(value).is_valid_float():
+		var side: float = maxf(0.0, float(value))
+		return Vector2(side, side)
+	return floor_size
+
+
+func _apply_floor_size() -> void:
+	var plane_mesh := floor_mesh.mesh as PlaneMesh
+	if plane_mesh == null:
+		push_warning("No se pudo aplicar floor_size: Floor no usa PlaneMesh.")
+		return
+
+	plane_mesh.size = floor_size
 
 
 func _resolve_sky_texture_path(value: String) -> String:
@@ -1083,6 +1118,41 @@ func _apply_sky_texture(path: String) -> void:
 	environment.sky = sky
 	environment.background_mode = Environment.BG_SKY
 	sky_texture_file = resolved_path
+
+
+func _apply_illumination() -> void:
+	var mode: String = illumination.strip_edges().to_lower()
+	if mode != "night":
+		mode = "day"
+	illumination = mode
+
+	var environment: Environment = world_environment.environment
+	if environment == null:
+		environment = Environment.new()
+		world_environment.environment = environment
+
+	if mode == "night":
+		_aim_directional_light(Vector3(-1.5, 8.0, -1.0), Vector3.ZERO)
+		directional_light.visible = directional_light_energy > 0.0
+		directional_light.light_energy = directional_light_energy
+		environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+		environment.ambient_light_color = Color(0.10, 0.14, 0.22, 1.0)
+		environment.ambient_light_energy = ambient_light_energy
+		return
+
+	directional_light.visible = true
+	directional_light.light_energy = directional_light_energy
+	if _is_ar_mode:
+		environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+		environment.ambient_light_color = Color(0.78, 0.8, 0.84, 1.0)
+	else:
+		environment.ambient_light_source = Environment.AMBIENT_SOURCE_BG
+	environment.ambient_light_energy = ambient_light_energy
+
+
+func _aim_directional_light(source_position: Vector3, target_position: Vector3) -> void:
+	directional_light.global_position = source_position
+	directional_light.look_at(target_position, Vector3.UP)
 
 
 func _load_mqtt_config(path: String) -> Dictionary:

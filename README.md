@@ -41,10 +41,14 @@ En el nodo raiz `Main` (script `main.gd`):
 - `gltf_model_scale`, `fbx_model_scale`: escala base por formato.
 - `default_target_model_height`: altura usada por `fit_height` si el YAML no define otra.
 - `gallery_origin`: origen de la cuadricula.
+- `floor_size`: tamano del suelo en metros, por defecto `20 x 20`. Se puede sobrescribir en `models/models.yaml`.
 - `xr_render_target_size_multiplier`: escala de resolucion XR en Pico/OpenXR.
 - `start_in_ar`: arranque en passthrough/AR por defecto si esta soportado. Se puede sobrescribir con `default_ar` en `models/models.yaml`.
 - `disable_ar`: bloquea el modo AR aunque `default_ar` o el usuario intenten activarlo.
 - `sky_texture_file`: textura de cielo panoramica por defecto. Se puede sobrescribir con `texture_sky` en `models/models.yaml`.
+- `illumination`: modo de iluminacion por defecto. Se puede sobrescribir con `illumination` en `models/models.yaml`.
+- `ambient_light_energy`: intensidad de luz ambiente. Se puede sobrescribir en `models/models.yaml`.
+- `directional_light_energy`: potencia de la luz direccional. En modo noche simula luz de luna alta.
 - `xr_move_speed`, `xr_vertical_move_speed`, `xr_turn_speed_degrees`, `xr_stick_deadzone`: locomocion XR con stick izquierdo.
 - `desktop_forward_move_speed`, `desktop_strafe_move_speed`, `desktop_vertical_move_speed`: velocidad de navegacion en preview Linux.
 
@@ -63,6 +67,10 @@ Ejemplo:
 default_ar: false
 disable_ar: true
 texture_sky: "eso_milky_way_panorama.jpg"
+illumination: "night"
+ambient_light_energy: 0.54
+directional_light_energy: 0.24
+floor_size: [80.0, 80.0]
 
 models:
   "BancoIFU.glb":
@@ -114,6 +122,10 @@ Claves soportadas:
 - `default_ar`: clave global, fuera de `models`; `true` arranca en AR y `false` arranca en VR.
 - `disable_ar`: clave global, fuera de `models`; si es `true`, fuerza VR y bloquea el cambio manual a AR.
 - `texture_sky`: clave global, fuera de `models`; imagen panoramica para el cielo. Un nombre simple como `"cielo.jpg"` se busca en `res://assets/sky/`; tambien acepta `assets/sky/cielo.jpg` o `res://assets/sky/cielo.jpg`.
+- `illumination`: clave global, fuera de `models`; valores soportados: `"day"` mantiene la luz direccional de la escena, `"night"` usa una luz direccional alta y suave tipo luna llena, mas luz ambiente azul tenue.
+- `ambient_light_energy`: clave global, fuera de `models`; intensidad no negativa de la luz ambiente.
+- `directional_light_energy`: clave global, fuera de `models`; intensidad no negativa de la luz direccional.
+- `floor_size`: clave global, fuera de `models`; tamano del suelo como `[ancho, fondo]`. Tambien acepta un unico numero para suelo cuadrado.
 - `fit_height`: aplica o no `_fit_model_height`.
 - `fit_width`: limita o no la anchura final del modelo.
 - `fit_depth`: limita o no la profundidad final del modelo.

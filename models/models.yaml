@@ -1,6 +1,10 @@
 default_ar: false
 disable_ar: true
 texture_sky: "eso_milky_way_panorama.jpg"
+illumination: "night"
+ambient_light_energy: 2.94
+directional_light_energy: 0.24
+floor_size: [80.0, 80.0]
 
 models:
   "NRT.glb":

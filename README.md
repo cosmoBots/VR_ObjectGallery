@@ -210,10 +210,12 @@ mqtt:
   port: 1883
   username: "user"
   password: "change-me"
-  client_id: "vr_object_gallery"
+  client_prefix: "cbots"
   topic_prefix: "gallery"
   keepalive_seconds: 30
 ```
+
+`client_id` se calcula en runtime como `<client_prefix>_<hash>`, usando `OS.get_unique_id()` cuando esta disponible. Godot no expone la MAC en `IP.get_local_interfaces()`; esa API devuelve nombre, indice e IPs de las interfaces. En Web `OS.get_unique_id()` no esta disponible, asi que se usa un fallback local no pensado para seguridad.
 
 Para activar MQTT en un modelo, define `mqtt_id` en el modelo y `mqtt: true` en cada accion:
 

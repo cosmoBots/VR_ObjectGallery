@@ -31,3 +31,4 @@ web/*.pck
 web/*.png
 android.env
 /backup
+VR_NRT.sh

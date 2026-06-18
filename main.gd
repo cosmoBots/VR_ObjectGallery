@@ -1239,7 +1239,35 @@ func _load_mqtt_config(path: String) -> Dictionary:
 		var key: String = entry.substr(0, sep).strip_edges()
 		var value_text: String = entry.substr(sep + 1).strip_edges()
 		config[key] = _parse_yaml_scalar(value_text)
+	var client_prefix: String = str(config.get("client_prefix", "cbots")).strip_edges()
+	if client_prefix.is_empty():
+		client_prefix = "cbots"
+	config["client_prefix"] = client_prefix
+	config["client_id"] = _mqtt_runtime_client_id(client_prefix)
 	return config
+
+
+func _mqtt_runtime_client_id(prefix: String) -> String:
+	var device_id: String = OS.get_unique_id().strip_edges()
+	if device_id.is_empty():
+		device_id = "%s:%s:%s" % [OS.get_name(), OS.get_model_name(), OS.get_user_data_dir()]
+	var suffix: String = device_id.sha256_text().substr(0, 12)
+	return "%s_%s" % [_clean_mqtt_client_id_part(prefix), suffix]
+
+
+func _clean_mqtt_client_id_part(value: String) -> String:
+	var out := PackedStringArray()
+	var text: String = value.strip_edges().to_lower()
+	for i in text.length():
+		var ch: String = text.substr(i, 1)
+		if (ch >= "a" and ch <= "z") or (ch >= "0" and ch <= "9") or ch == "_" or ch == "-":
+			out.append(ch)
+		elif ch == " " or ch == "." or ch == ":" or ch == "/":
+			out.append("_")
+	var cleaned: String = "".join(out).strip_edges()
+	if cleaned.is_empty():
+		return "cbots"
+	return cleaned
 
 
 func _validate_model_overrides(overrides: Dictionary) -> void:

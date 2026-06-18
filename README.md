@@ -217,6 +217,8 @@ mqtt:
 
 `client_id` se calcula en runtime como `<client_prefix>_<hash>`, usando `OS.get_unique_id()` cuando esta disponible. Godot no expone la MAC en `IP.get_local_interfaces()`; esa API devuelve nombre, indice e IPs de las interfaces. En Web `OS.get_unique_id()` no esta disponible, asi que se usa un fallback local no pensado para seguridad.
 
+En XR se muestra un pequeno panel de texto delante de la camara con los ultimos eventos MQTT: configuracion cargada, topics suscritos, conexion/desconexion y mensajes recibidos. Los mismos eventos se imprimen tambien con prefijo `MQTT`, asi que en Android se pueden revisar con `adb logcat` filtrando por ese texto.
+
 Para activar MQTT en un modelo, define `mqtt_id` en el modelo y `mqtt: true` en cada accion:
 
 ```yaml

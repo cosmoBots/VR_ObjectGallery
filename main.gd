@@ -52,6 +52,8 @@ const XR_DEBUG_VECTOR_NAMES := ["primary", "secondary"]
 @export var desktop_vertical_move_speed: float = 1.0
 @export var desktop_look_sensitivity: float = 0.1
 @export var desktop_stick_simulation_enabled: bool = true
+@export var xr_mqtt_log_visible: bool = true
+@export var xr_mqtt_log_lines: int = 8
 
 @onready var world_environment: WorldEnvironment = $WorldEnvironment
 @onready var directional_light: DirectionalLight3D = $DirectionalLight3D
@@ -91,6 +93,10 @@ var _mqtt_config: Dictionary = {}
 var _mqtt_client = null
 var _mqtt_topic_handlers: Dictionary = {}
 var _mqtt_reconnect_timer: float = 0.0
+var _xr_mqtt_log_label: Label3D = null
+var _xr_mqtt_client_label: Label3D = null
+var _desktop_mqtt_client_label: Label3D = null
+var _xr_mqtt_log_buffer: PackedStringArray = PackedStringArray()
 var _xr_debug_button_states: Dictionary = {}
 var _xr_debug_float_states: Dictionary = {}
 var _xr_debug_vector_states: Dictionary = {}
@@ -118,13 +124,16 @@ func _ready() -> void:
 	_xr_active = _enable_xr_if_available()
 	_connect_controller_signals()
 	_setup_hand_feedback_materials()
+	_setup_xr_mqtt_log_panel()
 	_model_overrides = _load_model_overrides(model_overrides_file)
 	_apply_gallery_config(_load_gallery_config(model_overrides_file))
+	_apply_android_emulator_render_limits()
 	_apply_floor_size()
 	_apply_sky_texture(sky_texture_file)
 	_apply_illumination()
 	_validate_model_overrides(_model_overrides)
 	_mqtt_config = _load_mqtt_config(mqtt_config_file)
+	_update_xr_mqtt_client_label()
 	_configure_preview_mode()
 	_spawn_gallery()
 	_setup_mqtt()
@@ -140,7 +149,13 @@ func _is_linux_desktop() -> bool:
 
 
 func _should_enable_xr() -> bool:
+	if OS.has_feature("android_emulator"):
+		return false
 	return OS.has_feature("android") or OS.has_feature("linux_xr")
+
+
+func _is_android_emulator_export() -> bool:
+	return OS.has_feature("android_emulator")
 
 
 func _is_vive_xr_export() -> bool:
@@ -184,6 +199,8 @@ func _configure_preview_mode() -> void:
 	var show_desktop_hand_markers: bool = use_desktop_preview and not _is_linux_desktop()
 	desktop_left_marker.visible = show_desktop_hand_markers
 	desktop_right_marker.visible = show_desktop_hand_markers
+	if _desktop_mqtt_client_label != null:
+		_desktop_mqtt_client_label.visible = xr_mqtt_log_visible and use_desktop_preview
 
 	if use_desktop_preview:
 		desktop_preview.rotation_degrees.x = 0.0
@@ -260,6 +277,111 @@ func _set_marker_material(node: Node, material: Material) -> void:
 		(node as MeshInstance3D).material_override = material
 	for child in node.get_children():
 		_set_marker_material(child, material)
+
+
+func _apply_android_emulator_render_limits() -> void:
+	if not _is_android_emulator_export():
+		return
+
+	use_unshaded_debug_material = true
+	directional_light.visible = false
+	directional_light.shadow_enabled = false
+
+	var environment: Environment = world_environment.environment
+	if environment == null:
+		environment = Environment.new()
+		world_environment.environment = environment
+	environment.background_mode = Environment.BG_COLOR
+	environment.background_color = Color(0.05, 0.055, 0.065, 1.0)
+	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	environment.ambient_light_color = Color(0.78, 0.82, 0.88, 1.0)
+	environment.ambient_light_energy = 1.0
+	environment.sky = null
+
+	floor_mesh.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
+	if floor_mesh.material_override is BaseMaterial3D:
+		var floor_material := (floor_mesh.material_override as BaseMaterial3D).duplicate(true) as BaseMaterial3D
+		floor_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		floor_material.albedo_color = Color(0.18, 0.19, 0.21, 1.0)
+		floor_mesh.material_override = floor_material
+
+
+func _setup_xr_mqtt_log_panel() -> void:
+	_xr_mqtt_log_label = Label3D.new()
+	_xr_mqtt_log_label.name = "XRMqttLog"
+	_xr_mqtt_log_label.visible = xr_mqtt_log_visible
+	_xr_mqtt_log_label.position = Vector3(-0.72, -0.34, -1.45)
+	_xr_mqtt_log_label.font_size = 20
+	_xr_mqtt_log_label.pixel_size = 0.0022
+	_xr_mqtt_log_label.modulate = Color(0.78, 0.95, 1.0, 1.0)
+	_xr_mqtt_log_label.outline_size = 8
+	_xr_mqtt_log_label.outline_modulate = Color(0.0, 0.0, 0.0, 0.9)
+	_xr_mqtt_log_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_xr_mqtt_log_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	xr_camera.add_child(_xr_mqtt_log_label)
+
+	_xr_mqtt_client_label = Label3D.new()
+	_xr_mqtt_client_label.name = "XRMqttClientId"
+	_xr_mqtt_client_label.visible = xr_mqtt_log_visible
+	_xr_mqtt_client_label.position = Vector3(0.28, -0.34, -1.45)
+	_xr_mqtt_client_label.font_size = 20
+	_xr_mqtt_client_label.pixel_size = 0.0022
+	_xr_mqtt_client_label.modulate = Color(1.0, 0.9, 0.58, 1.0)
+	_xr_mqtt_client_label.outline_size = 8
+	_xr_mqtt_client_label.outline_modulate = Color(0.0, 0.0, 0.0, 0.9)
+	_xr_mqtt_client_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_xr_mqtt_client_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	xr_camera.add_child(_xr_mqtt_client_label)
+
+	_desktop_mqtt_client_label = Label3D.new()
+	_desktop_mqtt_client_label.name = "DesktopMqttClientId"
+	_desktop_mqtt_client_label.visible = xr_mqtt_log_visible
+	_desktop_mqtt_client_label.position = Vector3(0.36, -0.32, -1.45)
+	_desktop_mqtt_client_label.font_size = 20
+	_desktop_mqtt_client_label.pixel_size = 0.0022
+	_desktop_mqtt_client_label.modulate = Color(1.0, 0.9, 0.58, 1.0)
+	_desktop_mqtt_client_label.outline_size = 8
+	_desktop_mqtt_client_label.outline_modulate = Color(0.0, 0.0, 0.0, 0.9)
+	_desktop_mqtt_client_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	_desktop_mqtt_client_label.vertical_alignment = VERTICAL_ALIGNMENT_TOP
+	desktop_camera.add_child(_desktop_mqtt_client_label)
+
+	_update_xr_mqtt_log_label()
+	_update_xr_mqtt_client_label()
+
+
+func _mqtt_log(message: String) -> void:
+	var text: String = "MQTT %s" % message
+	print(text)
+	_xr_mqtt_log_buffer.append(text)
+	while _xr_mqtt_log_buffer.size() > maxi(1, xr_mqtt_log_lines):
+		_xr_mqtt_log_buffer.remove_at(0)
+	_update_xr_mqtt_log_label()
+
+
+func _update_xr_mqtt_log_label() -> void:
+	if _xr_mqtt_log_label == null:
+		return
+	_xr_mqtt_log_label.visible = xr_mqtt_log_visible
+	var lines := PackedStringArray()
+	lines.append("NRT MQTT")
+	if _xr_mqtt_log_buffer.is_empty():
+		lines.append("sin eventos todavia")
+	else:
+		lines.append_array(_xr_mqtt_log_buffer)
+	_xr_mqtt_log_label.text = "\n".join(lines)
+
+
+func _update_xr_mqtt_client_label() -> void:
+	var client_id: String = str(_mqtt_config.get("client_id", "pendiente"))
+	var topic_prefix: String = str(_mqtt_config.get("topic_prefix", "pendiente"))
+	var text: String = "client_id:\n%s\ntopic_prefix:\n%s" % [client_id, topic_prefix]
+	if _xr_mqtt_client_label != null:
+		_xr_mqtt_client_label.visible = xr_mqtt_log_visible
+		_xr_mqtt_client_label.text = text
+	if _desktop_mqtt_client_label != null:
+		_desktop_mqtt_client_label.visible = xr_mqtt_log_visible and desktop_preview_enabled
+		_desktop_mqtt_client_label.text = text
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -711,7 +833,10 @@ func _make_pedestal() -> MeshInstance3D:
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = Color(0.15, 0.15, 0.15, 1.0)
 	mat.roughness = 0.9
+	if _is_android_emulator_export():
+		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	pedestal.material_override = mat
+	pedestal.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 
 	pedestal.position = Vector3(0.0, pedestal_height * 0.5, 0.0)
 	return pedestal
@@ -737,7 +862,10 @@ func _make_shadow_cookie(model_root: Node3D) -> MeshInstance3D:
 	var mat := StandardMaterial3D.new()
 	mat.albedo_color = Color(1.0, 0.9, 0.15, 1.0)
 	mat.roughness = 0.95
+	if _is_android_emulator_export():
+		mat.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	cookie.material_override = mat
+	cookie.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_OFF
 	cookie.position = Vector3(0.0, pedestal_height + 0.003, 0.0)
 	return cookie
 
@@ -1147,6 +1275,16 @@ func _resolve_sky_texture_path(value: String) -> String:
 
 
 func _apply_sky_texture(path: String) -> void:
+	if _is_android_emulator_export():
+		var environment: Environment = world_environment.environment
+		if environment == null:
+			environment = Environment.new()
+			world_environment.environment = environment
+		environment.background_mode = Environment.BG_COLOR
+		environment.background_color = Color(0.05, 0.055, 0.065, 1.0)
+		environment.sky = null
+		return
+
 	var resolved_path: String = _resolve_sky_texture_path(path)
 	if resolved_path.is_empty():
 		return
@@ -1174,6 +1312,18 @@ func _apply_sky_texture(path: String) -> void:
 
 
 func _apply_illumination() -> void:
+	if _is_android_emulator_export():
+		var emulator_environment: Environment = world_environment.environment
+		if emulator_environment == null:
+			emulator_environment = Environment.new()
+			world_environment.environment = emulator_environment
+		directional_light.visible = false
+		directional_light.shadow_enabled = false
+		emulator_environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+		emulator_environment.ambient_light_color = Color(0.78, 0.82, 0.88, 1.0)
+		emulator_environment.ambient_light_energy = 1.0
+		return
+
 	var mode: String = illumination.strip_edges().to_lower()
 	if mode != "night":
 		mode = "day"
@@ -1446,8 +1596,10 @@ func _apply_material_mode(model_root: Node3D, override: Dictionary) -> void:
 
 func _setup_mqtt() -> void:
 	if not bool(_mqtt_config.get("enabled", false)):
+		_mqtt_log("disabled")
 		return
 	if _mqtt_topic_handlers.is_empty():
+		_mqtt_log("enabled pero sin topics registrados")
 		return
 
 	_mqtt_client = MqttClientScript.new()
@@ -1455,7 +1607,20 @@ func _setup_mqtt() -> void:
 	_mqtt_client.message.connect(_on_mqtt_message)
 	_mqtt_client.connected.connect(_on_mqtt_connected)
 	_mqtt_client.disconnected.connect(_on_mqtt_disconnected)
+	if _mqtt_client.has_signal("log_event"):
+		_mqtt_client.log_event.connect(_on_mqtt_log_event)
+	_mqtt_log(
+		"config host=%s port=%d client_id=%s topic_prefix=%s handlers=%d" % [
+			str(_mqtt_config.get("host", "")),
+			int(_mqtt_config.get("port", 1883)),
+			str(_mqtt_config.get("client_id", "")),
+			str(_mqtt_config.get("topic_prefix", "")),
+			_mqtt_topic_handlers.size(),
+		]
+	)
+	_update_xr_mqtt_client_label()
 	for topic in _mqtt_topic_handlers.keys():
+		_mqtt_log("subscribe %s" % str(topic))
 		_mqtt_client.subscribe(str(topic))
 	_mqtt_client.connect_to_broker()
 
@@ -1476,11 +1641,23 @@ func _process_mqtt(delta: float) -> void:
 
 
 func _on_mqtt_connected() -> void:
-	print("MQTT conectado a %s:%d" % [str(_mqtt_config.get("host", "")), int(_mqtt_config.get("port", 1883))])
+	_mqtt_log("broker verificado %s:%d" % [str(_mqtt_config.get("host", "")), int(_mqtt_config.get("port", 1883))])
+
+
+func _on_mqtt_log_event(message: String) -> void:
+	_mqtt_log(message)
 
 
 func _on_mqtt_disconnected() -> void:
-	push_warning("MQTT desconectado")
+	var reason: String = ""
+	if _mqtt_client != null and _mqtt_client.has_method("get_last_disconnect_reason"):
+		reason = str(_mqtt_client.get_last_disconnect_reason())
+	if reason.is_empty():
+		_mqtt_log("desconectado")
+		push_warning("MQTT desconectado")
+	else:
+		_mqtt_log("desconectado: %s" % reason)
+		push_warning("MQTT desconectado: %s" % reason)
 
 
 func _register_mqtt_filtered_view(override: Dictionary, action_name: String, view_index: int) -> void:
@@ -1534,7 +1711,9 @@ func _register_mqtt_control(override: Dictionary, action_name: String, control_i
 
 
 func _on_mqtt_message(topic: String, payload: String) -> void:
+	_mqtt_log("message %s payload=%s" % [topic, payload])
 	if not _mqtt_topic_handlers.has(topic):
+		_mqtt_log("ignored unknown topic %s" % topic)
 		return
 	var handler: Dictionary = _mqtt_topic_handlers[topic]
 	match str(handler.get("type", "")):

@@ -7,6 +7,8 @@ EXPORT_PRESETS_PATH="${ROOT_DIR}/export_presets.cfg"
 PACKAGE_NAME="eu.cosmobots.vr_objectgallery"
 ADB_CMD=(env ADB_LIBUSB=1 adb)
 ANDROID_ENV_PATH="${ROOT_DIR}/android.env"
+GODOT_BIN="${GODOT_BIN:-$HOME/soft/Godot_v4.6.2-stable_linux.x86_64}"
+BUILD_LOG="${BUILD_LOG:-/tmp/vr_objectgallery_pico_build.log}"
 
 die() {
   echo "ERROR: $*" >&2
@@ -15,6 +17,10 @@ die() {
 
 check_adb_available() {
   command -v adb >/dev/null 2>&1 || die "No encuentro 'adb' en PATH. Instala Android Platform Tools y asegurate de que 'adb' se puede ejecutar desde la terminal."
+}
+
+check_godot_available() {
+  [[ -x "$GODOT_BIN" ]] || die "No encuentro Godot ejecutable en GODOT_BIN=$GODOT_BIN"
 }
 
 require_file() {
@@ -112,12 +118,16 @@ latest_source_file() {
     -printf '%T@ %p\n' | sort -nr | head -n1 | cut -d' ' -f2-
 }
 
-check_apk_is_fresh() {
-  require_file "$APK_PATH"
-
+apk_needs_build() {
   local newest_source
   newest_source="$(latest_source_file)"
   [[ -n "$newest_source" ]] || die "No he encontrado ficheros fuente a comparar"
+
+  if [[ ! -f "$APK_PATH" ]]; then
+    echo "APK:    no existe $APK_PATH"
+    echo "Fuente: $(stat -c '%y %n' "$newest_source")"
+    return 0
+  fi
 
   local apk_mtime src_mtime
   apk_mtime="$(stat -c '%Y' "$APK_PATH")"
@@ -127,7 +137,28 @@ check_apk_is_fresh() {
   echo "Fuente: $(stat -c '%y %n' "$newest_source")"
 
   if (( apk_mtime < src_mtime )); then
-    die "El APK es mas antiguo que el ultimo cambio fuente. Reexporta antes de instalar."
+    return 0
+  fi
+  return 1
+}
+
+export_apk() {
+  check_godot_available
+  echo "Exportando preset '$EXPORT_PRESET_NAME' -> $APK_PATH"
+  echo "Godot: $GODOT_BIN"
+  echo "Log build: $BUILD_LOG"
+  if ! "$GODOT_BIN" --headless --path "$ROOT_DIR" --export-debug "$EXPORT_PRESET_NAME" "$APK_PATH" 2>&1 | tee "$BUILD_LOG"; then
+    die "La exportacion fallo. Log completo: $BUILD_LOG"
+  fi
+  require_file "$APK_PATH"
+  echo "APK generado: $(stat -c '%y %n' "$APK_PATH")"
+}
+
+ensure_apk_is_fresh() {
+  if apk_needs_build; then
+    export_apk
+  else
+    echo "APK actualizado, no recompilo."
   fi
 }
 
@@ -161,7 +192,7 @@ main() {
   load_android_env
   check_adb_available
   if [[ -z "$explicit_apk" ]]; then
-    check_apk_is_fresh
+    ensure_apk_is_fresh
   else
     require_file "$APK_PATH"
   fi

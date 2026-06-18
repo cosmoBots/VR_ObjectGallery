@@ -2,9 +2,13 @@ default_ar: false
 disable_ar: true
 texture_sky: "eso_milky_way_panorama.jpg"
 illumination: "night"
-ambient_light_energy: 2.94
-directional_light_energy: 0.24
 floor_size: [80.0, 80.0]
+day_illum:
+  ambient_light_energy: 0.28
+  directional_light_energy: 2.2
+night_illum:
+  ambient_light_energy: 2.94
+  directional_light_energy: 0.24
 
 models:
   "NRT.glb":
@@ -67,6 +71,7 @@ models:
         local_ctrl: "right_stick_x"
         target_node: "44V-M70-460_POLARIMETRO_ASS_ASM"
         reset_binding: "right_stick_click"
+        reset_key: "O"
         axis: "x"
         min: -0.08
         max: 0.17
@@ -78,6 +83,7 @@ models:
         local_ctrl: "right_stick_y"
         target_node: "44V-M70-511_MOUNTANDBASE"
         reset_binding: "right_stick_click"
+        reset_key: "O"
         axis: "z"
         min: -0.01
         max: 0.02

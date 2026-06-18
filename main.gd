@@ -38,8 +38,10 @@ const XR_DEBUG_VECTOR_NAMES := ["primary", "secondary"]
 @export var disable_ar: bool = false
 @export var sky_texture_file: String = "res://assets/sky/eso_milky_way_panorama.jpg"
 @export_enum("day", "night") var illumination: String = "day"
-@export_range(0.0, 4.0, 0.01) var ambient_light_energy: float = 0.28
-@export_range(0.0, 4.0, 0.01) var directional_light_energy: float = 2.2
+@export_range(0.0, 4.0, 0.01) var day_ambient_light_energy: float = 0.28
+@export_range(0.0, 4.0, 0.01) var day_directional_light_energy: float = 2.2
+@export_range(0.0, 4.0, 0.01) var night_ambient_light_energy: float = 2.94
+@export_range(0.0, 4.0, 0.01) var night_directional_light_energy: float = 0.24
 @export var xr_move_speed: float = 1.5
 @export var xr_vertical_move_speed: float = 1.0
 @export var xr_turn_speed_degrees: float = 90.0
@@ -290,8 +292,8 @@ func _process(delta: float) -> void:
 	if _xr_active or desktop_stick_simulation_enabled:
 		if _xr_active:
 			_debug_poll_xr_inputs()
-			_process_ar_vr_toggle()
 			_process_xr_locomotion(delta)
+		_process_ar_vr_toggle()
 		_process_filtered_views()
 		_process_model_controls(delta)
 		_update_hand_button_feedback()
@@ -431,11 +433,27 @@ func _process_ar_vr_toggle() -> void:
 	if _is_vive_xr_export():
 		toggle_pressed = toggle_pressed or _controller_trigger_pressed(right_hand)
 	if toggle_pressed and not _toggle_ar_button_previous:
-		if _is_ar_mode:
+		if _left_grip_pressed():
+			_toggle_illumination()
+		elif not _xr_active:
+			pass
+		elif _is_ar_mode:
 			_switch_to_vr()
 		else:
 			_switch_to_ar()
 	_toggle_ar_button_previous = toggle_pressed
+
+
+func _left_grip_pressed() -> bool:
+	return _control_button_pressed("left_grip_click")
+
+
+func _toggle_illumination() -> void:
+	if illumination.strip_edges().to_lower() == "night":
+		illumination = "day"
+	else:
+		illumination = "night"
+	_apply_illumination()
 
 
 func _switch_to_ar() -> bool:
@@ -1021,14 +1039,26 @@ func _load_gallery_config(path: String) -> Dictionary:
 		return {}
 
 	var config: Dictionary = {}
+	var current_section: String = ""
 	while not file.eof_reached():
 		var raw_line: String = _normalize_yaml_line(file.get_line())
 		var line: String = raw_line.split("#", true, 1)[0].rstrip("\r\n\t ")
 		if line.is_empty():
 			continue
-		if line.begins_with(" "):
-			continue
 		if line == "models:":
+			break
+
+		if line.begins_with("  ") and not current_section.is_empty():
+			var section_entry: String = line.strip_edges()
+			var section_sep: int = section_entry.find(":")
+			if section_sep == -1:
+				continue
+			var section_key: String = section_entry.substr(0, section_sep).strip_edges()
+			var section_value_text: String = section_entry.substr(section_sep + 1).strip_edges()
+			config[current_section][section_key] = _parse_yaml_scalar(section_value_text)
+			continue
+
+		if line.begins_with(" "):
 			continue
 
 		var sep: int = line.find(":")
@@ -1036,7 +1066,12 @@ func _load_gallery_config(path: String) -> Dictionary:
 			continue
 		var key: String = line.substr(0, sep).strip_edges()
 		var value_text: String = line.substr(sep + 1).strip_edges()
-		config[key] = _parse_yaml_scalar(value_text)
+		if value_text.is_empty():
+			config[key] = {}
+			current_section = key
+		else:
+			config[key] = _parse_yaml_scalar(value_text)
+			current_section = ""
 	return config
 
 
@@ -1049,12 +1084,30 @@ func _apply_gallery_config(config: Dictionary) -> void:
 		sky_texture_file = _resolve_sky_texture_path(str(config["texture_sky"]))
 	if config.has("illumination"):
 		illumination = str(config["illumination"]).strip_edges().to_lower()
-	if config.has("ambient_light_energy"):
-		ambient_light_energy = maxf(0.0, float(config["ambient_light_energy"]))
-	if config.has("directional_light_energy"):
-		directional_light_energy = maxf(0.0, float(config["directional_light_energy"]))
+	if config.has("day_illum"):
+		_apply_illumination_config("day", config["day_illum"])
+	if config.has("night_illum"):
+		_apply_illumination_config("night", config["night_illum"])
 	if config.has("floor_size"):
 		floor_size = _floor_size_from_config(config["floor_size"])
+
+
+func _apply_illumination_config(mode: String, values) -> void:
+	if not (values is Dictionary):
+		return
+
+	var illum_config := values as Dictionary
+	if mode == "night":
+		if illum_config.has("ambient_light_energy"):
+			night_ambient_light_energy = maxf(0.0, float(illum_config["ambient_light_energy"]))
+		if illum_config.has("directional_light_energy"):
+			night_directional_light_energy = maxf(0.0, float(illum_config["directional_light_energy"]))
+		return
+
+	if illum_config.has("ambient_light_energy"):
+		day_ambient_light_energy = maxf(0.0, float(illum_config["ambient_light_energy"]))
+	if illum_config.has("directional_light_energy"):
+		day_directional_light_energy = maxf(0.0, float(illum_config["directional_light_energy"]))
 
 
 func _floor_size_from_config(value) -> Vector2:
@@ -1133,21 +1186,22 @@ func _apply_illumination() -> void:
 
 	if mode == "night":
 		_aim_directional_light(Vector3(-1.5, 8.0, -1.0), Vector3.ZERO)
-		directional_light.visible = directional_light_energy > 0.0
-		directional_light.light_energy = directional_light_energy
+		directional_light.visible = night_directional_light_energy > 0.0
+		directional_light.light_energy = night_directional_light_energy
 		environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 		environment.ambient_light_color = Color(0.10, 0.14, 0.22, 1.0)
-		environment.ambient_light_energy = ambient_light_energy
+		environment.ambient_light_energy = night_ambient_light_energy
 		return
 
+	_aim_directional_light(Vector3(-3.0, 6.0, -3.5), Vector3.ZERO)
 	directional_light.visible = true
-	directional_light.light_energy = directional_light_energy
+	directional_light.light_energy = day_directional_light_energy
 	if _is_ar_mode:
 		environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
 		environment.ambient_light_color = Color(0.78, 0.8, 0.84, 1.0)
 	else:
 		environment.ambient_light_source = Environment.AMBIENT_SOURCE_BG
-	environment.ambient_light_energy = ambient_light_energy
+	environment.ambient_light_energy = day_ambient_light_energy
 
 
 func _aim_directional_light(source_position: Vector3, target_position: Vector3) -> void:
@@ -1777,6 +1831,9 @@ func _register_model_controls(model_root: Node3D, override: Dictionary) -> void:
 		_active_model_controls.append({
 			"action_name": String(control_name),
 			"local_ctrl": local_ctrl,
+			"keyboard_negative": String(control_config.get("keyboard_negative", "")),
+			"keyboard_positive": String(control_config.get("keyboard_positive", "")),
+			"reset_key": String(control_config.get("reset_key", "")),
 			"reset_binding": String(control_config.get("reset_binding", "")),
 			"node": target_3d,
 			"transform": transform_type,
@@ -1814,7 +1871,7 @@ func _process_model_controls(delta: float) -> void:
 		var control: Dictionary = _active_model_controls[i]
 		var reset_binding: String = str(control.get("reset_binding", ""))
 		if not reset_binding.is_empty():
-			var reset_now: bool = bool(reset_states.get(reset_binding, false)) or bool(_button_press_events.get(reset_binding, false))
+			var reset_now: bool = _control_reset_pressed(control, reset_states)
 			if _enable_control_debug_visuals and reset_binding == "right_ax_button":
 				_right_debug_material = _debug_brown_material
 			if reset_now:
@@ -1841,7 +1898,7 @@ func _process_model_controls(delta: float) -> void:
 		var input_value: float = 0.0
 		var local_ctrl: String = str(control.get("local_ctrl", ""))
 		if not local_ctrl.is_empty():
-			input_value = _control_input_value(local_ctrl)
+			input_value = _control_input_value_for_control(control)
 		if absf(input_value) < 0.15:
 			continue
 
@@ -1854,6 +1911,18 @@ func _process_model_controls(delta: float) -> void:
 	for reset_binding in reset_states.keys():
 		_control_button_previous[reset_binding] = reset_states[reset_binding]
 	_button_press_events.clear()
+
+
+func _control_reset_pressed(control: Dictionary, reset_states: Dictionary) -> bool:
+	var reset_binding: String = str(control.get("reset_binding", ""))
+	if reset_binding.is_empty():
+		return false
+	if not _xr_active and desktop_stick_simulation_enabled:
+		var reset_key: String = str(control.get("reset_key", "")).strip_edges()
+		if not reset_key.is_empty():
+			return _keyboard_key_pressed(reset_key)
+		return false
+	return bool(reset_states.get(reset_binding, false)) or bool(_button_press_events.get(reset_binding, false))
 
 
 func _apply_control_offset(control: Dictionary) -> void:
@@ -1922,6 +1991,18 @@ func _control_input_value(binding: String) -> float:
 			return 0.0
 
 
+func _control_input_value_for_control(control: Dictionary) -> float:
+	var binding: String = str(control.get("local_ctrl", ""))
+	if not _xr_active and desktop_stick_simulation_enabled:
+		if binding == "right_stick_x" or binding == "right_stick_y":
+			return _desktop_control_input_value(binding)
+		var negative_key: String = str(control.get("keyboard_negative", "")).strip_edges()
+		var positive_key: String = str(control.get("keyboard_positive", "")).strip_edges()
+		if not negative_key.is_empty() or not positive_key.is_empty():
+			return _desktop_key_axis_value(negative_key, positive_key)
+	return _control_input_value(binding)
+
+
 func _control_button_pressed(binding: String) -> bool:
 	if not _xr_active and desktop_stick_simulation_enabled:
 		return _desktop_control_button_pressed(binding)
@@ -1943,6 +2024,10 @@ func _control_button_pressed(binding: String) -> bool:
 			return _controller_trigger_pressed(left_hand)
 		"right_trigger_click":
 			return _controller_trigger_pressed(right_hand)
+		"left_grip_click":
+			return _controller_button_pressed(left_hand, ["grip_click"]) or _controller_float_pressed(left_hand, "grip")
+		"right_grip_click":
+			return _controller_button_pressed(right_hand, ["grip_click"]) or _controller_float_pressed(right_hand, "grip")
 		"left_secondary_click":
 			return left_hand.is_button_pressed("secondary_click")
 		"right_secondary_click":
@@ -1980,10 +2065,6 @@ func _desktop_control_input_value(binding: String) -> float:
 			return _desktop_axis_value(KEY_F, KEY_H)
 		"left_secondary_y":
 			return _desktop_axis_value(KEY_G, KEY_T)
-		"right_secondary_x":
-			return _desktop_axis_value(KEY_KP_4, KEY_KP_6)
-		"right_secondary_y":
-			return _desktop_axis_value(KEY_KP_2, KEY_KP_8)
 		_:
 			return 0.0
 
@@ -2006,6 +2087,10 @@ func _desktop_control_button_pressed(binding: String) -> bool:
 			return Input.is_key_pressed(KEY_Y)
 		"right_trigger_click":
 			return Input.is_key_pressed(KEY_P)
+		"left_grip_click":
+			return Input.is_key_pressed(KEY_C)
+		"right_grip_click":
+			return Input.is_key_pressed(KEY_V)
 		"left_secondary_click":
 			return Input.is_key_pressed(KEY_7)
 		"right_secondary_click":
@@ -2021,6 +2106,79 @@ func _desktop_axis_value(negative_key: Key, positive_key: Key) -> float:
 	if Input.is_key_pressed(positive_key):
 		value += 1.0
 	return value
+
+
+func _desktop_key_axis_value(negative_key: String, positive_key: String) -> float:
+	var value: float = 0.0
+	if _keyboard_key_pressed(negative_key):
+		value -= 1.0
+	if _keyboard_key_pressed(positive_key):
+		value += 1.0
+	return value
+
+
+func _keyboard_key_pressed(key_name: String) -> bool:
+	var keycode: Key = _key_from_name(key_name)
+	return keycode != KEY_NONE and Input.is_key_pressed(keycode)
+
+
+func _key_from_name(key_name: String) -> Key:
+	var normalized: String = key_name.strip_edges().to_upper()
+	if normalized.is_empty():
+		return KEY_NONE
+	if normalized.length() == 1:
+		var code: int = normalized.unicode_at(0)
+		if code >= 65 and code <= 90:
+			return int(KEY_A) + (code - 65)
+		if code >= 48 and code <= 57:
+			return int(KEY_0) + (code - 48)
+	match normalized:
+		"SPACE":
+			return KEY_SPACE
+		"TAB":
+			return KEY_TAB
+		"ENTER", "RETURN":
+			return KEY_ENTER
+		"SHIFT":
+			return KEY_SHIFT
+		"CTRL", "CONTROL":
+			return KEY_CTRL
+		"ALT":
+			return KEY_ALT
+		"PAGEUP", "PAGE_UP":
+			return KEY_PAGEUP
+		"PAGEDOWN", "PAGE_DOWN":
+			return KEY_PAGEDOWN
+		"LEFT":
+			return KEY_LEFT
+		"RIGHT":
+			return KEY_RIGHT
+		"UP":
+			return KEY_UP
+		"DOWN":
+			return KEY_DOWN
+		"KP_0", "NUMPAD_0":
+			return KEY_KP_0
+		"KP_1", "NUMPAD_1":
+			return KEY_KP_1
+		"KP_2", "NUMPAD_2":
+			return KEY_KP_2
+		"KP_3", "NUMPAD_3":
+			return KEY_KP_3
+		"KP_4", "NUMPAD_4":
+			return KEY_KP_4
+		"KP_5", "NUMPAD_5":
+			return KEY_KP_5
+		"KP_6", "NUMPAD_6":
+			return KEY_KP_6
+		"KP_7", "NUMPAD_7":
+			return KEY_KP_7
+		"KP_8", "NUMPAD_8":
+			return KEY_KP_8
+		"KP_9", "NUMPAD_9":
+			return KEY_KP_9
+		_:
+			return KEY_NONE
 
 
 func _axis_index_from_name(axis_name: String) -> int:

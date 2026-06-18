@@ -47,8 +47,7 @@ En el nodo raiz `Main` (script `main.gd`):
 - `disable_ar`: bloquea el modo AR aunque `default_ar` o el usuario intenten activarlo.
 - `sky_texture_file`: textura de cielo panoramica por defecto. Se puede sobrescribir con `texture_sky` en `models/models.yaml`.
 - `illumination`: modo de iluminacion por defecto. Se puede sobrescribir con `illumination` en `models/models.yaml`.
-- `ambient_light_energy`: intensidad de luz ambiente. Se puede sobrescribir en `models/models.yaml`.
-- `directional_light_energy`: potencia de la luz direccional. En modo noche simula luz de luna alta.
+- `day_illum`, `night_illum`: perfiles de iluminacion con luz ambiente y direccional.
 - `xr_move_speed`, `xr_vertical_move_speed`, `xr_turn_speed_degrees`, `xr_stick_deadzone`: locomocion XR con stick izquierdo.
 - `desktop_forward_move_speed`, `desktop_strafe_move_speed`, `desktop_vertical_move_speed`: velocidad de navegacion en preview Linux.
 
@@ -68,9 +67,13 @@ default_ar: false
 disable_ar: true
 texture_sky: "eso_milky_way_panorama.jpg"
 illumination: "night"
-ambient_light_energy: 0.54
-directional_light_energy: 0.24
 floor_size: [80.0, 80.0]
+day_illum:
+  ambient_light_energy: 0.28
+  directional_light_energy: 2.2
+night_illum:
+  ambient_light_energy: 2.94
+  directional_light_energy: 0.24
 
 models:
   "BancoIFU.glb":
@@ -91,6 +94,7 @@ models:
         local_ctrl: "right_stick_x"
         target_node: "44V-M70-460_POLARIMETRO_ASS_ASM"
         reset_binding: "right_stick_click"
+        reset_key: "O"
         axis: "x"
         min: -1.0
         max: 1.0
@@ -99,6 +103,7 @@ models:
         local_ctrl: "right_stick_y"
         target_node: "44V-M70-511_MOUNTANDBASE"
         reset_binding: "right_stick_click"
+        reset_key: "O"
         axis: "z"
         min: -1.0
         max: 1.0
@@ -122,9 +127,9 @@ Claves soportadas:
 - `default_ar`: clave global, fuera de `models`; `true` arranca en AR y `false` arranca en VR.
 - `disable_ar`: clave global, fuera de `models`; si es `true`, fuerza VR y bloquea el cambio manual a AR.
 - `texture_sky`: clave global, fuera de `models`; imagen panoramica para el cielo. Un nombre simple como `"cielo.jpg"` se busca en `res://assets/sky/`; tambien acepta `assets/sky/cielo.jpg` o `res://assets/sky/cielo.jpg`.
-- `illumination`: clave global, fuera de `models`; valores soportados: `"day"` mantiene la luz direccional de la escena, `"night"` usa una luz direccional alta y suave tipo luna llena, mas luz ambiente azul tenue.
-- `ambient_light_energy`: clave global, fuera de `models`; intensidad no negativa de la luz ambiente.
-- `directional_light_energy`: clave global, fuera de `models`; intensidad no negativa de la luz direccional.
+- `illumination`: clave global, fuera de `models`; valores soportados: `"day"` usa una luz direccional diurna mas alta, `"night"` usa una luz direccional alta y suave tipo luna llena, mas luz ambiente azul tenue.
+- `day_illum`: clave global, fuera de `models`; perfil de dia con `ambient_light_energy` y `directional_light_energy`.
+- `night_illum`: clave global, fuera de `models`; perfil de noche con `ambient_light_energy` y `directional_light_energy`.
 - `floor_size`: clave global, fuera de `models`; tamano del suelo como `[ancho, fondo]`. Tambien acepta un unico numero para suelo cuadrado.
 - `fit_height`: aplica o no `_fit_model_height`.
 - `fit_width`: limita o no la anchura final del modelo.
@@ -178,8 +183,10 @@ Valores soportados en `local_ctrl`:
 Campos por control:
 - nombre del control: identificador logico de la accion. Se usa en MQTT y no tiene por que coincidir con el control fisico local.
 - `local_ctrl`: binding local opcional para teclado/mandos. Si no se define, la accion no responde a control local pero puede seguir usando MQTT y `reset_binding`.
+- `keyboard_negative`, `keyboard_positive`: teclas opcionales para simular en Linux el eje de ese control. No se usan en `right_stick_x` ni `right_stick_y`, que siempre van con cursores.
 - `target_node`: nombre exacto del nodo hijo a mover.
 - `reset_binding`: boton que devuelve ese nodo a su posicion de reposo.
+- `reset_key`: tecla opcional para simular en Linux el reset de ese control.
 - `axis`: eje local a modificar (`x`, `y` o `z`).
 - `min`: desplazamiento minimo relativo a la posicion inicial del nodo.
 - `max`: desplazamiento maximo relativo a la posicion inicial del nodo.
@@ -285,6 +292,7 @@ Locomocion XR actual:
 - click del stick izquierdo (`left_stick_click`): resetea la altura al nivel inicial
 - stick derecho: reservado para controles de subarboles definidos en `models.yaml`
 - `Y` izquierdo (`left_by_button`): alterna entre AR y VR
+- manteniendo `grip_click` izquierdo, `Y` izquierdo (`left_by_button`) alterna entre `illumination: "day"` e `illumination: "night"`
 - si `disable_ar: true`, el cambio manual a AR queda bloqueado
 - en AR desaparece el suelo, pero no las peanas
 
@@ -316,19 +324,19 @@ Simulacion de sticks en Linux:
 - flechas `izquierda/derecha`: `right_stick_x`
 - flechas `abajo/arriba`: `right_stick_y`
 - `U`: `left_stick_click`
-- `O`: `right_stick_click`
+- `O`: `right_stick_click` solo si el control lo define como `reset_key`
 - `B`: `left_by_button`
 - `N`: `right_by_button`
 - `Y`: `left_trigger_click`
 - `P`: `right_trigger_click`
+- `C`: `left_grip_click`
+- `V`: `right_grip_click`
 - `1`: `left_ax_button`
 - `2`: `right_ax_button`
 - `F/H`: `left_secondary_x`
 - `G/T`: `left_secondary_y`
 - `7`: `left_secondary_click`
-- keypad `4/6`: `right_secondary_x`
-- keypad `2/8`: `right_secondary_y`
-- `0`: `right_secondary_click`
+- los ejes/botones de mano derecha definidos en `models.yaml` usan `keyboard_negative`, `keyboard_positive` y `reset_key`, salvo `right_stick_x/y`, que usan cursores
 
 Feedback visual de varitas:
 - solo se iluminan en blanco con el gatillo del controlador correspondiente

@@ -22,7 +22,7 @@ models:
     show_cookie: false
     #material_mode: "matte"
     scale: 1
-    translation: [0.0, 0.0, 0.0]
+    translation: [0.0, 0.0, -4.0]
     controls:
       yaw:
         mqtt: true

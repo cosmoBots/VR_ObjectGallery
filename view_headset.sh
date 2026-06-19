@@ -17,13 +17,15 @@ Uso:
   ./view_headset.sh [opciones] [serial] [-- argumentos extra de scrcpy]
 
 Opciones:
-  --fast       Baja latencia: menos resolucion/bitrate/FPS, sin audio ni control.
+  --fast       Baja latencia: menos resolucion/bitrate/FPS y sin audio.
   --left-eye   Recorta la mitad izquierda de la pantalla enviada por el visor.
   --right-eye  Recorta la mitad derecha de la pantalla enviada por el visor.
+  --reset-adb  Reinicia el servidor ADB antes de lanzar scrcpy.
 
 Ejemplos:
   ./view_headset.sh
   ./view_headset.sh --fast
+  ./view_headset.sh --reset-adb --fast
   ./view_headset.sh --fast --left-eye
   ./view_headset.sh 1WMHH000000000
   ./view_headset.sh --fast 1WMHH000000000 -- --max-size 960 --video-bit-rate 1M
@@ -47,6 +49,12 @@ check_tools() {
 
 connected_devices() {
   "${ADB_CMD[@]}" devices | awk 'NR>1 && $2=="device" {print $1}'
+}
+
+reset_adb_server() {
+  echo "Reiniciando servidor ADB..."
+  "${ADB_CMD[@]}" kill-server >/dev/null 2>&1 || true
+  "${ADB_CMD[@]}" start-server
 }
 
 device_screen_size() {
@@ -96,6 +104,7 @@ main() {
   local serial=""
   local low_latency=false
   local eye_crop=""
+  local reset_adb=false
   local -a scrcpy_args=()
   while (($# > 0)); do
     case "$1" in
@@ -115,6 +124,10 @@ main() {
         eye_crop="right"
         shift
         ;;
+      --reset-adb)
+        reset_adb=true
+        shift
+        ;;
       --)
         shift
         scrcpy_args+=("$@")
@@ -130,6 +143,10 @@ main() {
         ;;
     esac
   done
+
+  if [[ "$reset_adb" == true ]]; then
+    reset_adb_server
+  fi
 
   mapfile -t devices < <(connected_devices)
   if ((${#devices[@]} == 0)); then
@@ -148,7 +165,6 @@ main() {
   if [[ "$low_latency" == true ]]; then
     scrcpy_args=(
       --no-audio
-      --no-control
       --video-buffer=0
       --max-size=1024
       --max-fps=30

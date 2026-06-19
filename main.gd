@@ -3,6 +3,7 @@ extends Node3D
 const MqttClientScript = preload("res://mqtt_client.gd")
 const MQTT_STATUS_CONNECTING := 0
 const MQTT_NORMALIZED_DISPLAY_DECIMALS := 4
+const MQTT_CLIENT_EPOCH_UNIX := 1577836800
 const XR_ANALOG_BUTTON_THRESHOLD := 0.55
 const XR_DEBUG_BUTTON_NAMES := [
 	"ax_button",
@@ -1406,8 +1407,31 @@ func _mqtt_runtime_client_id(prefix: String) -> String:
 	var device_id: String = OS.get_unique_id().strip_edges()
 	if device_id.is_empty():
 		device_id = "%s:%s:%s" % [OS.get_name(), OS.get_model_name(), OS.get_user_data_dir()]
-	var suffix: String = device_id.sha256_text().substr(0, 12)
-	return "%s_%s" % [_clean_mqtt_client_id_part(prefix), suffix]
+	var device_suffix: String = device_id.sha256_text().substr(0, 12)
+	var clean_prefix: String = _clean_mqtt_client_id_part(prefix)
+	if _is_linux_desktop():
+		device_suffix = device_suffix.substr(0, 8)
+		var session_suffix: String = _mqtt_runtime_session_suffix()
+		return "%s_%s_%s" % [clean_prefix, device_suffix, session_suffix]
+	return "%s_%s" % [clean_prefix, device_suffix]
+
+
+func _mqtt_runtime_session_suffix() -> String:
+	var seconds_since_2020: int = maxi(0, int(Time.get_unix_time_from_system()) - MQTT_CLIENT_EPOCH_UNIX)
+	return _int_to_lower_hex(seconds_since_2020)
+
+
+func _int_to_lower_hex(value: int) -> String:
+	if value <= 0:
+		return "0"
+	var digits := "0123456789abcdef"
+	var remaining: int = value
+	var out := PackedStringArray()
+	while remaining > 0:
+		var digit: int = remaining % 16
+		out.insert(0, digits.substr(digit, 1))
+		remaining = remaining >> 4
+	return "".join(out)
 
 
 func _clean_mqtt_client_id_part(value: String) -> String:

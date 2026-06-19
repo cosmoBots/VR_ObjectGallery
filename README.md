@@ -215,7 +215,7 @@ mqtt:
   keepalive_seconds: 30
 ```
 
-`client_id` se calcula en runtime como `<client_prefix>_<hash>`, usando `OS.get_unique_id()` cuando esta disponible. Godot no expone la MAC en `IP.get_local_interfaces()`; esa API devuelve nombre, indice e IPs de las interfaces. En Web `OS.get_unique_id()` no esta disponible, asi que se usa un fallback local no pensado para seguridad.
+`client_id` se calcula en runtime como `<client_prefix>_<hash>`, usando `OS.get_unique_id()` cuando esta disponible. En Linux desktop se anade un sufijo de sesion (`<client_prefix>_<hash8>_<hex_segundos_desde_2020>`) para poder ejecutar varias instancias en paralelo sin competir por el mismo cliente MQTT y mantenerse cerca del limite portable de 23 bytes de MQTT 3.1.1. Godot no expone la MAC en `IP.get_local_interfaces()`; esa API devuelve nombre, indice e IPs de las interfaces. En Web `OS.get_unique_id()` no esta disponible, asi que se usa un fallback local no pensado para seguridad.
 
 En XR se muestra un pequeno panel de texto delante de la camara con los ultimos eventos MQTT: configuracion cargada, topics suscritos, conexion/desconexion y mensajes recibidos. Los mismos eventos se imprimen tambien con prefijo `MQTT`, asi que en Android se pueden revisar con `adb logcat` filtrando por ese texto.
 
@@ -310,6 +310,13 @@ Despliegue USB por visor:
 - Meta Quest: `./deploy_meta.sh`
 - HTC Vive XR Elite: `./deploy_vive.sh`
 - Build limpio + despliegue debug, por defecto Vive: `./clean_build_deploy.sh`
+
+Ver pantalla del visor por USB:
+- `./view_headset.sh`
+- si hay varios dispositivos: `./view_headset.sh <serial_adb>`
+- baja latencia: `./view_headset.sh --fast`
+- baja latencia y un solo ojo: `./view_headset.sh --fast --left-eye` o `./view_headset.sh --fast --right-eye`
+- argumentos extra para `scrcpy`: `./view_headset.sh --fast <serial_adb> -- --max-size 960 --video-bit-rate 1M`
 
 ## Preview en Linux
 

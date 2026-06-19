@@ -33,7 +33,7 @@ models:
         axis: "y"
         min: -270.0
         max: 270.0
-        speed: 90.0
+        speed: 50.0
         round_decimals: 2
         step: 1.0
       pitch:
@@ -44,7 +44,7 @@ models:
         axis: "x"
         min: -45.0
         max: 22.0
-        speed: 45.0
+        speed: 25.0
         round_decimals: 2
         step: 1.0
 

@@ -7,8 +7,10 @@ EXPORT_PRESETS_PATH="${ROOT_DIR}/export_presets.cfg"
 PACKAGE_NAME="eu.cosmobots.vr_objectgallery"
 ADB_CMD=(env ADB_LIBUSB=1 adb)
 ANDROID_ENV_PATH="${ROOT_DIR}/android.env"
+TARGETS_ENV_PATH="${ROOT_DIR}/.targets"
 GODOT_BIN="${GODOT_BIN:-$HOME/soft/Godot_v4.6.2-stable_linux.x86_64}"
 BUILD_LOG="${BUILD_LOG:-/tmp/vr_objectgallery_pico_build.log}"
+ADB_DEVICE_ARGS=()
 
 die() {
   echo "ERROR: $*" >&2
@@ -33,6 +35,20 @@ load_android_env() {
     # shellcheck source=/dev/null
     source "$ANDROID_ENV_PATH"
   fi
+}
+
+load_targets() {
+  if [[ ! -f "$TARGETS_ENV_PATH" ]]; then
+    die "No existe $TARGETS_ENV_PATH. Copia .targets.example a .targets y ajusta PICO_SERIAL."
+  fi
+  # shellcheck source=/dev/null
+  source "$TARGETS_ENV_PATH"
+  [[ -n "${PICO_SERIAL:-}" ]] || die "PICO_SERIAL esta vacio en .targets"
+  ADB_DEVICE_ARGS=(-s "$PICO_SERIAL")
+}
+
+adb_target() {
+  "${ADB_CMD[@]}" "${ADB_DEVICE_ARGS[@]}" "$@"
 }
 
 preset_export_path() {
@@ -163,26 +179,29 @@ ensure_apk_is_fresh() {
 }
 
 check_adb_device() {
-  local devices
-  devices="$("${ADB_CMD[@]}" devices | awk 'NR>1 && $2=="device" {print $1}')"
-  [[ -n "$devices" ]] || die "ADB no ve ningun dispositivo en estado 'device'"
-  echo "Dispositivo ADB: $(echo "$devices" | head -n1)"
+  local state
+  state="$("${ADB_CMD[@]}" devices | awk -v serial="${PICO_SERIAL:-}" '$1==serial {print $2}')"
+  if [[ "$state" != "device" ]]; then
+    "${ADB_CMD[@]}" devices -l
+    die "ADB no ve PICO_SERIAL=${PICO_SERIAL:-} en estado 'device'"
+  fi
+  echo "Dispositivo ADB: $PICO_SERIAL"
 }
 
 uninstall_app() {
-  if "${ADB_CMD[@]}" shell pm list packages | grep -q "$PACKAGE_NAME"; then
-    "${ADB_CMD[@]}" uninstall "$PACKAGE_NAME"
+  if adb_target shell pm list packages | grep -q "$PACKAGE_NAME"; then
+    adb_target uninstall "$PACKAGE_NAME"
   else
     echo "Paquete no instalado, continuo"
   fi
 }
 
 install_app() {
-  "${ADB_CMD[@]}" install "$APK_PATH"
+  adb_target install "$APK_PATH"
 }
 
 launch_app() {
-  "${ADB_CMD[@]}" shell monkey -p "$PACKAGE_NAME" -c android.intent.category.LAUNCHER 1
+  adb_target shell monkey -p "$PACKAGE_NAME" -c android.intent.category.LAUNCHER 1
 }
 
 main() {
@@ -190,6 +209,7 @@ main() {
   APK_PATH="$(resolve_apk_path "$explicit_apk")"
 
   load_android_env
+  load_targets
   check_adb_available
   if [[ -z "$explicit_apk" ]]; then
     ensure_apk_is_fresh

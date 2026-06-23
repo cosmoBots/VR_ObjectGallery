@@ -1,0 +1,7 @@
+# Copia este fichero a .targets y ajusta los seriales locales de tu maquina.
+# .targets esta ignorado por git.
+
+PICO_SERIAL=""
+META_SERIAL=""
+VIVE_SERIAL=""
+ANDROID_EMULATOR_SERIAL=""

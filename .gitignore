@@ -30,5 +30,6 @@ web/*.wasm
 web/*.pck
 web/*.png
 android.env
+.targets
 /backup
 VR_NRT.sh

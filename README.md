@@ -311,6 +311,12 @@ Despliegue USB por visor:
 - HTC Vive XR Elite: `./deploy_vive.sh`
 - Build limpio + despliegue debug, por defecto Vive: `./clean_build_deploy.sh`
 
+Targets locales:
+- copia `.targets.example` a `.targets`
+- ajusta `PICO_SERIAL`, `META_SERIAL` y `VIVE_SERIAL`
+- `.targets` esta ignorado por git para que cada desarrollador tenga sus propios visores
+- los scripts `deploy_pico.sh`, `deploy_meta.sh`, `deploy_vive.sh`, `view_headset_pico.sh` y `view_headset_meta.sh` usan esos seriales
+
 Ver pantalla del visor por USB:
 - `./view_headset.sh`
 - Pico: `./view_headset_pico.sh`
@@ -328,6 +334,10 @@ Ver pantalla del visor por USB:
 ## Preview en Linux
 
 Si OpenXR no esta activo, la escena arranca en modo escritorio con una camara normal.
+
+Despliegue local:
+- `./deploy_linux.sh` exporta el preset `Linux` si el binario es mas antiguo que el proyecto y luego lanza `VR_NRT.x86_64`
+- `EXPORT_MODE=release ./deploy_linux.sh` exporta en modo release
 
 Controles:
 - `Click izquierdo`: capturar raton
@@ -381,6 +391,8 @@ Prerequisitos:
 - salida esperada: `./web/index.html`
 - exportacion por terminal: `./export_web.sh`
 - servidor local de prueba: `./serve_web.sh` y abrir `http://localhost:8000`
+- despliegue local completo: `./deploy_web.sh` exporta si hace falta y sirve `web/` en `http://localhost:8000`
+- puerto alternativo: `./deploy_web.sh 8080`
 
 El export Web genera los ficheros `.html`, `.js`, `.wasm` y `.pck` en `web/`. Si se quiere integrar en React, exporta el mismo preset directamente a una carpeta tipo `public/simulator/index.html`.
 

@@ -4,10 +4,12 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 EXPORT_PRESETS_PATH="${ROOT_DIR}/export_presets.cfg"
 ANDROID_ENV_PATH="${ROOT_DIR}/android.env"
+TARGETS_ENV_PATH="${ROOT_DIR}/.targets"
 PACKAGE_NAME="eu.cosmobots.vr_objectgallery"
 GODOT_BIN="${GODOT_BIN:-$HOME/soft/Godot_v4.6.2-stable_linux.x86_64}"
 BUILD_LOG="${BUILD_LOG:-/tmp/vr_objectgallery_build.log}"
 ADB_CMD=(env ADB_LIBUSB=1 adb)
+ADB_DEVICE_ARGS=()
 
 die() {
   echo "ERROR: $*" >&2
@@ -39,6 +41,14 @@ load_android_env() {
   fi
 }
 
+load_targets() {
+  if [[ ! -f "$TARGETS_ENV_PATH" ]]; then
+    die "No existe $TARGETS_ENV_PATH. Copia .targets.example a .targets y ajusta los seriales."
+  fi
+  # shellcheck source=/dev/null
+  source "$TARGETS_ENV_PATH"
+}
+
 require_file() {
   local path="$1"
   [[ -f "$path" ]] || die "No existe: $path"
@@ -57,6 +67,28 @@ preset_for_target() {
     pico) printf '%s\n' "PicoVR" ;;
     *) die "Target desconocido: $target" ;;
   esac
+}
+
+serial_for_target() {
+  local target="$1"
+  case "$target" in
+    vive) printf '%s\n' "${VIVE_SERIAL:-}" ;;
+    meta) printf '%s\n' "${META_SERIAL:-}" ;;
+    pico) printf '%s\n' "${PICO_SERIAL:-}" ;;
+    *) die "Target desconocido: $target" ;;
+  esac
+}
+
+configure_adb_target() {
+  local target="$1"
+  local serial
+  serial="$(serial_for_target "$target")"
+  [[ -n "$serial" ]] || die "El serial para '$target' esta vacio en .targets"
+  ADB_DEVICE_ARGS=(-s "$serial")
+}
+
+adb_target() {
+  "${ADB_CMD[@]}" "${ADB_DEVICE_ARGS[@]}" "$@"
 }
 
 preset_export_path() {
@@ -111,14 +143,18 @@ resolve_apk_path() {
 }
 
 check_adb_device() {
-  local devices
-  devices="$("${ADB_CMD[@]}" devices | awk 'NR>1 && $2=="device" {print $1}')"
-  [[ -n "$devices" ]] || die "ADB no ve ningun dispositivo en estado 'device'"
-  echo "Dispositivo ADB: $(echo "$devices" | head -n1)"
+  local serial state
+  serial="${ADB_DEVICE_ARGS[1]:-}"
+  state="$("${ADB_CMD[@]}" devices | awk -v wanted="$serial" '$1==wanted {print $2}')"
+  if [[ "$state" != "device" ]]; then
+    "${ADB_CMD[@]}" devices -l
+    die "ADB no ve el target '$serial' en estado 'device'"
+  fi
+  echo "Dispositivo ADB: $serial"
 }
 
 force_stop_app() {
-  "${ADB_CMD[@]}" shell am force-stop "$PACKAGE_NAME" >/dev/null 2>&1 || true
+  adb_target shell am force-stop "$PACKAGE_NAME" >/dev/null 2>&1 || true
 }
 
 prepare_adb_server() {
@@ -131,19 +167,19 @@ prepare_adb_server() {
 }
 
 uninstall_app() {
-  if "${ADB_CMD[@]}" shell pm list packages | grep -q "$PACKAGE_NAME"; then
-    "${ADB_CMD[@]}" uninstall "$PACKAGE_NAME"
+  if adb_target shell pm list packages | grep -q "$PACKAGE_NAME"; then
+    adb_target uninstall "$PACKAGE_NAME"
   else
     echo "Paquete no instalado, continuo"
   fi
 }
 
 install_app() {
-  "${ADB_CMD[@]}" install "$APK_PATH"
+  adb_target install "$APK_PATH"
 }
 
 launch_app() {
-  "${ADB_CMD[@]}" shell monkey -p "$PACKAGE_NAME" -c android.intent.category.LAUNCHER 1
+  adb_target shell monkey -p "$PACKAGE_NAME" -c android.intent.category.LAUNCHER 1
 }
 
 main() {
@@ -166,7 +202,9 @@ main() {
   done
 
   load_android_env
+  load_targets
   check_tools
+  configure_adb_target "$target"
 
   local preset_name
   preset_name="$(preset_for_target "$target")"

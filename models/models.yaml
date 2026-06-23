@@ -31,8 +31,8 @@ models:
         transform: "rotation"
         space: "global"
         axis: "y"
-        min: -270.0
-        max: 270.0
+        min: -370.0
+        max: 370.0
         speed: 50.0
         round_decimals: 2
         step: 1.0
@@ -42,8 +42,8 @@ models:
         target_node: "Telescope_Structure"
         transform: "rotation"
         axis: "x"
-        min: -45.0
-        max: 22.0
+        min: -60.0
+        max: 40.0
         speed: 25.0
         round_decimals: 2
         step: 1.0

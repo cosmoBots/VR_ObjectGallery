@@ -21,11 +21,18 @@ Opciones:
   --left-eye   Recorta la mitad izquierda de la pantalla enviada por el visor.
   --right-eye  Recorta la mitad derecha de la pantalla enviada por el visor.
   --reset-adb  Reinicia el servidor ADB antes de lanzar scrcpy.
+  --clean      Mata procesos scrcpy previos en el visor antes de arrancar.
+  --forward    Usa adb forward en vez de adb reverse para el tunel de scrcpy.
+  --debug      Activa logs verbosos de scrcpy.
+  --list       Muestra dispositivos ADB y sale.
 
 Ejemplos:
   ./view_headset.sh
   ./view_headset.sh --fast
   ./view_headset.sh --reset-adb --fast
+  ./view_headset.sh --clean --fast
+  ./view_headset.sh --forward --fast
+  ./view_headset.sh --debug --fast
   ./view_headset.sh --fast --left-eye
   ./view_headset.sh 1WMHH000000000
   ./view_headset.sh --fast 1WMHH000000000 -- --max-size 960 --video-bit-rate 1M
@@ -40,6 +47,7 @@ load_android_env() {
     # shellcheck source=/dev/null
     source "$ANDROID_ENV_PATH"
   fi
+  export ADB_LIBUSB="${ADB_LIBUSB:-1}"
 }
 
 check_tools() {
@@ -51,10 +59,33 @@ connected_devices() {
   "${ADB_CMD[@]}" devices | awk 'NR>1 && $2=="device" {print $1}'
 }
 
+print_adb_devices() {
+  echo "Dispositivos ADB:"
+  "${ADB_CMD[@]}" devices -l
+}
+
+serial_is_connected() {
+  local wanted="$1"
+  local device
+  for device in "${devices[@]}"; do
+    if [[ "$device" == "$wanted" ]]; then
+      return 0
+    fi
+  done
+  return 1
+}
+
 reset_adb_server() {
   echo "Reiniciando servidor ADB..."
   "${ADB_CMD[@]}" kill-server >/dev/null 2>&1 || true
   "${ADB_CMD[@]}" start-server
+}
+
+clean_device_scrcpy() {
+  local serial="$1"
+  echo "Limpiando procesos scrcpy previos en $serial..."
+  "${ADB_CMD[@]}" -s "$serial" shell pkill -f scrcpy >/dev/null 2>&1 || true
+  "${ADB_CMD[@]}" -s "$serial" shell rm -f /data/local/tmp/scrcpy-server.jar >/dev/null 2>&1 || true
 }
 
 device_screen_size() {
@@ -105,6 +136,10 @@ main() {
   local low_latency=false
   local eye_crop=""
   local reset_adb=false
+  local clean_scrcpy=false
+  local force_forward=false
+  local debug_logs=false
+  local list_devices=false
   local -a scrcpy_args=()
   while (($# > 0)); do
     case "$1" in
@@ -128,6 +163,22 @@ main() {
         reset_adb=true
         shift
         ;;
+      --clean)
+        clean_scrcpy=true
+        shift
+        ;;
+      --forward)
+        force_forward=true
+        shift
+        ;;
+      --debug)
+        debug_logs=true
+        shift
+        ;;
+      --list)
+        list_devices=true
+        shift
+        ;;
       --)
         shift
         scrcpy_args+=("$@")
@@ -148,8 +199,14 @@ main() {
     reset_adb_server
   fi
 
+  if [[ "$list_devices" == true ]]; then
+    print_adb_devices
+    exit 0
+  fi
+
   mapfile -t devices < <(connected_devices)
   if ((${#devices[@]} == 0)); then
+    print_adb_devices
     die "ADB no ve ninguna gafa/dispositivo en estado 'device'. Comprueba USB debugging y acepta el permiso en la gafa."
   fi
 
@@ -160,6 +217,13 @@ main() {
       exit 1
     fi
     serial="${devices[0]}"
+  elif ! serial_is_connected "$serial"; then
+    print_adb_devices
+    die "ADB no ve el serial '$serial' en estado 'device'. Si aparece como 'unauthorized' u 'offline', acepta la autorizacion USB en la gafa o reinicia ADB."
+  fi
+
+  if [[ "$clean_scrcpy" == true ]]; then
+    clean_device_scrcpy "$serial"
   fi
 
   if [[ "$low_latency" == true ]]; then
@@ -173,15 +237,35 @@ main() {
     )
   fi
 
+  if [[ "$force_forward" == true ]]; then
+    scrcpy_args=(
+      --force-adb-forward
+      "${scrcpy_args[@]}"
+    )
+  fi
+
+  if [[ "$debug_logs" == true ]]; then
+    scrcpy_args=(
+      --verbosity=debug
+      "${scrcpy_args[@]}"
+    )
+  fi
+
   if [[ -n "$eye_crop" ]]; then
     append_eye_crop_args "$serial" "$eye_crop"
   fi
 
   echo "Dispositivo ADB: $serial"
   echo "scrcpy: $SCRCPY_BIN"
+  printf 'Comando: %q' "$SCRCPY_BIN"
+  printf ' %q' -s "$serial"
   if has_no_control_arg; then
+    printf ' %q' "${scrcpy_args[@]}"
+    printf '\n'
     exec "$SCRCPY_BIN" -s "$serial" "${scrcpy_args[@]}"
   fi
+  printf ' %q' --stay-awake "${scrcpy_args[@]}"
+  printf '\n'
   exec "$SCRCPY_BIN" -s "$serial" --stay-awake "${scrcpy_args[@]}"
 }
 

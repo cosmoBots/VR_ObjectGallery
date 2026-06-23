@@ -314,11 +314,15 @@ Despliegue USB por visor:
 Ver pantalla del visor por USB:
 - `./view_headset.sh`
 - Pico: `./view_headset_pico.sh`
-- Meta Quest: `./view_headset_meta.sh` (reinicia ADB antes de lanzar)
+- Meta Quest: `./view_headset_meta.sh`
 - si hay varios dispositivos: `./view_headset.sh <serial_adb>`
+- listar estado ADB: `./view_headset.sh --list`
 - baja latencia: `./view_headset.sh --fast`
 - baja latencia y un solo ojo: `./view_headset.sh --fast --left-eye` o `./view_headset.sh --fast --right-eye`
 - reiniciar ADB manualmente: `./view_headset.sh --reset-adb <serial_adb>`
+- limpiar scrcpy en el visor: `./view_headset.sh --clean <serial_adb>`
+- tunel alternativo: `./view_headset.sh --forward <serial_adb>`
+- diagnostico: `./view_headset.sh --debug <serial_adb>`
 - argumentos extra para `scrcpy`: `./view_headset.sh --fast <serial_adb> -- --max-size 960 --video-bit-rate 1M`
 
 ## Preview en Linux

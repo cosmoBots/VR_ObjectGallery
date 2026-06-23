@@ -11,6 +11,21 @@ die() {
   exit 1
 }
 
+find_scrcpy() {
+  if command -v scrcpy >/dev/null 2>&1; then
+    SCRCPY_BIN="$(command -v scrcpy)"
+    return 0
+  fi
+  if [[ -n "${SCRCPY_BIN:-}" && -x "$SCRCPY_BIN" ]]; then
+    return 0
+  fi
+  if [[ -x "$HOME/soft/bin/scrcpy" ]]; then
+    SCRCPY_BIN="$HOME/soft/bin/scrcpy"
+    return 0
+  fi
+  return 1
+}
+
 usage() {
   cat <<'EOF'
 Uso:
@@ -52,7 +67,7 @@ load_android_env() {
 
 check_tools() {
   command -v adb >/dev/null 2>&1 || die "No encuentro 'adb' en PATH. Revisa android.env o instala Android Platform Tools."
-  [[ -x "$SCRCPY_BIN" ]] || die "No encuentro scrcpy ejecutable en SCRCPY_BIN=$SCRCPY_BIN"
+  find_scrcpy || die "No encuentro scrcpy en PATH ni en SCRCPY_BIN=$SCRCPY_BIN. Instala scrcpy o ajusta la variable SCRCPY_BIN."
 }
 
 connected_devices() {

@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ANDROID_ENV_PATH="${ROOT_DIR}/android.env"
-SCRCPY_BIN="${SCRCPY_BIN:-$HOME/soft/bin/scrcpy}"
+SCRCPY_BIN="${SCRCPY_BIN:-}"
 ADB_CMD=(env ADB_LIBUSB=1 adb)
 
 die() {
@@ -12,11 +12,11 @@ die() {
 }
 
 find_scrcpy() {
-  if command -v scrcpy >/dev/null 2>&1; then
-    SCRCPY_BIN="$(command -v scrcpy)"
+  if [[ -n "${SCRCPY_BIN:-}" && -x "$SCRCPY_BIN" ]]; then
     return 0
   fi
-  if [[ -n "${SCRCPY_BIN:-}" && -x "$SCRCPY_BIN" ]]; then
+  if command -v scrcpy >/dev/null 2>&1; then
+    SCRCPY_BIN="$(command -v scrcpy)"
     return 0
   fi
   if [[ -x "$HOME/soft/bin/scrcpy" ]]; then

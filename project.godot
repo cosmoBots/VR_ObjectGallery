@@ -25,6 +25,7 @@ optics="optic elements"
 case=""
 cupula=""
 telescopio=""
+mirror=""
 
 [rendering]
 

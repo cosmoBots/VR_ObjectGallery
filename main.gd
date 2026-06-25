@@ -43,11 +43,21 @@ const MQTT_OVERLAY_Z := -0.95
 @export var start_in_ar: bool = true
 @export var disable_ar: bool = false
 @export var sky_texture_file: String = "res://assets/sky/eso_milky_way_panorama.jpg"
+@export var day_sky_texture_file: String = ""
+@export var night_sky_texture_file: String = "res://assets/sky/eso_milky_way_panorama.jpg"
+@export var day_sky_color: Color = Color(0.32, 0.54, 0.78, 1.0)
+@export var night_sky_color: Color = Color(0.015, 0.018, 0.03, 1.0)
 @export_enum("day", "night") var illumination: String = "day"
 @export_range(0.0, 4.0, 0.01) var day_ambient_light_energy: float = 0.28
 @export_range(0.0, 4.0, 0.01) var day_directional_light_energy: float = 2.2
 @export_range(0.0, 4.0, 0.01) var night_ambient_light_energy: float = 2.94
 @export_range(0.0, 4.0, 0.01) var night_directional_light_energy: float = 0.24
+@export var day_ambient_light_color: Color = Color(1.0, 1.0, 1.0, 1.0)
+@export var day_directional_light_color: Color = Color(1.0, 1.0, 1.0, 1.0)
+@export var night_ambient_light_color: Color = Color(0.10, 0.14, 0.22, 1.0)
+@export var night_directional_light_color: Color = Color(0.78, 0.84, 1.0, 1.0)
+@export var day_directional_light_position: Vector3 = Vector3(4.0, 4.0, -6.4)
+@export var night_directional_light_position: Vector3 = Vector3(-1.5, 8.0, -1.0)
 @export var xr_move_speed: float = 1.5
 @export var xr_vertical_move_speed: float = 1.0
 @export var xr_turn_speed_degrees: float = 90.0
@@ -94,6 +104,7 @@ var _enable_control_debug_visuals: bool = false
 var _is_ar_mode: bool = false
 var _toggle_ar_button_previous: bool = false
 var _initial_xr_origin_height: float = 0.0
+var _initial_desktop_preview_height: float = 0.0
 var _left_stick_click_previous: bool = false
 var _mqtt_config: Dictionary = {}
 var _mqtt_client = null
@@ -127,6 +138,7 @@ func _default_model_override() -> Dictionary:
 
 func _ready() -> void:
 	_initial_xr_origin_height = xr_origin.global_position.y
+	_initial_desktop_preview_height = desktop_preview.global_position.y
 	_xr_active = _enable_xr_if_available()
 	_connect_controller_signals()
 	_setup_hand_feedback_materials()
@@ -135,7 +147,6 @@ func _ready() -> void:
 	_apply_gallery_config(_load_gallery_config(model_overrides_file))
 	_apply_android_emulator_render_limits()
 	_apply_floor_size()
-	_apply_sky_texture(sky_texture_file)
 	_apply_illumination()
 	_validate_model_overrides(_model_overrides)
 	_mqtt_config = _load_mqtt_config(mqtt_config_file)
@@ -429,6 +440,7 @@ func _process(delta: float) -> void:
 		return
 	if not desktop_preview_enabled:
 		return
+	_process_height_reset()
 
 	var move_input := Vector3.ZERO
 	if Input.is_key_pressed(KEY_W):
@@ -465,7 +477,7 @@ func _process(delta: float) -> void:
 
 func _process_xr_locomotion(delta: float) -> void:
 	var stick: Vector2 = left_hand.get_vector2("primary")
-	if _process_xr_height_reset():
+	if _process_height_reset():
 		return
 
 	var camera_basis: Basis = xr_camera.global_transform.basis
@@ -496,12 +508,15 @@ func _process_xr_locomotion(delta: float) -> void:
 			_rotate_xr_origin_around_camera(-stick.x * deg_to_rad(xr_turn_speed_degrees) * delta)
 
 
-func _process_xr_height_reset() -> bool:
+func _process_height_reset() -> bool:
 	var reset_binding := "left_stick_click"
 	var left_stick_click: bool = _control_button_pressed(reset_binding)
 	var reset_now: bool = (left_stick_click and not _left_stick_click_previous) or bool(_button_press_events.get(reset_binding, false))
 	if reset_now:
-		xr_origin.global_position.y = _initial_xr_origin_height
+		if _xr_active:
+			xr_origin.global_position.y = _initial_xr_origin_height
+		else:
+			desktop_preview.global_position.y = _initial_desktop_preview_height
 		_left_stick_click_previous = left_stick_click
 		return true
 	_left_stick_click_previous = left_stick_click
@@ -1216,6 +1231,15 @@ func _apply_gallery_config(config: Dictionary) -> void:
 		disable_ar = bool(config["disable_ar"])
 	if config.has("texture_sky"):
 		sky_texture_file = _resolve_sky_texture_path(str(config["texture_sky"]))
+		night_sky_texture_file = sky_texture_file
+	if config.has("day_sky"):
+		day_sky_texture_file = _resolve_sky_texture_path(str(config["day_sky"]))
+	if config.has("night_sky"):
+		night_sky_texture_file = _resolve_sky_texture_path(str(config["night_sky"]))
+	if config.has("day_sky_color"):
+		day_sky_color = _color_from_config(config["day_sky_color"], day_sky_color)
+	if config.has("night_sky_color"):
+		night_sky_color = _color_from_config(config["night_sky_color"], night_sky_color)
 	if config.has("illumination"):
 		illumination = str(config["illumination"]).strip_edges().to_lower()
 	if config.has("day_illum"):
@@ -1236,12 +1260,24 @@ func _apply_illumination_config(mode: String, values) -> void:
 			night_ambient_light_energy = maxf(0.0, float(illum_config["ambient_light_energy"]))
 		if illum_config.has("directional_light_energy"):
 			night_directional_light_energy = maxf(0.0, float(illum_config["directional_light_energy"]))
+		if illum_config.has("ambient_light_color"):
+			night_ambient_light_color = _color_from_config(illum_config["ambient_light_color"], night_ambient_light_color)
+		if illum_config.has("directional_light_color"):
+			night_directional_light_color = _color_from_config(illum_config["directional_light_color"], night_directional_light_color)
+		if illum_config.has("directional_light_position"):
+			night_directional_light_position = _vector3_from_config(illum_config["directional_light_position"], night_directional_light_position)
 		return
 
 	if illum_config.has("ambient_light_energy"):
 		day_ambient_light_energy = maxf(0.0, float(illum_config["ambient_light_energy"]))
 	if illum_config.has("directional_light_energy"):
 		day_directional_light_energy = maxf(0.0, float(illum_config["directional_light_energy"]))
+	if illum_config.has("ambient_light_color"):
+		day_ambient_light_color = _color_from_config(illum_config["ambient_light_color"], day_ambient_light_color)
+	if illum_config.has("directional_light_color"):
+		day_directional_light_color = _color_from_config(illum_config["directional_light_color"], day_directional_light_color)
+	if illum_config.has("directional_light_position"):
+		day_directional_light_position = _vector3_from_config(illum_config["directional_light_position"], day_directional_light_position)
 
 
 func _floor_size_from_config(value) -> Vector2:
@@ -1256,6 +1292,30 @@ func _floor_size_from_config(value) -> Vector2:
 		var side: float = maxf(0.0, float(value))
 		return Vector2(side, side)
 	return floor_size
+
+
+func _color_from_config(value, fallback: Color) -> Color:
+	if value is Array:
+		var values := value as Array
+		if values.size() >= 3:
+			var alpha: float = 1.0
+			if values.size() >= 4:
+				alpha = clampf(float(values[3]), 0.0, 1.0)
+			return Color(
+				clampf(float(values[0]), 0.0, 1.0),
+				clampf(float(values[1]), 0.0, 1.0),
+				clampf(float(values[2]), 0.0, 1.0),
+				alpha
+			)
+	return fallback
+
+
+func _vector3_from_config(value, fallback: Vector3) -> Vector3:
+	if value is Array:
+		var values := value as Array
+		if values.size() >= 3:
+			return Vector3(float(values[0]), float(values[1]), float(values[2]))
+	return fallback
 
 
 func _apply_floor_size() -> void:
@@ -1317,6 +1377,33 @@ func _apply_sky_texture(path: String) -> void:
 	sky_texture_file = resolved_path
 
 
+func _clear_sky_texture(background_color: Color) -> void:
+	var environment: Environment = world_environment.environment
+	if environment == null:
+		environment = Environment.new()
+		world_environment.environment = environment
+	environment.background_mode = Environment.BG_COLOR
+	environment.background_color = background_color
+	environment.sky = null
+
+
+func _apply_sky_for_illumination(mode: String) -> void:
+	if _is_android_emulator_export() or _is_ar_mode:
+		return
+
+	if mode == "night":
+		if night_sky_texture_file.strip_edges().is_empty():
+			_clear_sky_texture(night_sky_color)
+		else:
+			_apply_sky_texture(night_sky_texture_file)
+		return
+
+	if day_sky_texture_file.strip_edges().is_empty():
+		_clear_sky_texture(day_sky_color)
+	else:
+		_apply_sky_texture(day_sky_texture_file)
+
+
 func _apply_illumination() -> void:
 	if _is_android_emulator_export():
 		var emulator_environment: Environment = world_environment.environment
@@ -1334,6 +1421,7 @@ func _apply_illumination() -> void:
 	if mode != "night":
 		mode = "day"
 	illumination = mode
+	_apply_sky_for_illumination(mode)
 
 	var environment: Environment = world_environment.environment
 	if environment == null:
@@ -1341,28 +1429,36 @@ func _apply_illumination() -> void:
 		world_environment.environment = environment
 
 	if mode == "night":
-		_aim_directional_light(Vector3(-1.5, 8.0, -1.0), Vector3.ZERO)
+		_aim_directional_light(night_directional_light_position, Vector3.ZERO)
 		directional_light.visible = night_directional_light_energy > 0.0
+		directional_light.shadow_enabled = directional_light.visible
+		directional_light.light_color = night_directional_light_color
 		directional_light.light_energy = night_directional_light_energy
 		environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-		environment.ambient_light_color = Color(0.10, 0.14, 0.22, 1.0)
+		environment.ambient_light_color = night_ambient_light_color
 		environment.ambient_light_energy = night_ambient_light_energy
 		return
 
-	_aim_directional_light(Vector3(-3.0, 6.0, -3.5), Vector3.ZERO)
-	directional_light.visible = true
+	_aim_directional_light(day_directional_light_position, Vector3.ZERO)
+	directional_light.visible = day_directional_light_energy > 0.0
+	directional_light.shadow_enabled = directional_light.visible
+	directional_light.light_color = day_directional_light_color
 	directional_light.light_energy = day_directional_light_energy
-	if _is_ar_mode:
-		environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
-		environment.ambient_light_color = Color(0.78, 0.8, 0.84, 1.0)
-	else:
-		environment.ambient_light_source = Environment.AMBIENT_SOURCE_BG
+	environment.ambient_light_source = Environment.AMBIENT_SOURCE_COLOR
+	environment.ambient_light_color = day_ambient_light_color
 	environment.ambient_light_energy = day_ambient_light_energy
 
 
 func _aim_directional_light(source_position: Vector3, target_position: Vector3) -> void:
 	directional_light.global_position = source_position
-	directional_light.look_at(target_position, Vector3.UP)
+	var horizontal_opposite := Vector3(
+		source_position.x + (source_position.x - target_position.x),
+		target_position.y,
+		source_position.z + (source_position.z - target_position.z)
+	)
+	if horizontal_opposite.is_equal_approx(source_position):
+		horizontal_opposite = source_position + Vector3.FORWARD
+	directional_light.look_at(horizontal_opposite, Vector3.UP)
 
 
 func _load_mqtt_config(path: String) -> Dictionary:
@@ -1968,12 +2064,19 @@ func _register_filtered_views(model_root: Node3D, override: Dictionary) -> void:
 
 		var visuals: Array[VisualInstance3D] = []
 		var initial_visibility: Dictionary = {}
+		var initial_layers: Dictionary = {}
+		var visible_when_filtered: Dictionary = {}
+		var open_when_filtered: Dictionary = {}
 		for node in model_root.find_children("*", "VisualInstance3D", true, false):
 			var visual := node as VisualInstance3D
 			if visual == null:
 				continue
 			visuals.append(visual)
 			initial_visibility[visual] = visual.visible
+			initial_layers[visual] = visual.layers
+			visible_when_filtered[visual] = _node_or_ancestor_is_in_group(visual, group_name, model_root)
+		for visual in visuals:
+			open_when_filtered[visual] = bool(visible_when_filtered.get(visual, false)) or _has_filtered_visual_descendant(visual, visible_when_filtered)
 
 		var filtered_view := {
 			"name": String(view_name),
@@ -1981,10 +2084,14 @@ func _register_filtered_views(model_root: Node3D, override: Dictionary) -> void:
 			"group": group_name,
 			"visuals": visuals,
 			"initial_visibility": initial_visibility,
+			"initial_layers": initial_layers,
+			"visible_when_filtered": visible_when_filtered,
+			"open_when_filtered": open_when_filtered,
 			"active": bool(view_config.get("start_active", false)),
 			"was_pressed": false,
 		}
-		_apply_filtered_view_visibility(filtered_view)
+		if bool(filtered_view["active"]):
+			_apply_filtered_view_visibility(filtered_view)
 		_active_filtered_views.append(filtered_view)
 		if bool(view_config.get("mqtt", false)):
 			_register_mqtt_filtered_view(override, String(view_name), _active_filtered_views.size() - 1)
@@ -2006,14 +2113,37 @@ func _process_filtered_views() -> void:
 func _apply_filtered_view_visibility(filtered_view: Dictionary) -> void:
 	var visuals: Array[VisualInstance3D] = filtered_view["visuals"]
 	var initial_visibility: Dictionary = filtered_view["initial_visibility"]
+	var initial_layers: Dictionary = filtered_view["initial_layers"]
+	var visible_when_filtered: Dictionary = filtered_view["visible_when_filtered"]
+	var open_when_filtered: Dictionary = filtered_view["open_when_filtered"]
 	var only_group: bool = bool(filtered_view.get("active", false))
-	var group_name: String = str(filtered_view["group"])
 
 	for visual in visuals:
 		if only_group:
-			visual.visible = visual.is_in_group(group_name)
+			var should_render := bool(visible_when_filtered.get(visual, false))
+			visual.visible = bool(open_when_filtered.get(visual, false))
+			visual.layers = int(initial_layers.get(visual, 1)) if should_render else 0
 		else:
 			visual.visible = bool(initial_visibility.get(visual, true))
+			visual.layers = int(initial_layers.get(visual, 1))
+
+
+func _node_or_ancestor_is_in_group(node: Node, group_name: String, subtree_root: Node) -> bool:
+	var current: Node = node
+	while current != null:
+		if current.is_in_group(group_name):
+			return true
+		if current == subtree_root:
+			break
+		current = current.get_parent()
+	return false
+
+
+func _has_filtered_visual_descendant(node: Node, visible_when_filtered: Dictionary) -> bool:
+	for child in node.find_children("*", "VisualInstance3D", true, false):
+		if bool(visible_when_filtered.get(child, false)):
+			return true
+	return false
 
 
 func _register_model_controls(model_root: Node3D, override: Dictionary) -> void:

@@ -1,14 +1,22 @@
 default_ar: false
 disable_ar: true
-texture_sky: "eso_milky_way_panorama.jpg"
+day_sky: "autumn_field_puresky.jpg"
+day_sky_color: [0.32, 0.54, 0.78]
+night_sky: "eso_milky_way_panorama.jpg"
 illumination: "night"
 floor_size: [80.0, 80.0]
 day_illum:
   ambient_light_energy: 0.28
+  ambient_light_color: [1.0, 1.0, 1.0]
   directional_light_energy: 2.2
+  directional_light_color: [1.0, 1.0, 1.0]
+  directional_light_position: [4.0, 4.0, -6.4]
 night_illum:
   ambient_light_energy: 2.94
+  ambient_light_color: [0.10, 0.14, 0.22]
   directional_light_energy: 0.24
+  directional_light_color: [0.78, 0.84, 1.0]
+  directional_light_position: [-1.5, 8.0, -1.0]
 
 models:
   "NRT.glb":
@@ -23,6 +31,11 @@ models:
     #material_mode: "matte"
     scale: 1
     translation: [0.0, 0.0, -4.0]
+    filtered_views:
+      view1:
+        button: "left_ax_button"
+        group: "optics"
+        mqtt: true
     controls:
       yaw:
         mqtt: true

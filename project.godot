@@ -23,6 +23,8 @@ window/stretch/aspect="expand"
 
 optics="optic elements"
 case=""
+cupula=""
+telescopio=""
 
 [rendering]
 

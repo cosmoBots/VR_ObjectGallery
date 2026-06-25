@@ -45,7 +45,8 @@ En el nodo raiz `Main` (script `main.gd`):
 - `xr_render_target_size_multiplier`: escala de resolucion XR en Pico/OpenXR.
 - `start_in_ar`: arranque en passthrough/AR por defecto si esta soportado. Se puede sobrescribir con `default_ar` en `models/models.yaml`.
 - `disable_ar`: bloquea el modo AR aunque `default_ar` o el usuario intenten activarlo.
-- `sky_texture_file`: textura de cielo panoramica por defecto. Se puede sobrescribir con `texture_sky` en `models/models.yaml`.
+- `sky_texture_file`: textura de cielo panoramica por defecto para noche. Se puede sobrescribir con `texture_sky` o `night_sky` en `models/models.yaml`.
+- `day_sky`, `night_sky`: texturas panoramicas opcionales por modo de iluminacion. `day_sky: ""` usa un cielo diurno plano configurable con `day_sky_color`.
 - `illumination`: modo de iluminacion por defecto. Se puede sobrescribir con `illumination` en `models/models.yaml`.
 - `day_illum`, `night_illum`: perfiles de iluminacion con luz ambiente y direccional.
 - `xr_move_speed`, `xr_vertical_move_speed`, `xr_turn_speed_degrees`, `xr_stick_deadzone`: locomocion XR con stick izquierdo.
@@ -66,14 +67,23 @@ Ejemplo:
 default_ar: false
 disable_ar: true
 texture_sky: "eso_milky_way_panorama.jpg"
+day_sky: "autumn_field_puresky.jpg"
+day_sky_color: [0.32, 0.54, 0.78]
+night_sky: "eso_milky_way_panorama.jpg"
 illumination: "night"
 floor_size: [80.0, 80.0]
 day_illum:
   ambient_light_energy: 0.28
+  ambient_light_color: [1.0, 1.0, 1.0]
   directional_light_energy: 2.2
+  directional_light_color: [1.0, 1.0, 1.0]
+  directional_light_position: [4.0, 4.0, -6.4]
 night_illum:
   ambient_light_energy: 2.94
+  ambient_light_color: [0.10, 0.14, 0.22]
   directional_light_energy: 0.24
+  directional_light_color: [0.78, 0.84, 1.0]
+  directional_light_position: [-1.5, 8.0, -1.0]
 
 models:
   "BancoIFU.glb":
@@ -126,10 +136,14 @@ models:
 Claves soportadas:
 - `default_ar`: clave global, fuera de `models`; `true` arranca en AR y `false` arranca en VR.
 - `disable_ar`: clave global, fuera de `models`; si es `true`, fuerza VR y bloquea el cambio manual a AR.
-- `texture_sky`: clave global, fuera de `models`; imagen panoramica para el cielo. Un nombre simple como `"cielo.jpg"` se busca en `res://assets/sky/`; tambien acepta `assets/sky/cielo.jpg` o `res://assets/sky/cielo.jpg`.
+- `texture_sky`: clave global, fuera de `models`; alias historico de `night_sky`. Un nombre simple como `"cielo.jpg"` se busca en `res://assets/sky/`; tambien acepta `assets/sky/cielo.jpg` o `res://assets/sky/cielo.jpg`.
+- `day_sky`: clave global, fuera de `models`; imagen panoramica para el modo dia. Si esta vacia (`""`), usa un cielo diurno plano y quita las estrellas.
+- `day_sky_color`: clave global, fuera de `models`; color RGB `[r, g, b]` del cielo diurno plano cuando `day_sky` esta vacio. Valores en rango `0..1`.
+- `night_sky`: clave global, fuera de `models`; imagen panoramica para el modo noche.
 - `illumination`: clave global, fuera de `models`; valores soportados: `"day"` usa una luz direccional diurna mas alta, `"night"` usa una luz direccional alta y suave tipo luna llena, mas luz ambiente azul tenue.
-- `day_illum`: clave global, fuera de `models`; perfil de dia con `ambient_light_energy` y `directional_light_energy`.
-- `night_illum`: clave global, fuera de `models`; perfil de noche con `ambient_light_energy` y `directional_light_energy`.
+- `day_illum`: clave global, fuera de `models`; perfil de dia con `ambient_light_energy`, `ambient_light_color`, `directional_light_energy`, `directional_light_color` y `directional_light_position`.
+- `night_illum`: clave global, fuera de `models`; perfil de noche con `ambient_light_energy`, `ambient_light_color`, `directional_light_energy`, `directional_light_color` y `directional_light_position`.
+- `directional_light_position`: posicion virtual `[x, y, z]` desde la que viene la luz direccional hacia el origen. En modo dia, el valor por defecto apunta aproximadamente al sol de `autumn_field_puresky.jpg`.
 - `floor_size`: clave global, fuera de `models`; tamano del suelo como `[ancho, fondo]`. Tambien acepta un unico numero para suelo cuadrado.
 - `fit_height`: aplica o no `_fit_model_height`.
 - `fit_width`: limita o no la anchura final del modelo.
@@ -148,10 +162,10 @@ Claves soportadas:
 - `filtered_views`: vistas filtradas por grupo Godot, activables por boton.
 - `controls`: mapa de acciones de movimiento sobre subarboles.
 
-Restricciones actuales de `texture_sky`:
+Restricciones actuales de `day_sky`, `night_sky` y `texture_sky`:
 - debe ser una panoramica equirectangular 360 grados en proporcion `2:1`
 - formatos recomendados: `.jpg`, `.png` o `.webp`
-- ejemplo validado: `6000x3000`
+- ejemplos validados: `eso_milky_way_panorama.jpg` y `autumn_field_puresky.jpg`
 - por ahora no hay parametros de mapeo por YAML; la imagen se aplica como `PanoramaSkyMaterial`
 
 Orden de aplicacion:

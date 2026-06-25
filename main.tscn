@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cwo034wg56xub"]
 
 [ext_resource type="Script" uid="uid://rff55v78r4s1" path="res://main.gd" id="1_main"]
-[ext_resource type="Texture2D" path="res://assets/sky/eso_milky_way_panorama.jpg" id="2_sky"]
+[ext_resource type="Texture2D" uid="uid://dba4h728c64o0" path="res://assets/sky/eso_milky_way_panorama.jpg" id="2_sky"]
 
 [sub_resource type="PanoramaSkyMaterial" id="PanoramaSkyMaterial_1"]
 panorama = ExtResource("2_sky")

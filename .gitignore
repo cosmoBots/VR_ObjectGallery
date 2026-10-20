@@ -11,6 +11,7 @@
 Thumbs.db
 
 # Build/export outputs
+/build/
 *.apk
 *.aab
 *.pck
@@ -30,6 +31,7 @@ web/*.wasm
 web/*.pck
 web/*.png
 android.env
+android.env.bat
 .targets
 /backup
 VR_NRT.sh

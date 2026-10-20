@@ -331,7 +331,56 @@ Targets locales:
 - `.targets` esta ignorado por git para que cada desarrollador tenga sus propios visores
 - los scripts `deploy_pico.sh`, `deploy_meta.sh`, `deploy_vive.sh`, `view_headset_pico.sh` y `view_headset_meta.sh` usan esos seriales
 
-Ver pantalla del visor por USB:
+### Despliegue desde Windows
+
+Usa `deploy_pico.bat` o `deploy_meta.bat` desde CMD, o `./deploy_pico.bat` y
+`./deploy_meta.bat` desde PowerShell. Los dos usan `deploy_android.ps1`, incluido
+en el repositorio, y funcionan desde cualquier directorio.
+
+Preparacion inicial:
+
+1. Instala Android SDK (puedes usar Android Studio) con SDK Platform-Tools y los
+   componentes requeridos por tu version de Godot. Instala tambien un JDK compatible.
+   Sigue la [guia oficial de exportacion Android](https://docs.godotengine.org/en/stable/tutorials/export/exporting_for_android.html).
+2. En Godot, configura `Editor Settings > Export > Android > Android SDK Path`
+   (normalmente `%LOCALAPPDATA%\Android\Sdk`) y `Java SDK Path` con la carpeta del JDK.
+   Configura tambien `JAVA_HOME` o anade el JDK al `PATH` para los scripts.
+3. Instala las plantillas de exportacion de la misma version que el ejecutable de Godot.
+   Los presets usan Gradle: instala la plantilla Android desde `Project > Install Android Build Template`.
+   El fichero `android/.build_version` de este repositorio indica `4.6.2.stable`;
+   si usas Godot 4.7.2, actualiza tambien esa plantilla desde el editor.
+4. Copia `.targets.example` a `.targets` y rellena `PICO_SERIAL` y `META_SERIAL`
+   con los valores de `adb devices -l`. Activa el modo desarrollador/depuracion USB
+   del visor y acepta la autorizacion USB dentro del visor.
+
+Godot se busca en la carpeta superior (`..`), dando preferencia al ejecutable
+`Godot*_win64_console.exe`. ADB se busca en `ANDROID_HOME`, `ANDROID_SDK_ROOT`,
+el SDK de `%LOCALAPPDATA%` y el `PATH`. Para personalizar rutas, copia
+`android.env.bat.example` a `android.env.bat` y edita sus variables; este fichero
+local esta ignorado por git. No se carga el `android.env` de Linux.
+
+```powershell
+.\deploy_pico.bat -Check
+.\deploy_meta.bat -Check
+.\deploy_pico.bat
+.\deploy_meta.bat
+# Instalar un APK existente sin compilar (solo requiere ADB y el serial):
+.\deploy_meta.bat "C:\builds\VR_ObjectGalleryMeta.apk"
+```
+
+Sin argumento se lee la ruta del APK del preset `PicoVR` o `Meta Quest 3` y
+se exporta en debug si falta o hay fuentes mas recientes. Un APK indicado
+explicitamente no se recompila; las rutas relativas se resuelven desde el proyecto
+y la extension `.apk` es opcional. La instalacion usa `adb install -r` para
+conservar datos y despues lanza la aplicacion. Si cambia la firma del APK, ADB
+rechazara la actualizacion y tendras que desinstalar la version anterior manualmente.
+Los logs de exportacion quedan en `%TEMP%\vr_objectgallery_pico_build.log` o
+`%TEMP%\vr_objectgallery_meta_build.log` (personalizable con `BUILD_LOG`).
+`-Check` valida las rutas y requisitos basicos sin compilar ni contactar con el visor;
+la comprobacion completa de plantillas y componentes del SDK la realiza Godot al exportar.
+
+### Ver pantalla del visor por USB
+
 - `./view_headset.sh`
 - Pico: `./view_headset_pico.sh`
 - Meta Quest: `./view_headset_meta.sh`
@@ -344,6 +393,38 @@ Ver pantalla del visor por USB:
 - tunel alternativo: `./view_headset.sh --forward <serial_adb>`
 - diagnostico: `./view_headset.sh --debug <serial_adb>`
 - argumentos extra para `scrcpy`: `./view_headset.sh --fast <serial_adb> -- --max-size 960 --video-bit-rate 1M`
+
+## Preview en Windows
+
+Ejecuta `.\deploy_windows.bat` desde PowerShell o `deploy_windows.bat` desde CMD.
+Exporta el preset `Windows` en debug si falta el ejecutable o hay fuentes mas
+recientes, y lanza `build/windows/VR_NRT.exe` desde la carpeta del proyecto.
+Los argumentos se pasan a la aplicacion, por ejemplo `.\deploy_windows.bat --verbose`.
+
+Detecta Godot en `..`, dando preferencia a `Godot*_win64_console.exe`.
+Puedes definir `GODOT_BIN`, `EXPORT_PRESET_NAME` y `BUILD_LOG` para personalizar
+el ejecutable de Godot, el preset y el log. Por defecto el log queda en
+`%TEMP%\vr_objectgallery_windows_build.log`. No requiere Android Studio ni el SDK Android;
+instala las plantillas de exportacion correspondientes a tu version de Godot desde
+`Editor > Manage Export Templates`.
+
+Si Godot indica que faltan `windows_debug_x86_64.exe` o
+`windows_release_x86_64.exe`, abre ese gestor y pulsa `Download and Install`
+para la version exacta del editor (actualmente 4.7.2 en esta maquina).
+Tambien puedes instalar el paquete `.tpz` oficial mediante `Install from File`.
+Despues vuelve a ejecutar `.\deploy_windows.bat`.
+
+Para exportar en release desde PowerShell:
+
+```powershell
+$env:EXPORT_MODE = "release"
+.\deploy_windows.bat
+```
+
+En CMD: `set "EXPORT_MODE=release"` y despues `deploy_windows.bat`.
+El cambio entre debug y release tambien fuerza una exportacion.
+Para volver a debug en PowerShell: `$env:EXPORT_MODE = "debug"`.
+Los controles de escritorio son los mismos que se describen a continuacion para Linux.
 
 ## Preview en Linux
 
